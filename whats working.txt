@@ -1,0 +1,7 @@
+Single player
+ - All cards ability should be working on player side but not on AI side
+ - AI will not play event from hand
+ - AI will only activate mandatory ability
+
+Multiplayer
+ - All cards ability should be working for both player

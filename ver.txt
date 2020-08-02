@@ -1,0 +1,265 @@
+0.21.0
+	Added Detective Opera Milky Holme cards
+	Changed download popup layout
+
+0.20.1
+	Fixed Stock label position when returning to main menu
+	Fixed rested cards position shown in playmat
+
+0.20.0
+	Added THE IDOLM@STER cards (without IM/S07-067 ability)
+	Fixed Pool trigger effect on Multiplay
+	Fixed Level Up on Multiplay
+	Fixed Clock Phase on Multplay
+	Fixed Auto ability trigger on Multiplay
+	Fixed Encore Phase on Multiplay
+
+0.19.1
+	Fixed error when downloading all resource
+
+0.19.0
+	Added THE IDOLM@STER Dearly Stars cards
+	Added popup when multiple ACT can be activated
+
+0.18.0
+	Added Macross Frontier cards
+
+0.17.1
+	Fixed Fate/hollow ataraxia images
+	Fixed cards display when there are less than 7 cards on Deck Building Add cards popup.
+	Fixed Deck Building button labels
+	Fixed some AUTO ability that trigger on attack with climax
+	Fixed ACT button image
+	Fixed CGS/WS01-T06 card info text
+
+0.17.0
+	Added Fate/hollow ataraxia
+	Changed download files and custom decks location
+	Fixed Japanese text wrap in info popup
+
+0.16.3
+	Fixed saving of custom decks
+	Fixed field label showing in main menu
+
+0.16.2
+	Changed download persentage of sets
+	Fixed auto ability triggering outside of beginning of phase
+	Fixed encore step crash on select
+
+0.16.1
+	Fixed getting level from auto ability
+	Increased card info movement buffer
+
+0.16.0
+	Added Jap Saekano cards
+	Added CX Combo icon image
+	Added popup for when Reshuffle and Level up rule action ocur at the same time
+	Changed card levels image to match ability effect
+	Fixed Show field button on Level up popup
+	Fixed Damage Step and Level up rule action
+	Fixed not drawing when leveling up during Clock Phase
+	Fixed trigger card not going to stock after deck refresh
+
+0.15.0
+	Added Jap Fate/stay night cards
+
+0.14.0
+	Added Jap Card Game Shiyoko promo cards
+	Added Image on card texts when opening Info popup
+
+0.13.0
+	Added Eng Fate/kaleido linear PRISMA ILLYA cards
+	Added Jap Fate/kaleido linear PRISMA ILLYA extrabox 1 and 2
+	Added number when selecting multiple cards
+	Added number when cards ability, having same names, activate to differentiate
+	Fixed Attack phase when opp press Skip Attack or End Attack button on Multiplayer
+	Fixed Trigger step gotting stuck on Multiplayer
+	Fixed filter button disapear when closing popup on Deck Building add cards popup
+	Changed Cont ability core
+
+0.12.2
+	Fixed Counter error
+	Fixed reveal top cards triggering again after leveling up
+
+0.12.1
+	Fixed error in auto ability checking
+
+0.12.0
+	Added Bandai Namco cards ability to game
+	Added turn player background
+	Added option to download all image
+	Changed Trigger step code
+	Changed phase setp transiton time
+	Fixed Stock movement when paying cost due to playing card
+	Fixed custom deck image
+	Fixed custom deck saving not showing after
+	Fixed deck building cards rows when adding 5 or more of each level group
+	Fixed Counter step when using Event counter
+
+0.11.0
+	Added Trigger icon on card image
+	Added Download section
+	Added check of downloaded file on startup and download
+	Reduced the app to contain only 2 decks and main file
+	
+0.10.0
+	Added ENG/JAP cards filter on deck building
+	Added ENG/JAP cards infomation on info popup (not complete)
+	Added About page in other section
+	Added Copyright information in other sectection
+	Fixed "Joint Investigation, Kokoro & Shalo" confrim text
+	Fixed opponent janken cost pay
+	Fixed Encore Phase
+	Fixed Encore ability
+	Fixed Climax AUTO and CONT ability
+
+0.9.1
+	Fixed bug on deck popup selection
+	Fixed opponent counter step
+	Added missing KS translation
+
+0.9.0
+	Added all KS and Sks cards updated 25/4/20
+	Check cont ability also check climax in play
+	Playmat popup sorted by name
+
+0.8.2
+	Playamt fix
+	Added new playmat
+	Remove old playmat (wrong positions)
+
+0.8.1
+	fix bug
+	changed app name
+
+0.8.0
+	restructure of Card object and popups
+	card limit based on name instead of quantity
+	seperated some class in different file
+	Relative instead of Scatter
+	changed string to fstring
+
+0.7.0
+	added deck building
+
+0.6.0
+	added Card Game Shiyoko TD
+	Changed images format (cards by set number)
+	Multiplay feature completed
+	ability restructure
+
+0.5.0
+	Fixed "Joint Investigation, Kokoro & Shalo" AUTO ability
+	Overplay confirm popup
+	Main Multiplay feature completed (with AUTO and ACT ability of blank deck, demo deck)
+
+0.4.8
+	Main Multiplay feature completed (without AUTO and ACT ability)
+
+0.4.7
+	Added Multiplay feature (Not complete)
+
+0.4.6
+	Fix Clock Icon image
+	Change file structure
+
+0.4.5
+	Fix Leveling up and Clocking not moving cards
+
+0.4.4
+	Fix Portrait mode
+
+0.4.3
+	Bug fix in counter
+	Opp AI search
+
+0.4.2
+	Implemented new card database
+
+0.4.1
+	Changed loading screen
+
+0.4.0
+	Added Custom deck in deck select
+	Removed extra name field in card info
+	Deck info can now ba accesed by triple touch
+	Card info can now be accesed by triple touch (both single and multiple area ie clock)
+	Deck list format changed
+	Card colour data changed - multi colour available
+	Changed card database
+	Added Markers
+	Added new playmats
+
+	
+0.3.4
+	End Attack button fix
+	Side attack hide button now
+	Encore ability list change
+
+0.3.3
+	remove error test
+
+0.3.2
+	add mail error
+	add error to test mail error function
+
+0.3.1
+	fix missing image
+	fix main menu image scaling
+	change app name for faster testing
+	add confirm ability for both player
+	fix Alarm ability
+
+0.3.0
+	changed trigger function structure
+	added all stg td cards
+	added 10% movement befor cancelling info card
+	
+0.2.1
+	remove auto ability check
+
+0.2.0
+	remove player in cdata database
+	change auto ability structure
+	added Persona 3 td cards 
+
+0.1.4
+	added on dc td on reverse ability (lvl reverser)
+	added bond stock ability
+	added actual/original info on card info
+	added alarm giving ability
+	added bodygurad
+	added debug buttons switch
+
+0.1.3
+	fix multiple auto ability popup
+
+0.1.2
+	added config/global file
+	add popup for multiple auto ability trigger
+
+0.1.1
+	fix random button on deck/mat select
+	fix font special character 
+
+0.1.0
+	deck and playmat selector
+	holding card or deck give card or deck information
+	added some ability
+
+0.0.11	
+	centered stacked card count
+	fixed card text size on card info
+	fixed other bug
+
+0.0.10
+	added card information popup
+	added stacked card count (Library,Waiting,Memory,Stock)
+	
+0.0.9
+	fixed attack text popup on start of declaration phase
+	increase shuffle count
+
+0.0.8
+	updated img to atlas
+	added soul, ability, icon, colour image to card
