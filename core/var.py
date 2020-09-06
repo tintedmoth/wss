@@ -262,6 +262,7 @@ def gdata_init():
 	        "draw": 0,
 	        "play": [],
 	        "discard": 0,
+	        "brest":["",[],[],[],[]],
 	        "dismay": False,
 	        "extra": [],
 	        "extra1": [],
@@ -271,6 +272,8 @@ def gdata_init():
 	        "mtrigger": 0,
 	        "clocker": False,
 	        "clocker_rev": False,
+	        "noact":{"1":True,"2":True},
+	        "climax":{"1":True,"2":True},
 	        "climax_play": False,
 	        "reshuffle": False,
 	        "reshuffle_trigger": "",
@@ -337,7 +340,7 @@ def gdata_init():
 	        "estock_pop": False,
 	        "notargetfield": False,
 	        "brainstorm": 0,
-	        "brainstorm_c": 0,
+	        "brainstorm_c": [0,[]],
 	        "resonance": [False,[]],
 	        "random_reveal":[],
 	        "confirm": False,
@@ -387,7 +390,7 @@ def atlas_make():
 			if item1 == "e" or item1 == "j" or item1 == "d":
 				continue
 			files[item][item1] = False
-			if ".db" in item1 and exists(f"{data_ex}/{item1}"):
+			if "-d" in item1 and exists(f"{data_ex}/{item1}"):
 				with open(f"{data_ex}/{item1}", "rb") as f:
 					hash_md5 = md5()
 					for chunk in iter(lambda: f.read(4096 * 10), b""):
@@ -407,28 +410,29 @@ def atlas_make():
 						to_remove.append(f"{img_ex}/{item1}")
 
 		if all(files[item][ff] for ff in files[item]):
-			with open(f"{data_ex}/{item}.db", "r", encoding="utf-8") as rjson:
-				temp = json_unzip(jload(rjson))
-				for key in temp:
-					for item2 in temp[key]:
-						if key == "a":
-							if item2 not in se["main"][key]:
-								se["main"][key][item2] = dict(temp[key][item2])
-						elif key == "c":
-							if item2 not in se["main"][key]:
-								se["main"][key].append(item2)
-						elif key == "t":
-							if item2 not in sd:
-								sd[item2] = dict(temp[key][item2])
-						elif key == "s":
-							if item2 not in se["main"][key]["Title"]:
-								se["main"][key]["Title"].append(item2)
-						elif key == "p":
-							if item2 not in sp:
-								sp[item2] = dict(temp[key][item2])
-						elif key == "m":
-							if item2 not in se["main"][key]:
-								se["main"][key].append(item2)
+			if exists(f"{data_ex}/{item}-d"):
+				with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
+					temp = json_unzip(jload(rjson))
+					for key in temp:
+						for item2 in temp[key]:
+							if key == "a":
+								if item2 not in se["main"][key]:
+									se["main"][key][item2] = dict(temp[key][item2])
+							elif key == "c":
+								if item2 not in se["main"][key]:
+									se["main"][key].append(item2)
+							elif key == "t":
+								if item2 not in sd:
+									sd[item2] = dict(temp[key][item2])
+							elif key == "s":
+								if item2 not in se["main"][key]["Title"]:
+									se["main"][key]["Title"].append(item2)
+							elif key == "p":
+								if item2 not in sp:
+									sp[item2] = dict(temp[key][item2])
+							elif key == "m":
+								if item2 not in se["main"][key]:
+									se["main"][key].append(item2)
 
 	for item in to_remove:
 		remove(item)

@@ -10,3 +10,5 @@ class TextInput(Ti):
 		super(TextInput, self).__init__(**kwargs)
 		self.cid = cid
 		self.font_name = f"{font_in}/{font}"
+		self.multiline = False
+		self.padding = [12,6,6,6]

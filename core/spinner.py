@@ -10,3 +10,4 @@ class Spinner(Sp):
 		super(Spinner, self).__init__(**kwargs)
 		self.cid = cid
 		self.font_name = f"{font_in}/{font}"
+		self.sync_height = True

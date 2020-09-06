@@ -26,7 +26,7 @@ markreplace = {
 # "(11)": "⑪", "(12)": "⑫", "(13)": "⑬", "(14)": "⑭", "(15)": "⑮",
 # "(16)": "⑯", "(17)": "⑰", "(18)": "⑱ ", "(19)": "⑲", "(20)": "⑳",}
 # " 1 ":" one "," 2 ":" two ","up to 2": "up to two",
-"square" : {"[REST]": "IREST", "[STAND]": "ISTAND", "[REVERSE]": "IREVERSE","Rested":"IREST"," Rest": "IREST","[Rest": "[IREST"," Standing": "ISTAND",
+"square" : {"[REST]": "IREST", "[STAND]": "ISTAND", "[REVERSE]": "IREVERSE","[Rest": "[IREST","Rested":"IREST"," Rest": "IREST"," Standing": "ISTAND",
          "[COUNTER]": "ICOUNTER","Reversed":"IREVERSE","Reverse":"IREVERSE","Stand":"ISTAND","[SOUL]":"ISOUL",
           "[AUTO]": "AUTO", "[ACT]": "ACT", "[CONT]": "CONT", "[DOOR]": "IDOOR", "[STANDBY]": "ISTANDBY",
           "[DRAW]": "IDRAW", "[STOCK]": "ISTOCK", "[TREASURE]": "ITREASURE", "[GATE]": "IGATE", "[BOUNCE]": "IBOUNCE",
@@ -37,5 +37,5 @@ markreplace = {
           },
 "anchors" : {"ISTANDBY": 1,"IREST": 1, "ISTAND": 1, "IREVERSE": 1, "IJAUTO": 1, "IJACT": 1, "IJCONT": 1,"AUTO": 2, "ACT": 2, "CONT": 2, "IDOOR": 1, "IDRAW": 1,
            "ISTOCK": 1, "ITREASURE": 2, "IGATE": 1, "IBOUNCE": 1, "ISHOT": 2, "ICHOICE": 2,"IALARM":1,"ICOUNTER":1,"ICXCOMBO":3,"IJCXCOMBO":3,"ISOUL":1},
-"set_only" : {"(Macross Frontier Only)":"Macross Frontier"}
+"set_only" : {"(Macross Frontier Only)":"Macross Frontier","(Kud Wafter Only)":"Kud Wafter"}
 }
