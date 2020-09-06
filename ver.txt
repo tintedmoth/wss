@@ -1,3 +1,17 @@
+0.23.0
+	Added Jap Index & Railgun cards
+	Fixed Encore stuff to previous card
+	
+0.22.0
+	Added Eng AngelBeats! Re:Edit cards
+	Added Jap AngelBeats! Re:Edit cards
+	Added Jap Angel Beats! & Kud Wafter cards
+	Added Jap AngelBeats! extrabox cards
+	Added Jap AngelBeats! vol.2 extrabox cards 
+	Fixed AI Encore	Phase
+	Fixed error downloading packages
+	Various ui fix
+
 0.21.0
 	Added Detective Opera Milky Holme cards
 	Changed download popup layout
