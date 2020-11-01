@@ -22,7 +22,7 @@ source.include_exts = py,pyc,pyd,kv,atlas,otf,db
 source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = tests, bin,.buildozer
+source.exclude_dirs = tests, bin,.buildozer,kivy
 
 # (list) List of exclusions using pattern matching
 #source.exclude_patterns = license,images/*/*.jpg
@@ -37,7 +37,7 @@ version.filename = %(source.dir)s/core/gamemech.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = python3==3.8.1,plyer,kivy==2.0.0rc3,android,certifi,openssl
+requirements = python3==3.8.1,plyer,kivy==2.0.0rc4,android,certifi,openssl
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

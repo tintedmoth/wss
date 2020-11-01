@@ -1,7 +1,13 @@
+0.24.0
+	Added Eng The Melancholy of Haruhi Suzumiya cards
+	Added Jap The Melancholy of Haruhi Suzumiya cards
+	Fixed ability given to middle character on center stage
+	Fixed Multiplayer when selecting a custom deck and starting room
+
 0.23.0
 	Added Jap Index & Railgun cards
-	Fixed Encore stuff to previous card
-	
+	Fixed Encore stuck to previous card
+
 0.22.0
 	Added Eng AngelBeats! Re:Edit cards
 	Added Jap AngelBeats! Re:Edit cards
