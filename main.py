@@ -7,7 +7,7 @@ from core.datapath import *
 if not exists(data_ex):
 	mkdir(data_ex)
 
-with open(f"{data_ex}/log", "w") as log_file:
+with open(f"{data_ex}/log", "w",encoding="utf-8") as log_file:
 	pass
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
 
