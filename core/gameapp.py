@@ -1,12 +1,14 @@
 from kivy.app import App
 from kivy.loader import Loader
 from kivy.uix.widget import Widget
-# import cProfile
-# from plyer import email
-# import pstats
 
 from core.datapath import *
 from core.gamemech import GameMech
+
+
+# import cProfile
+# from plyer import email
+# import pstats
 
 
 class GameApp(App):
@@ -55,20 +57,20 @@ class GameApp(App):
 		pass
 
 	# def on_start(self):
-		# self.profile = cProfile.Profile()
-		# self.profile.enable()
+	# self.profile = cProfile.Profile()
+	# self.profile.enable()
 
 	def on_stop(self):
 		pass
-		# self.profile.disable()
-		# self.profile.dump_stats('myapp.profile')
-		#
-		# with open('myapp.profile.txt', 'w') as stream:
-		# 	stats = pstats.Stats('myapp.profile', stream=stream)
-		# 	stats.print_stats()
-		#
-		# with open("myapp.profile.txt", "r") as stream:
-		# 	pp = ""
-		# 	for line in stream.readlines():
-		# 		pp += line
-		# email.send(recipient="tsws@totuccio.com", subject="", text=pp, create_chooser=False)
+	# self.profile.disable()
+	# self.profile.dump_stats('myapp.profile')
+	#
+	# with open('myapp.profile.txt', 'w') as stream:
+	# 	stats = pstats.Stats('myapp.profile', stream=stream)
+	# 	stats.print_stats()
+	#
+	# with open("myapp.profile.txt", "r") as stream:
+	# 	pp = ""
+	# 	for line in stream.readlines():
+	# 		pp += line
+	# email.send(recipient="tsws@totuccio.com", subject="", text=pp, create_chooser=False)

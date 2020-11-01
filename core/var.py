@@ -165,6 +165,7 @@ def gdata_init():
 	        "moveable": [], "playable_climax": [],
 
 	        "stack": {"1": [], "2": []},
+	        "stacked":{"0":[]},
 	        "save_name": "",
 	        "update_edata": False,
 	        "swap_card": [False, "", 0, 0],
@@ -191,6 +192,7 @@ def gdata_init():
 	        "p_c": "",
 	        "p_f": True,
 	        "p_max_s": 0,
+	        "p_min_s": -1,
 	        "popup_done": (False, True),  # (popup open, popup done)
 	        "p_rows": 1,
 	        "p_l": [],
@@ -249,6 +251,7 @@ def gdata_init():
 	        "attack_start": True,
 	        "dmg": 0,
 	        "attack": 0,
+	        "clear" : True,
 	        "oppchoose":False,
 	        "trigger_card":"",
 	        "d_atk": [0, []],
@@ -262,7 +265,7 @@ def gdata_init():
 	        "draw": 0,
 	        "play": [],
 	        "discard": 0,
-	        "brest":["",[],[],[],[]],
+	        "btrait":["",[],[],[],[],[]],
 	        "dismay": False,
 	        "extra": [],
 	        "extra1": [],
@@ -274,6 +277,7 @@ def gdata_init():
 	        "clocker_rev": False,
 	        "noact":{"1":True,"2":True},
 	        "climax":{"1":True,"2":True},
+	        "clock":{"1":True,"2":True},
 	        "climax_play": False,
 	        "reshuffle": False,
 	        "reshuffle_trigger": "",
@@ -344,8 +348,8 @@ def gdata_init():
 	        "resonance": [False,[]],
 	        "random_reveal":[],
 	        "confirm": False,
-	        "confirm1": [False, False],
-	        "confirm2": [False, False],
+	        "confirm1": [False, 0],
+	        "confirm2": [False, 0],
 	        "popup_attack": 1,
 	        "btn_pressed": [0, None],
 	        "revive": [],
@@ -538,6 +542,7 @@ starting_hand = 5  # number of cards when starting the game
 hand_limit = 7  # max number of cards allowed at the end of turn
 dbuild_limit = 5  # max col number of cards allowed at deck building
 popup_max_cards = 7  # max number of cards allowed width vise
+select2cards = 5
 
 COMPUTER = True
 

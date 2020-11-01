@@ -11,7 +11,7 @@ class Janken(Button):
 	def __init__(self, ncard, size, **kwargs):
 		super(Janken, self).__init__(**kwargs)
 		self.font_name = f"{font_in}/{font}"
-		self.id = ncard
+		self.cid = ncard
 		self.card = ncard
 		self.back = False
 		self.size_hint = (None, None)

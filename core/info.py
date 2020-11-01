@@ -1,12 +1,12 @@
 from kivy.uix.image import AsyncImage
 from kivy.uix.image import Image
-from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scrollview import ScrollView
 
 from core.button import Button
 from core.datapath import *
 from core.label import Label
+from core.popup import Popup
 from core.markreplace import markreplace
 
 
@@ -24,9 +24,13 @@ class Info(Popup):
 	           "door": "Door", "salvage": "Door", "gate": "Gate"}
 	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント",
 	       "Climax": "クライマックス", "Purple": "紫"}
-	cgst06 = ["mf_s13_072", "im_se04_23", "im_s07_090", "im_s07_054", "mk_s11_076"]
-	reverse_fix = ["im_se04_24"]
-	reverse_fix_btn = ["im_s07_051"]
+	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076","AB/W11-069","AB/W11-062","AB/W11-055"]
+	# cgst06 = ["mf_s13_072", "im_se04_23", "im_s07_090", "im_s07_054", "mk_s11_076","ab_w11_069","ab_w11_062","ab_w11_055"]
+	reverse_fix = ["IM/SE04-24","KW/W11-028"]
+	rest_fix = []#["AB/W11-010"]
+	# reverse_fix = ["im_se04_24","kw_w11_028"]
+	reverse_fix_btn = ["IM/S07-051","AB/W11-008","AB/W31-107"]
+	# reverse_fix_btn = ["im_s07_051","ab_w11_008"]
 
 	def __init__(self, pad=1, card=(100, 100), **kwargs):
 		super(Info, self).__init__(**kwargs)
@@ -52,14 +56,14 @@ class Info(Popup):
 		self.label = {}
 		for item in self.pinfo_lst:
 			if item in self.pinfo_lst[-2:]:
-				sized = (self.card[0] * 7.2, self.card[1] / 3.)
+				sized = (self.card[0] * 7.2, self.card[1] / 3)
 				textsize = (self.card[0] * 7, None)
 			else:
 				if "trait" in item or "id" in item:
-					sized = (self.card[0] * 3, self.card[1] / 3.)
+					sized = (self.card[0] * 3, self.card[1] / 3)
 					textsize = (self.card[0] * 3, None)
 				else:
-					sized = (self.card[0] * 1.5, self.card[1] / 3.)
+					sized = (self.card[0] * 1.5, self.card[1] / 3)
 					textsize = sized
 
 			if item in self.pinfo_lst[:-2] or item[:-2] in self.pinfo_lst[-2:]:
@@ -67,10 +71,10 @@ class Info(Popup):
 				                         halign='center', valign='middle', markup=True, size=sized,
 				                         size_hint=(None, None))
 				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None),
-				                                   cid=item, on_press=self.actual)
+				                                   cid=item, on_press=self.actual)#,font_size=self.fsize)
 			else:
 				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None),
-				                                   cid=item, on_press=self.actual)
+				                                   cid=item, on_press=self.actual)#,font_size=self.fsize)
 				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize,
 				                         valign='middle', markup=True, size_hint=(None, None), size=sized)
 
@@ -149,8 +153,9 @@ class Info(Popup):
 			self.label["trait"].text = self.lang[f"trait{self.lang_btn.text.lower()}"]
 			for item in self.label:
 				if "_btn" not in item:
-					self.label[item].texture_update()
-					self.label[item].size = self.label[item].texture.size
+					if self.label[item].text!="":
+						self.label[item].texture_update()
+						self.label[item].size = self.label[item].texture.size
 			self.content_size()
 			self.scv.scroll_y = 1
 
@@ -346,11 +351,19 @@ class Info(Popup):
 		if "(" in mStr:
 			ita = f"({mStr.split('(')[-1]}"
 			if ")\"" not in ita:
-				mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
+				if ")\n" in ita:
+					ita1 = ita.split(')\n')
+					mStr = mStr.replace(ita, f"[color=999999]{ita1[0]})[/color]"+"\n"+f"{ita1[1]}")
+				else:
+					mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
 		if "（" in mStr:
 			ita = f"（{mStr.split('（')[-1]}"
 			if "）」" not in ita:
-				mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
+				if "）\n" in ita:
+					ita1 = ita.split('）\n')
+					mStr = mStr.replace(ita, f"[color=999999]{ita1[0]}）[/color]" + "\n" + f"{ita1[1]}")
+				else:
+					mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
 
 		if "{" in mStr:
 			mStr = mStr.replace("{", "(").replace("}", ")")
@@ -361,21 +374,29 @@ class Info(Popup):
 			else:
 				item1 = item
 			for nx in range(mStr.count(item)):
-				if self.inx1 < 1 and f"\"{item}" in mStr and self.img_card.source.split("/")[-1] in self.cgst06:
+				# if self.inx1 < 1 and f"\"{item}" in mStr and self.img_card.source.split("/")[-1] in self.cgst06:
+				if self.inx1 < 1 and f"\"{item}" in mStr and any(sx in self.label["id"].text for sx in self.cgst06):
 					mStr = mStr.replace(f"\"{item}",
 					                    f"\n\"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
 					                    1)
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
-				elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[
-					-1] in self.reverse_fix:
+				elif self.inx1 < 1 and not btn and "IREST" in item and any(sx in self.label["id"].text for sx in self.rest_fix):
+				# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
+					mStr = mStr.replace(item,
+					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
+					                    1)
+					self.inx1 += 1
+				elif self.inx1 < 1 and not btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix):
+				# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
 					mStr = mStr.replace(item,
 					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
 					                    1)
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
-				elif self.inx1 < 1 and btn and "IREVERSE" in item and self.img_card.source.split("/")[
-					-1] in self.reverse_fix_btn:
+				elif self.inx1 < 1 and btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix_btn):
+				# elif self.inx1 < 1 and btn and "IREVERSE" in item and self.img_card.source.split("/")[
+				# 	-1] in self.reverse_fix_btn:
 					mStr = mStr.replace(item,
 					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
 					                    1)
@@ -530,7 +551,12 @@ class Info(Popup):
 				col += 1
 
 		self.replaceImage()
+		if len(self.title)>40:
+			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6-self.card[1] / 3)
+		else:
+			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)
 		self.sct1.size = (self.sct.size[0], scty)
+
 		self.scv.scroll_y = 1
 
 	def actual(self, btn):
@@ -548,7 +574,7 @@ class Info(Popup):
 
 	def wrap_jap(self, sttr):
 		lines = []
-		sttr = sttr.replace("\n", " ")
+		# sttr = sttr.replace("\n", " ")
 		sstr = ""
 		for x in range(len(sttr)):
 			if len(sttr) <= 0:
