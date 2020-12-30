@@ -13,9 +13,11 @@ logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
 
 environ["KIVY_NO_CONSOLELOG"] = "1"
 
-from android.permissions import request_permissions, Permission
+from kivy.utils import platform
 
-request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE])
+if platform == 'android':
+	from android.permissions import request_permissions, Permission
+	request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE])
 
 from kivy.config import Config
 

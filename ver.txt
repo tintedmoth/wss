@@ -1,8 +1,18 @@
+0.25.0
+	Added Jap Magical Girl Lyrical Nanoha A’s cards
+	Added Jap Magical Girl Lyrical Nanoha A’s PORTABLE -THE GEARS OF DESTINY- cards
+	Added Jap Magical Girl Lyrical Nanoha The MOVIE 1st extrabox cards
+	Added Jap Nanoha StrikerS cards
+
+0.24.1
+	Fixed SY/W08-005 ability
+
 0.24.0
 	Added Eng The Melancholy of Haruhi Suzumiya cards
 	Added Jap The Melancholy of Haruhi Suzumiya cards
 	Fixed ability given to middle character on center stage
 	Fixed Multiplayer when selecting a custom deck and starting room
+	Fixed STG/S60-T06 ability
 
 0.23.0
 	Added Jap Index & Railgun cards
