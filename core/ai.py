@@ -60,62 +60,23 @@ class AI:
 			y = y + ["n"]
 			payable.append(choice(y))
 		elif "salvage" in effect and pay[1]:
-			# if "Character" in effect[2] or "Climax" in effect[2]:
-			# 	salvage = [s for s in waiting if cdata[s].card in effect[2]]
-			# elif "Trait" in effect[2]:
-			# 	salvage = [s for s in waiting if any(trait in cdata[s].trait_t for trait in effect[2].split("_")[1:])]
-
-			# hand = pdata[self.player]["Hand"]
-			# salvage(self, trigger, ctype, n, cost)
 			salvage = list(gdata["p_l"])
 
 			if pay[1] and len(salvage) >= 1:
 				salvage = sorted(salvage, key=lambda e: cdata[e].level, reverse=True)
-				# elif "Climax" in effect[2]:
-				# 	pass
-				# elif "bond" in effect:
-				# 	pass
 
 				payable.append("AI_salvage")
 				if pay[1] and len(salvage) >= 1:
 					payable.append(salvage[:effect[0]])
 				else:
 					payable.append([""])
-
-
-
-			#
-			# 	if "Character" in effect[2]:
-			# 		# if any("counter" in cdata[self.player][ind].icon.lower() for ind in discard):
-			# 		salvage = sorted(salvage, key=lambda e: cdata[e].level, reverse=True)
-			# 	elif "Climax" in effect[2]:
-			# 		pass
-			# 	elif "bond" in effect:
-			# 		pass
-			# 	payable.append(salvage[:effect[0]])
-			# else:
-			# 	payable.append([""])
 		elif ("search" in effect or "searchopp" in effect) and pay[1]:
-			# if "Character" in effect[2] or "Climax" in effect[2]:
-			# 	search = [s for s in pdata[self.player]["Library"] if effect[2].split("_")[0] in cdata[s].card]
-			# elif "Trait" in effect[2]:
-			# 	search = [s for s in pdata[self.player]["Library"] if
-			# 	          any(trait in cdata[s].trait_t for trait in effect[2].split("_")[1:])]
-
-			# hand = pdata[self.player]["Hand"]
-			# salvage(self, trigger, ctype, n, cost)
 			search = list(gdata["p_l"])
 			if pay[1] and len(search) >=1:
-				# if "Character" in effect[2]:
-					# if any("counter" in cdata[self.player][ind].icon.lower() for ind in discard):
 				if "searchopp" in effect:
 					search = sorted(search, key=lambda e: cdata[e].level)
 				else:
 					search = sorted(search, key=lambda e: cdata[e].level, reverse=True)
-				# elif "Climax" in effect[2]:
-				# 	pass
-				# elif "bond" in effect:
-				# 	pass
 
 				payable.append("AI_search")
 				if pay[1] and len(search) >= 1:
@@ -130,6 +91,22 @@ class AI:
 					temp.append(choice(pdata[self.player]["Hand"]))
 				else:
 					temp.append("")
+			payable.append(temp)
+		elif ("looktop" in effect or "looktopopp" in effect) and pay[1]:
+			payable.append("AI_looktop")
+			temp = []
+			temppl = list(gdata["p_l"])
+			if "stack" in effect:
+				# if len(effect[effect.index("stack")+1])<2:
+				# 	sst = [effect[effect.index("stack")+1][0]]
+				# else:
+				sst = effect[effect.index("stack")+1][0]
+				# for st in sst:
+					# payble.append(st)
+				for rr in range(sst):
+					tt = choice(temppl)
+					temppl.remove(tt)
+					temp.append(tt)
 			payable.append(temp)
 		elif "survive" in effect and pay[1]:
 			play = 0
@@ -380,7 +357,7 @@ class AI:
 			playable = [s for s in playable if cdata[s].card == "Character"]
 
 			if center <= 0 and len(playable) <= 1 and self.player not in gdata["active"]:
-				encore.sort(key=lambda x: x.power, reverse=True)
+				encore.sort(key=lambda x: cdata[x].power, reverse=True)
 		else:
 			encore = []
 
@@ -492,7 +469,7 @@ class AI:
 
 		return ans
 
-	def attack(self, pdata, cdata, b=False):
+	def attack(self, pdata, cdata, gdata):
 		attack = []
 		if self.player == "2":
 			popp = "1"
@@ -500,11 +477,12 @@ class AI:
 			popp = self.player
 
 		for inx in range(3):
-			if b:
+			if gdata["bodyguard"]:
 				opp = 1
+				att = ["a", "f"]
 			else:
 				opp = (2, 1, 0)[inx]
-			att = ["a","f","d","s"]
+				att = ["a","f","d","s"]
 			t =""
 
 			if pdata[self.player]["Center"][inx] != "":
@@ -589,9 +567,7 @@ class AI:
 
 		if card.power_t < copp.power_t:
 			if card.level >= level - 1 and card.power_t + self.counter[0] > copp.power_t:
-				counter = [s for s in hand if
-				           cdata[s].icon == "Counter" and gdata["backup"][pl[-1]] and gdata["counter_icon"][pl[-1]][0]]
-
+				counter = [s for s in hand if cdata[s].icon == "Counter" and gdata["nobackup"][pl[-1]] and gdata["counter_icon"][pl[-1]][0]]
 		if len(counter) < 1:
 			counter = "pass"
 

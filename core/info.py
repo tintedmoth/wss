@@ -6,30 +6,23 @@ from kivy.uix.scrollview import ScrollView
 from core.button import Button
 from core.datapath import *
 from core.label import Label
-from core.popup import Popup
 from core.markreplace import markreplace
+from core.popup import Popup
 
 
 class Info(Popup):
-	pinfo_lst = ("id", "card", "colour", "level", "cost", "power", "soul", "trigger", "icon", "trait", "text",
-	             "flavour")
-	pinfo_c = {"text_o": "", "colour_o": "", "level_o": "", "cost_o": "", "power_o": "", "soul_o": "", "trait_o": "",
-	           "text_c": "", "colour_c": "", "level_c": "", "cost_c": "", "power_c": "", "soul_c": "", "trait_c": ""}
-	lang = {"nameE": "", "nameJ": "", "traitj": "", "traite": "", "texte": "", "textj": "", "flavoure": "",
-	        "flavourj": "", "coloure": "", "colourj": "", "carde": "",
-	        "cardj": ""}  # "triggere":"","triggerj":"","icone":"","iconj":""
-	popdict = {"name": "Card Name", "id": "Card No.", "rarity": "Rarity", "card": "Type", "colour": "Colour",
-	           "level": "Level", "cost": "Cost", "power": "Power", "soul": "Soul", "trigger": "Trigger",
-	           "trait": "Attribute", "text": "Text", "flavour": "Flavor Text", "icon": "Card Icon", "stock": "Pool",
-	           "door": "Door", "salvage": "Door", "gate": "Gate"}
-	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント",
-	       "Climax": "クライマックス", "Purple": "紫"}
-	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076","AB/W11-069","AB/W11-062","AB/W11-055"]
+	pinfo_lst = ("id", "card", "colour", "level", "cost", "power", "soul", "trigger", "icon", "trait", "text", "flavour")
+	pinfo_c = {"text_o": "", "colour_o": "", "level_o": "", "cost_o": "", "power_o": "", "soul_o": "", "trait_o": "", "text_c": "", "colour_c": "", "level_c": "", "cost_c": "", "power_c": "", "soul_c": "", "trait_c": ""}
+	lang = {"nameE": "", "nameJ": "", "traitj": "", "traite": "", "texte": "", "textj": "", "flavoure": "", "flavourj": "", "coloure": "", "colourj": "", "carde": "", "cardj": ""}  # "triggere":"","triggerj":"","icone":"","iconj":""
+	popdict = {"name": "Card Name", "id": "Card No.", "rarity": "Rarity", "card": "Type", "colour": "Colour", "level": "Level", "cost": "Cost", "power": "Power", "soul": "Soul", "trigger": "Trigger", "trait": "Attribute", "text": "Text", "flavour": "Flavor Text", "icon": "Card Icon", "stock": "Pool", "door": "Door", "salvage": "Door", "gate": "Gate"}
+	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント", "Climax": "クライマックス", "Purple": "紫"}
+	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010"]
 	# cgst06 = ["mf_s13_072", "im_se04_23", "im_s07_090", "im_s07_054", "mk_s11_076","ab_w11_069","ab_w11_062","ab_w11_055"]
-	reverse_fix = ["IM/SE04-24","KW/W11-028"]
-	rest_fix = []#["AB/W11-010"]
+	reverse_fix = ["IM/SE04-24", "KW/W11-028"]
+	rest_fix = []  #["AB/W11-010"]
 	# reverse_fix = ["im_se04_24","kw_w11_028"]
-	reverse_fix_btn = ["IM/S07-051","AB/W11-008","AB/W31-107"]
+	reverse_fix_btn = ["IM/S07-051", "AB/W11-008", "AB/W31-107","N1/WE06-05","N1/WE06-17"]
+
 	# reverse_fix_btn = ["im_s07_051","ab_w11_008"]
 
 	def __init__(self, pad=1, card=(100, 100), **kwargs):
@@ -46,12 +39,10 @@ class Info(Popup):
 		self.auto_dismiss = False
 		self.title_align = "center"
 		self.size_hint = (None, None)
-		self.cls_btn = Button(size_hint=(None, None), text="Close", on_release=self.close,
-		                      size=(self.card[0] * 2.5, self.card[1] / 2.))
+		self.cls_btn = Button(size_hint=(None, None), text="Close", on_release=self.close, size=(self.card[0] * 2.5, self.card[1] / 2.))
 		self.jap_btn = Button(size_hint=(None, None), text="JAP", on_release=self.change_lang, cid="jp")
 		self.eng_btn = Button(size_hint=(None, None), text="ENG", on_release=self.change_lang, cid="en")
-		self.img_card = AsyncImage(source=f"atlas://{img_in}/other/back", size=(self.card[0] * 4, self.card[1] * 4),
-		                           allow_stretch=True, size_hint=(None, None))
+		self.img_card = AsyncImage(source=f"atlas://{img_in}/other/back", size=(self.card[0] * 4, self.card[1] * 4), allow_stretch=True, size_hint=(None, None))
 		self.fsize = self.card[1] / 3. * 0.6
 		self.label = {}
 		for item in self.pinfo_lst:
@@ -67,16 +58,11 @@ class Info(Popup):
 					textsize = sized
 
 			if item in self.pinfo_lst[:-2] or item[:-2] in self.pinfo_lst[-2:]:
-				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize,
-				                         halign='center', valign='middle', markup=True, size=sized,
-				                         size_hint=(None, None))
-				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None),
-				                                   cid=item, on_press=self.actual)#,font_size=self.fsize)
+				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, halign='center', valign='middle', markup=True, size=sized, size_hint=(None, None))
+				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None), cid=item, on_press=self.actual)  #,font_size=self.fsize)
 			else:
-				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None),
-				                                   cid=item, on_press=self.actual)#,font_size=self.fsize)
-				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize,
-				                         valign='middle', markup=True, size_hint=(None, None), size=sized)
+				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None), cid=item, on_press=self.actual)  #,font_size=self.fsize)
+				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, valign='middle', markup=True, size_hint=(None, None), size=sized)
 
 		self.jap_wrap = [False, []]
 		self.wrap = self.card[0] * 7
@@ -85,8 +71,7 @@ class Info(Popup):
 		self.sct = RelativeLayout(size_hint=(1, 1))
 		self.sct1 = RelativeLayout(size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1))  # ,  # 7
 		self.scv = ScrollView(do_scroll_x=False, size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1))
-		self.lang_btn = Button(size_hint=(None, None), size=(self.card[1] / 2, self.card[1] / 2), text="E", cid="lang",
-		                       on_press=self.change_lang)
+		self.lang_btn = Button(size_hint=(None, None), size=(self.card[1] / 2, self.card[1] / 2), text="E", cid="lang", on_press=self.change_lang)
 
 		self.size = (self.sct_size[0] * 1.1, self.sct_size[1] + self.title_size + self.separator_height)
 		self.content = self.sct
@@ -116,9 +101,7 @@ class Info(Popup):
 
 		self.img_anchors = {}
 		for nx in range(10):
-			self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size=(
-				self.test["1"].texture.size[0] * 1.05, self.test["1"].texture.size[1] * 1.05),
-			                                  allow_stretch=True, size_hint=(None, None))
+			self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size=(self.test["1"].texture.size[0] * 1.05, self.test["1"].texture.size[1] * 1.05), allow_stretch=True, size_hint=(None, None))
 			self.sct1.add_widget(self.img_anchors[str(nx)])
 
 	def close(self, *arg):
@@ -131,9 +114,7 @@ class Info(Popup):
 				if self.jap_wrap[1][nx] == "" or self.jap_wrap[1][nx] == "None" or self.jap_wrap[1][nx] is None:
 					continue
 				else:
-					text = self.jap_wrap[1][nx].replace("】 ", "】").replace("］ ", "］").replace(" 【", "【").replace(" ［",
-					                                                                                             "［").replace(
-							"） ", "）").replace(" （", "（")
+					text = self.jap_wrap[1][nx].replace("】 ", "】").replace("］ ", "］").replace(" 【", "【").replace(" ［", "［").replace("） ", "）").replace(" （", "（")
 					text = self.replaceMultiple(text)
 					if nx > 0:
 						self.lang["textj"] += f"\n[color=ffffff]{text}[/color]"
@@ -153,7 +134,7 @@ class Info(Popup):
 			self.label["trait"].text = self.lang[f"trait{self.lang_btn.text.lower()}"]
 			for item in self.label:
 				if "_btn" not in item:
-					if self.label[item].text!="":
+					if self.label[item].text != "":
 						self.label[item].texture_update()
 						self.label[item].size = self.label[item].texture.size
 			self.content_size()
@@ -186,8 +167,7 @@ class Info(Popup):
 			self.img_card.source = f"atlas://{img_ex}/main/{card.img_file}"
 
 		self.label["id"].text = f"[color=ffffff]{card.cid} {card.rarity}[/color]"
-		if any(end in card.cid for end in
-		       ("EN", "-E", "-TE", "-PE", "/WX", "/SX")) and "DC/W01" not in card.cid and "LB/W02" not in card.cid:
+		if any(end in card.cid for end in ("EN", "-E", "-TE", "-PE", "/WX", "/SX")) and "DC/W01" not in card.cid and "LB/W02" not in card.cid:
 			self.lang_btn.disabled = True
 		else:
 			self.lang_btn.disabled = False
@@ -295,8 +275,7 @@ class Info(Popup):
 						ability.append(card.text_c[item][0])
 						self.pinfo_c["text_c"] += f"\n[color=ffff00]{text}[/color]"
 					elif card.text_c[item][0] in ability:
-						if card.text_c[item][0].startswith("[AUTO]") and not card.text_c[item][0].lower().startswith(
-								"[auto] encore ["):
+						if card.text_c[item][0].startswith("[AUTO]") and not card.text_c[item][0].lower().startswith("[auto] encore ["):
 							# elif f"[color=ffff00]{text}[/color]" in self.pinfo_c["text_c"] and "] encore [" not in card.text_c[item][0].lower() and "[AUTO]" in card.text_c[item][0]:
 							self.pinfo_c["text_c"] += f"\n[color=ffff00]{text}[/color]"
 				else:
@@ -331,84 +310,74 @@ class Info(Popup):
 		self.scv.scroll_y = 1
 		self.open()
 
-	def replaceMultiple(self, mStr, btn=False):
+	def replaceMultiple(self, mstr, btn=False):
 		self.inx1 = 0
 		for elem in self.marksquare:
-			if elem in mStr:
-				mStr = mStr.replace(elem, self.marksquare[elem])
-		if "ISTAND phase" in mStr:
-			mStr = mStr.replace("ISTAND phase", "stand phase")
-		if "ISTAND Phase" in mStr:
-			mStr = mStr.replace("ISTAND Phase", "stand phase")
-		mStr = mStr.replace("&", "&amp;").replace("[", "&bl;").replace("]", "&br;")
+			if elem in mstr:
+				mstr = mstr.replace(elem, self.marksquare[elem])
+		if "ISTAND phase" in mstr:
+			mstr = mstr.replace("ISTAND phase", "stand phase")
+		if "ISTAND Phase" in mstr:
+			mstr = mstr.replace("ISTAND Phase", "stand phase")
+		mstr = mstr.replace("&", "&amp;").replace("[", "&bl;").replace("]", "&br;")
 		for elem in self.markreplace:
-			if elem in mStr:
-				mStr = mStr.replace(elem, self.markreplace[elem])
+			if elem in mstr:
+				mstr = mstr.replace(elem, self.markreplace[elem])
 
 		for ss in self.set_only:
-			if ss in mStr:
-				mStr = mStr.replace(ss, f"{{{self.set_only[ss]}}}")
-		if "(" in mStr:
-			ita = f"({mStr.split('(')[-1]}"
+			if ss in mstr:
+				mstr = mstr.replace(ss, f"{{{self.set_only[ss]}}}")
+		if "(" in mstr:
+			ita = f"({mstr.split('(')[-1]}"
 			if ")\"" not in ita:
 				if ")\n" in ita:
 					ita1 = ita.split(')\n')
-					mStr = mStr.replace(ita, f"[color=999999]{ita1[0]})[/color]"+"\n"+f"{ita1[1]}")
+					mstr = mstr.replace(ita, f"[color=999999]{ita1[0]})[/color]" + "\n" + f"{ita1[1]}")
 				else:
-					mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
-		if "（" in mStr:
-			ita = f"（{mStr.split('（')[-1]}"
+					mstr = mstr.replace(ita, f"[color=999999]{ita}[/color]")
+		if "（" in mstr:
+			ita = f"（{mstr.split('（')[-1]}"
 			if "）」" not in ita:
 				if "）\n" in ita:
 					ita1 = ita.split('）\n')
-					mStr = mStr.replace(ita, f"[color=999999]{ita1[0]}）[/color]" + "\n" + f"{ita1[1]}")
+					mstr = mstr.replace(ita, f"[color=999999]{ita1[0]}）[/color]" + "\n" + f"{ita1[1]}")
 				else:
-					mStr = mStr.replace(ita, f"[color=999999]{ita}[/color]")
+					mstr = mstr.replace(ita, f"[color=999999]{ita}[/color]")
 
-		if "{" in mStr:
-			mStr = mStr.replace("{", "(").replace("}", ")")
+		if "{" in mstr:
+			mstr = mstr.replace("{", "(").replace("}", ")")
 
 		for item in self.anchors_text:
 			if "[" in item:
 				item1 = item[1:-1]
 			else:
 				item1 = item
-			for nx in range(mStr.count(item)):
+			for nx in range(mstr.count(item)):
 				# if self.inx1 < 1 and f"\"{item}" in mStr and self.img_card.source.split("/")[-1] in self.cgst06:
-				if self.inx1 < 1 and f"\"{item}" in mStr and any(sx in self.label["id"].text for sx in self.cgst06):
-					mStr = mStr.replace(f"\"{item}",
-					                    f"\n\"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
-					                    1)
+				if self.inx1 < 1 and f"\"{item}" in mstr and any(sx in self.label["id"].text for sx in self.cgst06):
+					mstr = mstr.replace(f"\"{item}", f"\n\"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
 				elif self.inx1 < 1 and not btn and "IREST" in item and any(sx in self.label["id"].text for sx in self.rest_fix):
-				# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
-					mStr = mStr.replace(item,
-					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
-					                    1)
+					# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
 				elif self.inx1 < 1 and not btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix):
-				# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
-					mStr = mStr.replace(item,
-					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
-					                    1)
+					# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
 				elif self.inx1 < 1 and btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix_btn):
-				# elif self.inx1 < 1 and btn and "IREVERSE" in item and self.img_card.source.split("/")[
-				# 	-1] in self.reverse_fix_btn:
-					mStr = mStr.replace(item,
-					                    f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
-					                    1)
+					# elif self.inx1 < 1 and btn and "IREVERSE" in item and self.img_card.source.split("/")[
+					# 	-1] in self.reverse_fix_btn:
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
 				else:
-					mStr = mStr.replace(item,
-					                    f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",
-					                    1)
+					mstr = mstr.replace(item, f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 				self.inx += 1
-		if "の" in mStr:
-			mStr = self.wrap_jap(mStr)
+		if "の" in mstr:
+			mstr = self.wrap_jap(mstr)
 		# xx = 0
 		# inx = -10
 		# sk = False
@@ -451,14 +420,13 @@ class Info(Popup):
 		# 		continue
 		# 	mainString = mainString[:sx] + "\n" + mainString[sx:]
 
-		return mStr
+		return mstr
 
 	def replaceImage(self):
 		qty = len(self.label["text"].anchors) + len(self.label["trigger"].anchors) + len(self.label["icon"].anchors)
 		if qty < len(self.img_anchors):
 			for nx in range(len(self.img_anchors), qty):
-				self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size_hint=(None, None), size=(
-					self.test1.texture.size[0] * 1.05, self.test1.texture.size[1] * 1.05), allow_stretch=True)
+				self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size_hint=(None, None), size=(self.test1.texture.size[0] * 1.05, self.test1.texture.size[1] * 1.05), allow_stretch=True)
 				self.sct1.add_widget(self.img_anchors[str(nx)])
 
 		for itt in self.img_anchors:
@@ -468,8 +436,7 @@ class Info(Popup):
 		for item in self.label["text"].anchors:
 			# if "cgst06" in item:
 			# 	continue
-			self.img_anchors[str(i1)].size = (
-				self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
+			self.img_anchors[str(i1)].size = (self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
 			self.img_anchors[str(i1)].source = f"atlas://{img_in}/other/{item[:-3]}"
 			# if self.img_card.source in self.cgst06 and "auto" in item:
 			# 	self.img_anchors[str(i1)].pos = (self.label["text"].anchors["cgst06"][0] + self.label["text"].x + self.card[1] / 10,
@@ -477,30 +444,19 @@ class Info(Popup):
 			#                                  self.label["text"].anchors["cgst06"][1] - self.test[item[-1]].texture.size[1] +
 			#                                  self.label["text"].y)
 			# else:
-			self.img_anchors[str(i1)].pos = (
-			self.label["text"].anchors[item][0] + self.label["text"].x + self.card[1] / 30,
-			self.label["text"].size[1] - self.card[1] / 45 -
-			self.label["text"].anchors[item][1] - self.test[item[-1]].texture.size[1] +
-			self.label["text"].y)
+			self.img_anchors[str(i1)].pos = (self.label["text"].anchors[item][0] + self.label["text"].x + self.card[1] / 40, self.label["text"].size[1] - self.card[1] / 45 - self.label["text"].anchors[item][1] - self.test[item[-1]].texture.size[1] + self.label["text"].y)
 			i1 += 1
 
 		for item in self.label["trigger"].anchors:
-			self.img_anchors[str(i1)].size = (
-				self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
+			self.img_anchors[str(i1)].size = (self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
 			self.img_anchors[str(i1)].source = f"atlas://{img_in}/other/{item[:-3]}"
-			self.img_anchors[str(i1)].pos = (self.label["trigger"].anchors[item][0] + self.label["trigger"].x,
-			                                 self.label["trigger"].size[1] - self.card[1] / 45 -
-			                                 self.label["trigger"].anchors[item][1] -
-			                                 self.test[item[-1]].texture.size[1] + self.label["trigger"].y)
+			self.img_anchors[str(i1)].pos = (self.label["trigger"].anchors[item][0] + self.label["trigger"].x, self.label["trigger"].size[1] - self.card[1] / 45 - self.label["trigger"].anchors[item][1] - self.test[item[-1]].texture.size[1] + self.label["trigger"].y)
 			i1 += 1
 		for item in self.label["icon"].anchors:
 			self.img_anchors[str(i1)].size = (
 				self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
 			self.img_anchors[str(i1)].source = f"atlas://{img_in}/other/{item[:-3]}"
-			self.img_anchors[str(i1)].pos = (self.label["icon"].anchors[item][0] + self.label["icon"].x,
-			                                 self.label["icon"].size[1] - self.card[1] / 45 -
-			                                 self.label["icon"].anchors[item][1] -
-			                                 self.test[item[-1]].texture.size[1] + self.label["icon"].y)
+			self.img_anchors[str(i1)].pos = (self.label["icon"].anchors[item][0] + self.label["icon"].x, self.label["icon"].size[1] - self.card[1] / 45 - self.label["icon"].anchors[item][1] - self.test[item[-1]].texture.size[1] + self.label["icon"].y)
 			i1 += 1
 
 	def content_size(self):
@@ -551,8 +507,8 @@ class Info(Popup):
 				col += 1
 
 		self.replaceImage()
-		if len(self.title)>40:
-			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6-self.card[1] / 3)
+		if len(self.title) > 40:
+			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6 - self.card[1] / 3)
 		else:
 			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)
 		self.sct1.size = (self.sct.size[0], scty)
@@ -588,11 +544,11 @@ class Info(Popup):
 			lines.append(line)
 			sttr = sttr.replace(line, "")
 
-		for l in range(len(lines)):
-			if l == 0:
-				sstr = f"{lines[l]}"
+		for ll in range(len(lines)):
+			if ll == 0:
+				sstr = f"{lines[ll]}"
 			else:
-				sstr += f"\n{lines[l]}"
+				sstr += f"\n{lines[ll]}"
 		return sstr
 
 	def check_wrap(self, sttr=""):

@@ -130,6 +130,7 @@ def gdata_init():
 	        "d_3atk_1turn": False,
 	        "d_btn_list": [],
 	        "multiplay_btn": True,
+	        "download_btn":True,
 	        "show_opp_hand": False,
 	        "show_wait_popup": True,  # Popup while waiting for opp network move
 	        "com": True,
@@ -235,8 +236,8 @@ def gdata_init():
 	        "triggers": [],
 	        "game_start": False,
 	        "gg": False,
-	        "backup": {"1": True, "2": True},
-	        "event": {"1": True, "2": True},
+	        "nobackup": {"1": False, "2": False},
+	        "noevent": {"1": False, "2": False},
 	        "no_cont_check": False,
 	        "reserve": {"1": [], "2": []},
 	        "check_reserve": False,
@@ -275,9 +276,9 @@ def gdata_init():
 	        "mtrigger": 0,
 	        "clocker": False,
 	        "clocker_rev": False,
-	        "noact":{"1":True,"2":True},
-	        "climax":{"1":True,"2":True},
-	        "clock":{"1":True,"2":True},
+	        "noact":{"1":False,"2":False},
+	        "noclimax":{"1":False,"2":False},
+	        "noclock":{"1":False,"2":False},
 	        "climax_play": False,
 	        "reshuffle": False,
 	        "reshuffle_trigger": "",
@@ -417,7 +418,7 @@ def atlas_make():
 			if exists(f"{data_ex}/{item}-d"):
 				with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
 					temp = json_unzip(jload(rjson))
-					for key in temp:
+					for key in list(temp.keys()):
 						for item2 in temp[key]:
 							if key == "a":
 								if item2 not in se["main"][key]:
@@ -441,13 +442,12 @@ def atlas_make():
 	for item in to_remove:
 		remove(item)
 
-	if len(se["main"]["a"]) > 0:
+	if len(se["main"]["a"])>0:
 		with open(f"{img_ex}/main.atlas", "w") as atlas:
 			jdump(se["main"]["a"], atlas, separators=(',', ':'), sort_keys=True)
 	else:
 		if exists(f"{img_ex}/main.atlas"):
 			remove(f"{img_ex}/main.atlas")
-
 
 ZIP_KEY = 'I2UHBG58pJ'
 

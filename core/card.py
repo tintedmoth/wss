@@ -205,12 +205,12 @@ class Card(RelativeLayout):
 			self.marker_l.refresh()
 			self.marker_r = Rectangle(texture=self.marker_l.texture, size=self.marker_l.texture.size,
 			                          pos=(self.marker_i.pos[0], self.marker_i.pos[1]))
-
+			self.cover = Rectangle(source=self.img_back, pos=self.pos, size=self.size)
 			self.text_l = CoreLabel(text="", text_size=self.size, color=(1, 1, 1, 1),
 			                        outline_width=2, halign='center', valign='middle', font_size=self.size[0] * .6)
 			self.text_l.refresh()
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
-			self.cover = Rectangle(source=self.img_back, pos=self.pos, size=self.size)
+
 		if self.ind == "1" or self.ind == "2":
 			self.cid = "player"
 		if data:
@@ -374,7 +374,7 @@ class Card(RelativeLayout):
 		with self.canvas:
 			self.cover.source = self.img_blank
 
-	def setPos(self, xpos=0, ypos=0, field=None, a=True, t=""):
+	def setPos(self, xpos=0, ypos=0, field=None, a=True, t="",d=False):
 		if field:
 			# self.playmat_fix(field=field)
 			# field = (field[0]-self.size[0]/2,field[1]-self.size[1]/2)
@@ -400,13 +400,16 @@ class Card(RelativeLayout):
 
 			if t == "Library" or t == "Stock":
 				# self.show_front()
-				self.show_back()  # @
+				self.show_back()  # @@
 			else:
-				self.show_front()
+				if d:
+					self.show_back()
+				else:
+					self.show_front()
 
 			if self.owner == "2" and self.pos_new == "Hand":
 				# self.show_front()
-				self.show_back()  # @
+				self.show_back()  # @@
 
 			if self.pos_new == "Stock" and self.status != "Rest":
 				self.rest()
@@ -715,11 +718,12 @@ class Card(RelativeLayout):
 		rot.start(self.rotation)
 
 	def update_name(self):
+		self.clean_c("name")
 		self.name_t = str(self.name)
 		if self.card == "Character":
 			for item in self.name_c:
 				if item[1] != 0:
-					self.name_t += f" {item[0]}"
+					self.name_t += f" - {item[0]}"
 
 	def update_marker(self, m=0):
 		if m > 0:
@@ -746,6 +750,8 @@ class Card(RelativeLayout):
 			text = self.level_c
 		elif t == "soul":
 			text = self.soul_c
+		elif t == "name":
+			text = self.name_c
 		elif t == "text":
 			text = self.text_c
 		elif t == "colour":
@@ -754,7 +760,7 @@ class Card(RelativeLayout):
 			text = self.trait_c
 		else:
 			text = []
-			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c)
+			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c,self.name_c)
 
 		if t == "":
 			for item in texts:
@@ -773,7 +779,7 @@ class Card(RelativeLayout):
 
 	def reduce_c(self, text="", waiting=False):
 		if text == "":
-			c = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c)
+			c = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c,self.name_c)
 		else:
 			if text == "power":
 				text = self.power_c
@@ -785,6 +791,8 @@ class Card(RelativeLayout):
 				text = self.soul_c
 			elif text == "text":
 				text = self.text_c
+			elif text == "name":
+				text = self.name_c
 			elif text == "colour":
 				text = self.colour_c
 			elif text == "trait":
@@ -815,7 +823,7 @@ class Card(RelativeLayout):
 			self.slc.source = self.img_selectable
 		else:
 			self.select = False
-			self.slc.pos = (- self.size[1] / 20, - self.size[1] / 20)
+			self.slc.pos = (-self.size[1] / 20, -self.size[1] / 20)
 			self.slc.size = (self.size[0] + self.size[1] / 10, self.size[1] * 1.1)
 			self.slc.source = self.img_blank
 
@@ -847,6 +855,7 @@ class CardImg(RelativeLayout):
 		self.flavour = ""
 		self.jflavour = ""
 		self.jtrait = ()
+		self.back = False
 		self.status = ""
 		self.pos_old = ""
 		self.pos_new = ""
@@ -961,11 +970,12 @@ class CardImg(RelativeLayout):
 				                                        self.size[1]),
 				                                   size=(img_t[0] * t_size * self.per, img_t[1] * t_size * self.per))
 			self.trigger_i["0"].source = self.img_none
-
+			self.cover = Rectangle(source=self.img_blank, pos=self.pos, size=self.size)
 			self.text_l = CoreLabel(text="", text_size=self.size, color=(1, 1, 1, 1),
 			                        outline_width=2, halign='center', valign='middle', font_size=self.size[0] * .6)
 			self.text_l.refresh()
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
+
 		# self.text_r.center = self.center
 
 		if data:
@@ -1068,6 +1078,16 @@ class CardImg(RelativeLayout):
 	def reverse(self, a=True):
 		self.status = "Reverse"
 
+	def show_back(self):
+		self.back = True
+		with self.canvas:
+			self.cover.source = self.img_back
+
+	def show_front(self):
+		self.back = False
+		with self.canvas:
+			self.cover.source = self.img_blank
+
 	def update_text(self, t="", f=.6):
 		self.text_l.text = f"{t}"
 		self.text_l.font_size = self.size[0] * f
@@ -1087,6 +1107,7 @@ class CardImg(RelativeLayout):
 					self.trait_t.append(item[0])
 
 	def update_name(self):
+		self.clean_c("name")
 		self.name_t = str(self.name)
 		if self.card == "Character":
 			for item in self.name_c:
@@ -1298,13 +1319,15 @@ class CardImg(RelativeLayout):
 			text = self.soul_c
 		elif t == "text":
 			text = self.text_c
+		elif t == "name":
+			text = self.name_c
 		elif t == "colour":
 			text = self.colour_c
 		elif t == "trait":
 			text = self.trait_c
 		else:
 			text = []
-			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c)
+			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c,self.name_c)
 
 		if t == "":
 			for item in texts:
@@ -1400,11 +1423,13 @@ class CardEmpty:
 			text = self.text_c
 		elif t == "colour":
 			text = self.colour_c
+		elif t == "name":
+			text = self.name_c
 		elif t == "trait":
 			text = self.trait_c
 		else:
 			text = []
-			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c)
+			texts = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c,self.name_c)
 
 		if t == "":
 			for item in texts:
@@ -1423,7 +1448,7 @@ class CardEmpty:
 
 	def reduce_c(self, text="", waiting=False):
 		if text == "":
-			c = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c)
+			c = (self.power_c, self.cost_c, self.level_c, self.soul_c, self.text_c, self.colour_c, self.trait_c,self.name_c)
 		else:
 			if text == "power":
 				text = self.power_c
@@ -1435,6 +1460,8 @@ class CardEmpty:
 				text = self.soul_c
 			elif text == "text":
 				text = self.text_c
+			elif text == "name":
+				text = self.name_c
 			elif text == "colour":
 				text = self.colour_c
 			elif text == "trait":
