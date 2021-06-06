@@ -24,8 +24,6 @@ from kivy.config import Config
 Config.set("graphics", "fullscreen", "auto")
 
 import kivy.core.window as window
-from kivy.base import EventLoop
-from kivy.cache import Cache
 from core.emailapp import EmailApp
 from core.gameapp import GameApp
 

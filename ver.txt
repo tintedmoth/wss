@@ -1,3 +1,23 @@
+0.27.0
+	Added Jap BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
+	Added Eng BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
+	Restructured ability code lines
+	Added visual guide for cards colour requirement
+	Fixed abilities that serach the deck on Multiplayer
+	Fixed Climax Phase on Multiplayer when playing Climax during Main Phase
+	Fixed Turn 1 Attack Phase on Multiplayer
+	Fixed Mulligan bug on Multiplayer
+	Fixed Encore bug on Multiplayer
+	Fixed minor bug
+
+0.26.1
+	Fixed Suspend game bug
+	Limit the multiplayer pairing to same version only
+
+0.26.0
+	Added Suspend game when app close
+	Added reconnection button on multiplay
+
 0.25.0
 	Added Jap Magical Girl Lyrical Nanoha A’s cards
 	Added Jap Magical Girl Lyrical Nanoha A’s PORTABLE -THE GEARS OF DESTINY- cards
