@@ -47,6 +47,7 @@ def pdata_init():
 		"1": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "colour": [], "janken": "",
 		      "marker": {},
+		      # "dict": {},"encore": [],
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -84,6 +85,7 @@ def pdata_init():
 		"2": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "encore": [], "colour": [], "janken": "",
 		      "marker": {},
+		      # "dict": {},
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -124,10 +126,16 @@ def gdata_init():
 	return {"multiplay_btn": True,
 	        "download_btn": True,
 	        "show_opp_hand": False,
-	        "show_wait_popup": True,
+	        "show_wait_popup": True,  # Popup while waiting for opp network move
 	        "com": True,
+	        # "ai": None,
+	        # "multi": False,
+	        # "level_both": False,
 	        "confirm_requirement": True,
-	        "overlap_confirm": True,
+	        # if True a popup appear when requirement are not met. if False cards won't be able to go into the field (playmat)
+	        "overlap_confirm": True,  # if True confirmation popup will appear when overlapping characters
+	        # "encore_overlap_confirm": True,
+	        # if True encore confirmation popup will appear when overlapping characters
 	        "remove_cards_in_deck": False,
 
 	        "load": False,
@@ -166,9 +174,10 @@ def gdata_init():
 	        "active_card": None,
 	        "results": 0,
 	        "drawed": [],
-	        "per_poped": [],
+	        "per_poped": ["",[],0,-1],
 	        "act_pop": {},
 	        "act_poped": "",
+	        # "cancel": True,
 	        "reshuffle_trigger_temp": "",
 	        "mill_check": [],
 	        "cancel_dmg": False,
@@ -182,7 +191,7 @@ def gdata_init():
 	        "p_f": True,
 	        "p_max_s": 0,
 	        "p_min_s": -1,
-	        "popup_done": (False, True),
+	        "popup_done": (False, True),  # (popup open, popup done)
 	        "p_rows": 1,
 	        "p_l": [],
 	        "p_ld": [],
@@ -540,27 +549,28 @@ else:
 
 atlas_make()
 
-phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]
-steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]
+phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  # list of main phases to display
+steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  # list of main phases to display
 icon_lst = ("door", "soul", "gate", "bar", "bag", "book", "shot", "bounce", "counter", "clock", "arrow")
 
-info_popup_dt = 1.5
-info_popup_press = 3
-phase_dt = 1.15 * 0.75
-joke_dt = 0.3
-ability_dt = 0.001
-move_dt = 0.35
-move_dt_btw = move_dt * 1.25
-popup_dt = 0.2
+info_popup_dt = 1.5  # sec time before info popup appear after holding card
+info_popup_press = 3  # sec time before info popup appear after holding card
+phase_dt = 1.15 * 0.75  # phases transition time
+joke_dt = 0.3  # joke transition time
+ability_dt = 0.001  # ability transition time
+move_dt = 0.35  # card movement transition time
+move_dt_btw = move_dt * 1.25  # transition time between card movement
+popup_dt = 0.2  # transition time between card movement
+# move_dt_btw = move_dt * 1.42  # transition time between card movement
 reveal_dt = 1.15
 server_dt = 1
-match_dt = 2
-shuffle_dt = 0.02
-shuffle_n = 7
-starting_hand = 5
-hand_limit = 7
-dbuild_limit = 5
-popup_max_cards = 7
+match_dt = 2  # check if room full every x second
+shuffle_dt = 0.02  # shuffling card speed
+shuffle_n = 7  # shuffle repetition
+starting_hand = 5  # number of cards when starting the game
+hand_limit = 7  # max number of cards allowed at the end of turn
+dbuild_limit = 5  # max col number of cards allowed at deck building
+popup_max_cards = 7  # max number of cards allowed width vise
 select2cards = 5
 
 COMPUTER = True
