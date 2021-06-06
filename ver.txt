@@ -1,7 +1,12 @@
+0.27.2
+	Fixed BFR/S78-005 ability
+
+0.27.1
+	Fixed deck building image selector
+
 0.27.0
 	Added Jap BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
 	Added Eng BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
-	Restructured ability code lines
 	Added visual guide for cards colour requirement
 	Fixed abilities that serach the deck on Multiplayer
 	Fixed Climax Phase on Multiplayer when playing Climax during Main Phase
@@ -9,6 +14,7 @@
 	Fixed Mulligan bug on Multiplayer
 	Fixed Encore bug on Multiplayer
 	Fixed minor bug
+	Restructured ability code lines
 
 0.26.1
 	Fixed Suspend game bug
