@@ -47,7 +47,6 @@ def pdata_init():
 		"1": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "colour": [], "janken": "",
 		      "marker": {},
-		      # "dict": {},"encore": [],
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -85,7 +84,6 @@ def pdata_init():
 		"2": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "encore": [], "colour": [], "janken": "",
 		      "marker": {},
-		      # "dict": {},
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -123,27 +121,16 @@ def pdata_init():
 
 
 def gdata_init():
-	return {"debug": True,
-	        "d_rotation": False,
-	        "d_opp_first": False,
-	        "d_pl_first": False,
-	        "d_3atk_1turn": False,
-	        "d_btn_list": [],
-	        "multiplay_btn": True,
-	        "download_btn":True,
+	return {"multiplay_btn": True,
+	        "download_btn": True,
 	        "show_opp_hand": False,
-	        "show_wait_popup": True,  # Popup while waiting for opp network move
+	        "show_wait_popup": True,
 	        "com": True,
-	        # "ai": None,
-	        # "multi": False,
-	        # "level_both": False,
 	        "confirm_requirement": True,
-	        # if True a popup appear when requirement are not met. if False cards won't be able to go into the field (playmat)
-	        "overlap_confirm": True,  # if True confirmation popup will appear when overlapping characters
-	        # "encore_overlap_confirm": True,
-	        # if True encore confirmation popup will appear when overlapping characters
+	        "overlap_confirm": True,
 	        "remove_cards_in_deck": False,
 
+	        "load": False,
 	        "check_atk": True,
 	        "check_ctr": False,
 	        "status": "",
@@ -155,7 +142,8 @@ def gdata_init():
 	        "pay_status": "",
 	        "do_status": "",
 	        "done": "",
-	        "do": [0, ""],
+	        "do": [0, []],
+	        "do_both": [],
 	        "decker": False,
 	        "selected": "",
 	        "selected_o": "",
@@ -166,7 +154,7 @@ def gdata_init():
 	        "moveable": [], "playable_climax": [],
 
 	        "stack": {"1": [], "2": []},
-	        "stacked":{"0":[]},
+	        "stacked": {"0": []},
 	        "save_name": "",
 	        "update_edata": False,
 	        "swap_card": [False, "", 0, 0],
@@ -177,15 +165,15 @@ def gdata_init():
 	        "popup_on": False,
 	        "active_card": None,
 	        "results": 0,
-	        "drawed" :[],
-	        "act_pop":{},
-	        "act_poped":"",
-	        # "cancel": True,
+	        "drawed": [],
+	        "per_poped": [],
+	        "act_pop": {},
+	        "act_poped": "",
 	        "reshuffle_trigger_temp": "",
 	        "mill_check": [],
 	        "cancel_dmg": False,
 	        "trigger_icon": [],
-	        "stage-1":[],
+	        "stage-1": [],
 	        "p_owner": "",
 	        "p_ind": "",
 	        "menu": False,
@@ -194,11 +182,12 @@ def gdata_init():
 	        "p_f": True,
 	        "p_max_s": 0,
 	        "p_min_s": -1,
-	        "popup_done": (False, True),  # (popup open, popup done)
+	        "popup_done": (False, True),
 	        "p_rows": 1,
 	        "p_l": [],
 	        "p_ld": [],
 	        "p_t": [],
+	        "p_ltitle": "",
 	        "p_j": 0,
 	        "p_width": 0,
 	        "p_height": 0,
@@ -247,15 +236,15 @@ def gdata_init():
 	        "phase": "", "pp": -1,
 	        "starting_player": "", "second_player": "", "active": "", "opp": "", "rev": False, "turn": 0, "inx": 0,
 	        "rev_counter": False,
-	        "mulligan": [False, False],
+	        "mulligan": [[], []],
 	        "encore_type": "",
 	        "attack_start": True,
 	        "dmg": 0,
 	        "attack": 0,
-	        "clear" : True,
-	        "oppchoose":False,
-	        "trigger_card":"",
-	        "d_atk": [0, []],
+	        "clear": True,
+	        "oppchoose": False,
+	        "trigger_card": "",
+	        "d_atk": [1, []],
 	        "attacking": ["", "", 0, 0, ""],
 	        "draw_both": [int(starting_hand), False, False],
 	        "draw_upto": 0,
@@ -263,22 +252,27 @@ def gdata_init():
 	        "levelup": {"1": False, "2": False},
 	        "shuffle_trigger": "",
 	        "shuffle_rep": int(shuffle_n),
+	        "shuffle_send": False,
 	        "draw": 0,
 	        "play": [],
+	        "xdiscard": [],
 	        "discard": 0,
-	        "btrait":["",[],[],[],[],[]],
+	        "btrait": ["", [], [], [], [], []],
 	        "dismay": False,
 	        "extra": [],
 	        "extra1": [],
 	        "mill": 0,
 	        "reveal": 0,
-	        "trigger": 0,
+	        "reveal_ind": "",
+	        "trigger": 1,
 	        "mtrigger": 0,
+	        "standby": ["", "", ""],
 	        "clocker": False,
 	        "clocker_rev": False,
-	        "noact":{"1":False,"2":False},
-	        "noclimax":{"1":False,"2":False},
-	        "noclock":{"1":False,"2":False},
+	        "noact": {"1": False, "2": False},
+	        "noclimax": {"1": False, "2": False},
+	        "anyclimax": {"1": False, "2": False},
+	        "noclock": {"1": False, "2": False},
 	        "climax_play": False,
 	        "reshuffle": False,
 	        "reshuffle_trigger": "",
@@ -290,6 +284,7 @@ def gdata_init():
 	        "power": (),
 	        "soul": (),
 	        "stock": 0,
+	        "numbers": "",
 	        "play_card": "",
 	        "ability_effect": [],
 	        "ability": "",
@@ -303,9 +298,11 @@ def gdata_init():
 	        "target_temp": [],
 	        "salvage_cost": [],
 	        "salvage": 0,
+	        "ksalvage": "",
 	        "reveal_top": [],
+	        "skip_top": [],
 	        "clock_done": "",
-	        "both" : False,
+	        "both": False,
 	        "confirm_trigger": "",
 	        "confirm_var": {},
 	        "janken_result": 0,
@@ -328,6 +325,9 @@ def gdata_init():
 	        "opp_move": [],
 	        "opp_attack": [],
 	        "clock_temp": None,
+	        "perform": 0,
+	        "perform_both": False,
+	        "perform_a": [],
 	        "opp_encore": [],
 	        "opp_ability": [],
 	        "effect": [],
@@ -341,13 +341,15 @@ def gdata_init():
 	        "astock": {"1": [], "2": []},
 	        "estock": {"1": [], "2": []},
 	        "mstock": "",
+	        "if": [],
+	        "ld": False,
 	        "astock_pop": False,
 	        "estock_pop": False,
 	        "notargetfield": False,
 	        "brainstorm": 0,
-	        "brainstorm_c": [0,[]],
-	        "resonance": [False,[]],
-	        "random_reveal":[],
+	        "brainstorm_c": [0, []],
+	        "resonance": [False, []],
+	        "random_reveal": [],
 	        "confirm": False,
 	        "confirm1": [False, 0],
 	        "confirm2": [False, 0],
@@ -375,14 +377,17 @@ def network_init():
 		"actual": "",
 		"private": False,
 		"status": "",
+		"body": "",
+		"failed": False,
+		"got": False,
 		"time": -1,
 		"ready": 0,
 		"game": "",
 		"wait": False,
 		"send": False,
 		"lvlsend": True,
-		"varlvl":[],
-		"act": ["", "", 0, [], []]
+		"varlvl": [],
+		"act": ["", "", 0, [], [], 0, -1]
 	}
 
 
@@ -392,32 +397,37 @@ def atlas_make():
 	for item in se["check"]:
 		files[item] = {}
 		for item1 in se["check"][item]:
-			if item1 == "e" or item1 == "j" or item1 == "d":
+			if item1 == "e" or item1 == "j" or item1 == "d" or item1 == "s":
 				continue
 			files[item][item1] = False
 			if "-d" in item1 and exists(f"{data_ex}/{item1}"):
-				with open(f"{data_ex}/{item1}", "rb") as f:
+				with open(f"{data_ex}/{item1}", "rb") as ft:
 					hash_md5 = md5()
-					for chunk in iter(lambda: f.read(4096 * 10), b""):
+					for chunk in iter(lambda: ft.read(4096 * 10), b""):
 						hash_md5.update(chunk)
 					if hash_md5.hexdigest() == se["check"][item][item1]:
 						files[item][item1] = True
+						if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
+							se["main"]["w"].remove(se["check"][item]["s"])
 					else:
 						to_remove.append(f"{data_ex}/{item1}")
 			elif "-" in item1 and exists(f"{img_ex}/{item1}"):
-				with open(f"{img_ex}/{item1}", "rb") as f:
+				with open(f"{img_ex}/{item1}", "rb") as ft:
 					hash_md5 = md5()
-					for chunk in iter(lambda: f.read(4096 * 10), b""):
+					for chunk in iter(lambda: ft.read(4096 * 10), b""):
 						hash_md5.update(chunk)
 					if hash_md5.hexdigest() == se["check"][item][item1]:
 						files[item][item1] = True
 					else:
+						if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
+							se["main"]["w"].remove(se["check"][item]["s"])
 						to_remove.append(f"{img_ex}/{item1}")
 
-		if all(files[item][ff] for ff in files[item]):
+		if all(files[item][s] for s in files[item]):
 			if exists(f"{data_ex}/{item}-d"):
 				with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
 					temp = json_unzip(jload(rjson))
+
 					for key in list(temp.keys()):
 						for item2 in temp[key]:
 							if key == "a":
@@ -432,6 +442,10 @@ def atlas_make():
 							elif key == "s":
 								if item2 not in se["main"][key]["Title"]:
 									se["main"][key]["Title"].append(item2)
+								if "w" not in se["main"]:
+									se["main"]["w"] = []
+								if item2 != "":
+									se["main"]["w"].append(item2)
 							elif key == "p":
 								if item2 not in sp:
 									sp[item2] = dict(temp[key][item2])
@@ -440,14 +454,16 @@ def atlas_make():
 									se["main"][key].append(item2)
 
 	for item in to_remove:
+		print(item)
 		remove(item)
 
-	if len(se["main"]["a"])>0:
+	if len(se["main"]["a"]) > 0:
 		with open(f"{img_ex}/main.atlas", "w") as atlas:
 			jdump(se["main"]["a"], atlas, separators=(',', ':'), sort_keys=True)
 	else:
 		if exists(f"{img_ex}/main.atlas"):
 			remove(f"{img_ex}/main.atlas")
+
 
 ZIP_KEY = 'I2UHBG58pJ'
 
@@ -461,20 +477,23 @@ with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rp:
 	se = json_unzip(jload(rp))
 with open(f"{data_in}/cdata.db", "r", encoding="utf-8") as rc:
 	sc = json_unzip(jload(rc))
+
 sp = se["playmat"]
 sd = se["main"]["t"]
 sn = se["neo"]
+
 annex_img = []
 with open(f"{img_in}/annex.atlas", "r", encoding="utf-8") as ax:
 	ann = jload(ax)
-	for ff in ann:
-		for an in ann[ff].keys():
+	for f in ann:
+		for an in ann[f].keys():
 			annex_img.append(an)
+
 other_img = []
 with open(f"{img_in}/other.atlas", "r", encoding="utf-8") as ox:
 	ann = jload(ox)
-	for ff in ann:
-		for an in ann[ff].keys():
+	for f in ann:
+		for an in ann[f].keys():
 			other_img.append(an)
 
 if exists(f"{data_ex}/cej.db"):
@@ -482,37 +501,38 @@ if exists(f"{data_ex}/cej.db"):
 		scej = json_unzip(jload(rd))
 		for deck in scej:
 			sd[deck] = dict(scej[deck])
-			# if sd[deck]["c"]:
-			# 	icx = 0
-			# 	ict = 0
-			# 	iqt = 0
-			# 	ina = {}
-			# 	for card in scej[deck]["deck"]:
-			# 		ilt = 4
-			# 		for text in sc[card]["text"]:
-			# 			eff = ab.cont(text)
-			# 			if "limit" in eff:
-			# 				ilt = 50
-			# 				break
-			# 		if sc[card]["name"] not in ina:
-			# 			ina[sc[card]["name"]] = 0
-			# 		if scej[deck]["deck"][card] > ilt:
-			# 			if ina[sc[card]["name"]] < ilt:
-			# 				iqt = ilt - ina[sc[card]["name"]]
-			# 		else:
-			# 			if ina[sc[card]["name"]] < ilt:
-			# 				iqt = ilt - ina[sc[card]["name"]]
-			# 				if scej[deck]["deck"][card] <= iqt:
-			# 					iqt = scej[deck]["deck"][card]
-			#
-			# 		if iqt > 0:
-			# 			if sc[card]["type"] == "Climax":
-			# 				icx += iqt
-			# 			ict += iqt
-			# 			ina[sc[card]["name"]] += iqt
-			#
-			# 	if not (ict == 50 and icx <= 8):
-			# 		sd[deck]["c"] = False
+
+			if sd[deck]["c"]:
+				icx = 0
+				ict = 0
+				iqt = 0
+				ina = {}
+				for card in scej[deck]["deck"]:
+					ilt = 4
+					for text in sc[card]["text"]:
+						eff = ab.cont(text)
+						if "limit" in eff:
+							ilt = 50
+							break
+					if sc[card]["name"] not in ina:
+						ina[sc[card]["name"]] = 0
+					if scej[deck]["deck"][card] > ilt:
+						if ina[sc[card]["name"]] < ilt:
+							iqt = ilt - ina[sc[card]["name"]]
+					else:
+						if ina[sc[card]["name"]] < ilt:
+							iqt = ilt - ina[sc[card]["name"]]
+							if scej[deck]["deck"][card] <= iqt:
+								iqt = scej[deck]["deck"][card]
+
+					if iqt > 0:
+						if sc[card]["type"] == "Climax":
+							icx += iqt
+						ict += iqt
+						ina[sc[card]["name"]] += iqt
+
+				if not (ict == 50 and icx <= 8):
+					sd[deck]["c"] = False
 else:
 	scej = {}
 	with open(f"{data_ex}/cej.db", "w") as w_d:
@@ -520,33 +540,31 @@ else:
 
 atlas_make()
 
-phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  # list of main phases to display
-steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  # list of main phases to display
+phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]
+steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]
 icon_lst = ("door", "soul", "gate", "bar", "bag", "book", "shot", "bounce", "counter", "clock", "arrow")
 
-info_popup_dt = 1.5  # sec time before info popup appear after holding card
-info_popup_press = 3  # sec time before info popup appear after holding card
-phase_dt = 1.15 * 0.75  # phases transition time
-joke_dt = 0.3  # joke transition time
-ability_dt = 0.001  # ability transition time
-move_dt = 0.35  # card movement transition time
-move_dt_btw = move_dt * 1.25  # transition time between card movement
-popup_dt = 0.2  # transition time between card movement
-# move_dt_btw = move_dt * 1.42  # transition time between card movement
+info_popup_dt = 1.5
+info_popup_press = 3
+phase_dt = 1.15 * 0.75
+joke_dt = 0.3
+ability_dt = 0.001
+move_dt = 0.35
+move_dt_btw = move_dt * 1.25
+popup_dt = 0.2
 reveal_dt = 1.15
 server_dt = 1
-match_dt = 2  # check if room full every x second
-shuffle_dt = 0.02  # shuffling card speed
-shuffle_n = 7  # shuffle reapetion
-starting_hand = 5  # number of cards when starting the game
-hand_limit = 7  # max number of cards allowed at the end of turn
-dbuild_limit = 5  # max col number of cards allowed at deck building
-popup_max_cards = 7  # max number of cards allowed width vise
+match_dt = 2
+shuffle_dt = 0.02
+shuffle_n = 7
+starting_hand = 5
+hand_limit = 7
+dbuild_limit = 5
+popup_max_cards = 7
 select2cards = 5
 
 COMPUTER = True
 
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
-act_aility = "[ACT]"
-
+act_ability = "[ACT]"

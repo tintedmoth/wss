@@ -46,7 +46,6 @@ class Mat(RelativeLayout):
 
 		self.pos_mat = (data["pos"][0] * per, data["pos"][1] * per)
 
-		# with self.canvas:
 		self.rect.source = self.img_mat
 		self.rect.size = self.actual
 		self.rect.pos = self.pos_mat
