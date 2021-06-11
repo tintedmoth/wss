@@ -53,7 +53,7 @@ from core.var import *
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
 __author__ = "totuccio"
 __copyright__ = "Copyright © 2020 totuccio"
-__version__ = "0.27.2"
+__version__ = "0.27.3"
 
 
 class GameMech(Widget):
@@ -3357,6 +3357,9 @@ class GameMech(Widget):
 		self.decks["selected"] = ""
 		deck_size = (self.sd["card"][0] * 1.5, self.sd["card"][1] * 1.5)
 		mat_size = (self.sd["card"][1] * 1.9, self.sd["card"][0] * 1.9)
+		self.decks["close"].text = "Close"
+		self.decks["close"].disabled = False
+
 		if t == "start":
 			self.dpop["idadd"] = ImgButton(source=f"atlas://{img_in}/other/add", size=deck_size, cid="a", card=self.sd["card"])
 			self.dpop["idadd"].btn.bind(on_press=self.popup_deck_slc)
@@ -3501,7 +3504,7 @@ class GameMech(Widget):
 
 			self.decks["close"].y = self.sd["padding"] * 1.5
 			self.decks["close"].center_x = xscat / 2 - self.sd["padding"] * 0.75
-
+			self.decks["close"].text = "Confirm"
 			ypos = self.sd["padding"] * 4.5 + self.sd["card"][1] / 2
 
 			for item in ("image", "format", "lang", "name"):
@@ -3518,7 +3521,10 @@ class GameMech(Widget):
 					ypos += self.sd["card"][1] * 1.5 + self.sd["padding"] * 1
 				elif item == "image" and "img" not in t:
 					self.decks["st"][f"{item}_box"].y = -Window.height * 2
-					self.decks["save"].y = -Window.height * 2
+					self.decks["save"].y = self.sd["padding"] * 1.5
+					self.decks["save"].center_x = xscat / 4 - self.sd["padding"] / 2
+					self.decks["close"].center_x = xscat / 4 * 3 - self.sd["card"][0] / 2
+					self.decks["save"].text = "Discard"
 				else:
 					self.decks["st"][f"{item}_box"].pos = (0, ypos)
 					if item == "lang":
