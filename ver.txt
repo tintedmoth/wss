@@ -1,3 +1,6 @@
+0.27.4
+	Fixed button text on deck building setting
+
 0.27.3
 	Added a retun button on new deck creation popup
 
