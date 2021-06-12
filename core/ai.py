@@ -59,11 +59,11 @@ class AI:
 			y = ["y", ] * 9
 			y = y + ["n"]
 			payable.append(choice(y))
-		elif "salvage" in effect and pay[1]:
+		elif (("salvage" in effect and "oppturn" in effect) or "salvage" in effect) and pay[1]:
 			salvage = list(gdata["p_l"])
 
 			if pay[1] and len(salvage) >= 1:
-				salvage = sorted(salvage, key=lambda e: cdata[e].level, reverse=True)
+				salvage = sorted(salvage, key=lambda e: (cdata[e].level,cdata[e].power), reverse=True)
 
 				payable.append("AI_salvage")
 				if pay[1] and len(salvage) >= 1:
@@ -76,22 +76,31 @@ class AI:
 				if "searchopp" in effect:
 					search = sorted(search, key=lambda e: cdata[e].level)
 				else:
-					search = sorted(search, key=lambda e: cdata[e].level, reverse=True)
+					search = sorted(search, key=lambda e: (cdata[e].power,cdata[e].level), reverse=True)
 
 				payable.append("AI_search")
 				if pay[1] and len(search) >= 1:
 					payable.append(search[:effect[0]])
 				else:
 					payable.append([""])
-		elif "discard" in effect and pay[1]:
-			payable.append("AI_discard")
-			temp=[]
-			for r in range(effect[1]):
-				if len(pdata[self.player]["Hand"])-len(temp)>0:
-					temp.append(choice(pdata[self.player]["Hand"]))
+		elif ("discard" in effect or "mdiscard" in effect) and pay[1]:
+			discard = list(gdata["p_l"])
+
+			if pay[1] and len(discard) >= 1:
+				discard = sorted(discard, key=lambda e: (cdata[e].power, cdata[e].level), reverse=True)
+				if "invert" in gdata["effect"]:
+					for cc in list(discard):
+						if cdata[cc].level > 2 or cdata[cc].level <= 0:
+							discard.remove(cc)
+							discard.append(cc)
+				payable.append("AI_discard")
+				if pay[1] and len(discard) >= 1:
+					payable.append(discard[:effect[1]])
 				else:
-					temp.append("")
-			payable.append(temp)
+					payable.append([""])
+		elif "numbers" in effect and pay[1]:
+			payable.append("AI_numbers")
+			payable.append(choice(effect[1]))
 		elif ("looktop" in effect or "looktopopp" in effect) and pay[1]:
 			payable.append("AI_looktop")
 			temp = []
@@ -339,8 +348,7 @@ class AI:
 		return play
 
 	def encore(self, pdata, cdata, gdata):
-		encore = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if
-		          s != "" and cdata[s].status == "Reverse"]
+		encore = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if s != "" and cdata[s].status == "Reverse"]
 		stock = len(pdata[self.player]["Stock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != "" and cdata[s].status != "Reverse"])
 		back = len([s for s in pdata[self.player]["Back"] if s != "" and cdata[s].status != "Reverse"])
@@ -397,7 +405,7 @@ class AI:
 				aa = True
 				for item in cdata[ind].text_c:
 					if item[0].startswith("[CONT]") and item[1] != 0 and item[1] > -9:
-						if "this cannot move to another position" in item[0].lower():
+						if "cannot move to another position" in item[0].lower():
 							aa = False
 							break
 

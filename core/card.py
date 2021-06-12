@@ -7,32 +7,32 @@ from core.button import Button
 from core.datapath import *
 from core.label import CoreLabel
 
-l_c_size = 0.3
-p_size = 0.45
-i_size = 0.236
-s_size = 0.55
-a_size = 0.55
-t_size = 0.27
-m_size = 0.25
+l_c_size = 0.3  # 0.264  # multiplier for changing size of level and cost image
+p_size = 0.45  # multiplier for changing size of power bar image
+i_size = 0.236  # multiplier for changing size of icon image
+s_size = 0.55  # multiplier for changing size of soul image
+a_size = 0.55  # multiplier for changing size of ability image
+t_size = 0.27  # multiplier for changing size of trigger image
+m_size = 0.25  # multiplier for changing size of marker image
 
-img_l = (50, 60)
-img_c = (50, 42)
-img_p = (81, 28)
-img_t = (49, 58)
-img_w = (66, 47)
-img_i = (56, 56)
-img_s = (16, 16)
-img_a = (24, 12)
+img_l = (50, 60)  # Level image size in px used for card layout
+img_c = (50, 42)  # Cost image size in px used for card layout
+img_p = (81, 28)  # Power image size in px used for card layout
+img_t = (49, 58)  # Trigger Icon image size in px
+img_w = (66, 47)  # Trigger Icon image size in px
+img_i = (56, 56)  # Icon image size in px
+img_s = (16, 16)  # Soul image size in px
+img_a = (24, 12)  # Ability image size in px
 
-level_pos = (0.015, 0.015)
-power_bar = (0.015, 0.015)
-power_text = (0.12, 0.010)
-icon_pos = (0.035, 0.010)
-soul_pos = (0.015, 0.010)
-trigger_pos = (0.015, 0.015)
-colour_pos = (0.015, 0.015)
-ability_pos = (0.015, 0.015)
-marker_pos = (0.015, 0.015)
+level_pos = (0.015, 0.015)  # Level and Cost image position from top left
+power_bar = (0.015, 0.015)  # Power bar image position on card from bottom left
+power_text = (0.12, 0.010)  # Power bar text position on card from bottom left
+icon_pos = (0.035, 0.010)  # Power bar text position on card from bottom left
+soul_pos = (0.015, 0.010)  # Power bar text position on card from bottom left
+trigger_pos = (0.015, 0.015)  # trigger icon position on card from top right
+colour_pos = (0.015, 0.015)  # Power bar text position on card from bottom right
+ability_pos = (0.015, 0.015)  # ability image position on card from bottom right
+marker_pos = (0.015, 0.015)  # marker image position on card from bottom right
 
 move_dt = 0.35
 
@@ -152,6 +152,7 @@ class Card(RelativeLayout):
 			for x in range(self.max_soul):
 				self.soul_i[str(x)] = Rectangle(source=self.img_blank, size=soul_size,pos=(self.power_b.pos[0] + x * soul_size[0],pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
 
+			# self.soul_l = CoreLabel(text="", text_size=soul_size, color=(1, 1, 1, 1),
 			self.soul_l = CoreLabel(text="", text_size=(soul_size[0] * 1.5, self.power_b.size[1]), color=(1, 1, 1, 1), outline_width=1.9, halign='center', valign='middle', font_size=self.power_b.size[1] * 0.8)
 			self.soul_l.refresh()
 			self.soul_r = Rectangle(texture=self.soul_l.texture, size=self.soul_l.texture.size, pos=(self.power_b.pos[0] + pos_soul[0] / 4. + soul_size[0],pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
@@ -169,6 +170,7 @@ class Card(RelativeLayout):
 			self.power_r = Rectangle(texture=self.power_l.texture, size=self.power_l.texture.size,pos=(power_text[0] * self.size[0], power_text[1] * self.size[1]))
 
 			self.marker_i = Rectangle(source=self.img_blank, size=marker_size,pos=self.ability_i["0"].pos)
+			# pos=(self.ability_i["0"].pos[0] - ability_size[0]-marker_pos[0] * self.card_size[0],self.ability_i["0"].pos[1]))
 
 			self.marker_l = CoreLabel(text="", text_size=self.marker_i.size, color=(1, 1, 1, 1), outline_width=1.9,font_size=marker_size[1] * .8, halign='center', valign='middle', size=marker_size)
 			self.marker_l.refresh()
@@ -290,6 +292,8 @@ class Card(RelativeLayout):
 		else:
 			self.rotation.angle = angle
 
+	# self.playmat_fix()
+
 	def rest(self, a=True):
 		self.status = "Rest"
 		if self.rotation.angle < 90:
@@ -303,6 +307,8 @@ class Card(RelativeLayout):
 			self.rotation.angle = angle
 		if angle > 360:
 			self.rotation.angle = 90
+
+	# self.playmat_fix()
 
 	def climax(self, a=True):
 		self.status = ""
@@ -341,6 +347,8 @@ class Card(RelativeLayout):
 
 	def setPos(self, xpos=0, ypos=0, field=None, a=True, t="", d=False):
 		if field:
+			# self.playmat_fix(field=field)
+			# field = (field[0]-self.size[0]/2,field[1]-self.size[1]/2)
 			if a:
 				move = Animation(x=field[0] + self.dx, y=field[1] + self.dy, d=self.move_dt)
 				move.start(self)
@@ -355,12 +363,14 @@ class Card(RelativeLayout):
 				self.x = xpos
 				self.y = ypos
 
+		# update and track position
 		if t != "":
 			self.pos_old = self.pos_new
 			self.pos_new = t
 
 			if t == "Library" or t == "Stock":
-				self.show_back()
+				# self.show_front()
+				self.show_back()  # @@
 			else:
 				if d:
 					self.show_back()
@@ -368,7 +378,8 @@ class Card(RelativeLayout):
 					self.show_front()
 
 			if self.owner == "2" and self.pos_new == "Hand":
-				self.show_back()
+				# self.show_front()
+				self.show_back()  # @@
 
 			if self.pos_new == "Stock" and self.status != "Rest":
 				self.rest()
@@ -438,6 +449,9 @@ class Card(RelativeLayout):
 					self.power_b.source = self.img_power
 					self.power_l = CoreLabel(text=f"{self.power_t:={len(str(self.power_t)) + 1}}", text_size=self.power_b.size, color=color, halign='center', font_size=self.power_b.size[1] * 0.8, valign='middle')
 
+					# self.power_l.text = f"{self.power_t:={len(str(self.power_t))+1}}"
+					# self.power_l.text_size = self.power_b.size
+					# self.power_l.color = color
 					self.power_l.refresh()
 					self.power_r.texture = self.power_l.texture
 					self.power_r.size = self.power_l.texture.size
@@ -455,6 +469,8 @@ class Card(RelativeLayout):
 		self.text_l.font_size = self.size[0] * f
 		self.text_l.refresh()
 		self.text_r.texture = self.text_l.texture
+
+	# self.text_r.size = self.text_l.texture.size
 
 	def update_icon(self):
 		if self.icon != "":
@@ -511,7 +527,7 @@ class Card(RelativeLayout):
 
 			with self.canvas:
 				if self.level_t > 0:
-					img = f"{self.mcolour[0].upper()}L"
+					img = f"{self.mcolour[0].upper()}L"  # {self.level_t}"
 				else:
 					img = "L0"
 				self.level_i.source = f"atlas://{img_in}/other/{img}"
@@ -547,13 +563,15 @@ class Card(RelativeLayout):
 			atext = []
 			for text in self.text_c:
 				tt = True
-				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability:
+				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability:  # and text[1] > -9:
 					if text[0] not in atext:
 						atext.append(text[0])
 					else:
 						if text[0].startswith(auto_ability):
 							if text[0].lower().startswith(auto_ability.lower() + " encore ["):
 								tt = False
+						# elif text[0].startswith(cont_ability):
+						# 	tt = False
 
 					if tt:
 						if text[0].startswith(cont_ability):
@@ -627,6 +645,10 @@ class Card(RelativeLayout):
 
 	def playmat_fix(self, field=""):
 		self.dx = self.dy = 0
+		# if self.owner == "2":
+		# 	m = -1
+		# elif self.owner == "1":
+		# 	m = 1
 		m = 1
 		if field == "":
 			field = self.pos_new
@@ -897,6 +919,8 @@ class CardImg(RelativeLayout):
 			self.text_l.refresh()
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
 
+		# self.text_r.center = self.center
+
 		if data:
 			self.import_data(data)
 
@@ -1014,6 +1038,8 @@ class CardImg(RelativeLayout):
 			self.text_l.refresh()
 			self.text_r.texture = self.text_l.texture
 
+	# self.text_r.size = self.text_l.texture.size
+
 	def update_trait(self):
 		self.trait_t = []
 		if self.card == "Character":
@@ -1122,7 +1148,7 @@ class CardImg(RelativeLayout):
 
 			with self.canvas:
 				if self.level_t > 0:
-					img = f"{self.mcolour[0].upper()}L"
+					img = f"{self.mcolour[0].upper()}L"  # {self.level_t}"
 				else:
 					img = "L0"
 				self.level_i.source = f"atlas://{img_in}/other/{img}"
@@ -1157,7 +1183,7 @@ class CardImg(RelativeLayout):
 			ability = []
 
 			for text in self.text_c:
-				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability:
+				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability:  # text[1] > -9
 					if text[0].startswith(cont_ability):
 						ability.append(self.img_cont)
 					elif text[0].startswith(auto_ability):
@@ -1308,6 +1334,7 @@ class CardEmpty:
 		self.pos_new = ""
 		self.owner = ""
 		self.selected = False
+		# self.selectable = False
 		self.cost_c = []
 		self.cost_t = 0
 		self.power_c = []

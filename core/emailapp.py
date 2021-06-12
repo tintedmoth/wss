@@ -34,7 +34,7 @@ class EmailApp(App):
 		           create_chooser=False)
 
 	def stop(self, *largs):
-		self.root_window.close()
+		self.root_window.close()  # Fix app exit on Android.
 		return super(EmailApp, self).stop(*largs)
 
 	def end(self, dt):

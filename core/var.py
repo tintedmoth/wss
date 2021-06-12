@@ -123,7 +123,13 @@ def pdata_init():
 
 
 def gdata_init():
-	return {"multiplay_btn": True,
+	return {"debug": True,
+	        "d_rotation": False,
+	        "d_opp_first": False,
+	        "d_pl_first": False,
+	        "d_3atk_1turn": False,
+	        "d_btn_list": [],
+	        "multiplay_btn": True,
 	        "download_btn": True,
 	        "show_opp_hand": False,
 	        "show_wait_popup": True,  # Popup while waiting for opp network move
@@ -511,37 +517,37 @@ if exists(f"{data_ex}/cej.db"):
 		for deck in scej:
 			sd[deck] = dict(scej[deck])
 
-			if sd[deck]["c"]:
-				icx = 0
-				ict = 0
-				iqt = 0
-				ina = {}
-				for card in scej[deck]["deck"]:
-					ilt = 4
-					for text in sc[card]["text"]:
-						eff = ab.cont(text)
-						if "limit" in eff:
-							ilt = 50
-							break
-					if sc[card]["name"] not in ina:
-						ina[sc[card]["name"]] = 0
-					if scej[deck]["deck"][card] > ilt:
-						if ina[sc[card]["name"]] < ilt:
-							iqt = ilt - ina[sc[card]["name"]]
-					else:
-						if ina[sc[card]["name"]] < ilt:
-							iqt = ilt - ina[sc[card]["name"]]
-							if scej[deck]["deck"][card] <= iqt:
-								iqt = scej[deck]["deck"][card]
-
-					if iqt > 0:
-						if sc[card]["type"] == "Climax":
-							icx += iqt
-						ict += iqt
-						ina[sc[card]["name"]] += iqt
-
-				if not (ict == 50 and icx <= 8):
-					sd[deck]["c"] = False
+			# if sd[deck]["c"]:
+			# 	icx = 0
+			# 	ict = 0
+			# 	iqt = 0
+			# 	ina = {}
+			# 	for card in scej[deck]["deck"]:
+			# 		ilt = 4
+			# 		for text in sc[card]["text"]:
+			# 			eff = ab.cont(text)
+			# 			if "limit" in eff:
+			# 				ilt = 50
+			# 				break
+			# 		if sc[card]["name"] not in ina:
+			# 			ina[sc[card]["name"]] = 0
+			# 		if scej[deck]["deck"][card] > ilt:
+			# 			if ina[sc[card]["name"]] < ilt:
+			# 				iqt = ilt - ina[sc[card]["name"]]
+			# 		else:
+			# 			if ina[sc[card]["name"]] < ilt:
+			# 				iqt = ilt - ina[sc[card]["name"]]
+			# 				if scej[deck]["deck"][card] <= iqt:
+			# 					iqt = scej[deck]["deck"][card]
+			#
+			# 		if iqt > 0:
+			# 			if sc[card]["type"] == "Climax":
+			# 				icx += iqt
+			# 			ict += iqt
+			# 			ina[sc[card]["name"]] += iqt
+			#
+			# 	if not (ict == 50 and icx <= 8):
+			# 		sd[deck]["c"] = False
 else:
 	scej = {}
 	with open(f"{data_ex}/cej.db", "w") as w_d:
