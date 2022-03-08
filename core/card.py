@@ -6,6 +6,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from core.button import Button
 from core.datapath import *
 from core.label import CoreLabel
+from os.path import exists
 
 l_c_size = 0.3  # 0.264  # multiplier for changing size of level and cost image
 p_size = 0.45  # multiplier for changing size of power bar image
@@ -38,7 +39,44 @@ move_dt = 0.35
 
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
-act_aility = "[ACT]"
+act_ability = "[ACT]"
+
+card_annex = ["ws01v",
+      "MK/S11-E101",
+      "MK/S11-E103",
+      "MK/S11-E105",
+      "MK/S11-TE02",
+      "MK/S11-TE03",
+      "MK/S11-TE04",
+      "MK/S11-TE05",
+      "MK/S11-TE08",
+      "MK/S11-TE09",
+      "MK/S11-TE10",
+              "MK/S11-TE11",
+              "MK/S11-TE14",
+              "MK/S11-TE15",
+              "CGS/WS01-T01",
+              "CGS/WS01-T02",
+              "CGS/WS01-T03",
+              "CGS/WS01-T04",
+              "CGS/WS01-T05",
+              "CGS/WS01-T06",
+              "CGS/WS01-T07",
+              "CGS/WS01-T08",
+              "CGS/WS01-T09",
+              "CGS/WS01-T10",
+              "CGS/WS01-T11",
+              "CGS/WS01-T12",
+              "CGS/WS01-T13",
+              "CGS/WS01-T14",
+              "CGS/WS01-T15",
+              "CGS/WS01-T16",
+              "CGS/WS01-T17",
+              "CGS/WS01-T18",
+              "CGS/WS01-T19",
+              "CGS/WS01-T20",
+              "CGS/WS01-T21"
+              ]
 
 
 class Card(RelativeLayout):
@@ -198,7 +236,7 @@ class Card(RelativeLayout):
 			self.colour.append(self.mcolour.lower())
 			self.colour_c = []
 			self.card = str(card["type"])
-			if "." in card["img"]:
+			if card["id"] in card_annex:
 				self.img_file = str(card["img"][:-4])
 			else:
 				self.img_file = str(card["img"])
@@ -282,9 +320,8 @@ class Card(RelativeLayout):
 
 	def stand(self, a=True):
 		self.status = "Stand"
-		if self.rotation.angle <= 180:
-			angle = 0
-		elif self.rotation.angle > 180:
+		angle = 0
+		if self.rotation.angle > 180:
 			angle = 360
 		if a:
 			mov = Animation(angle=angle, d=self.move_dt / 2.)
@@ -324,9 +361,8 @@ class Card(RelativeLayout):
 
 	def reverse(self, a=True):
 		self.status = "Reverse"
-		if self.rotation.angle < 0:
-			angle = -180
-		elif self.rotation.angle >= 0:
+		angle = -180
+		if self.rotation.angle >= 0:
 			angle = 180
 
 		if a:
@@ -346,22 +382,27 @@ class Card(RelativeLayout):
 			self.cover.source = self.img_blank
 
 	def setPos(self, xpos=0, ypos=0, field=None, a=True, t="", d=False):
+		if a:
+			mdt = self.move_dt
+		else:
+			mdt = 0
 		if field:
 			# self.playmat_fix(field=field)
 			# field = (field[0]-self.size[0]/2,field[1]-self.size[1]/2)
-			if a:
-				move = Animation(x=field[0] + self.dx, y=field[1] + self.dy, d=self.move_dt)
-				move.start(self)
-			else:
-				self.x = field[0] + self.dx
-				self.y = field[1] + self.dy
+
+			# if a:
+			move = Animation(x=field[0] + self.dx, y=field[1] + self.dy, d=mdt)
+			move.start(self)
+			# else:
+			# 	self.x = field[0] + self.dx
+			# 	self.y = field[1] + self.dy
 		else:
-			if a:
-				move = Animation(x=xpos, y=ypos, d=self.move_dt)
-				move.start(self)
-			else:
-				self.x = xpos
-				self.y = ypos
+			# if a:
+			move = Animation(x=xpos, y=ypos, d=mdt)
+			move.start(self)
+			# else:
+			# 	self.x = xpos
+			# 	self.y = ypos
 
 		# update and track position
 		if t != "":
@@ -483,9 +524,9 @@ class Card(RelativeLayout):
 			try:
 				self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
 			except KeyError:
-				try:
-					self.front.source = f"atlas://{img_ex}/main/{self.img_file}"
-				except KeyError:
+				if exists(f"{cache}/{self.img_file}"):
+					self.front.source = f"{cache}/{self.img_file}"
+				else:
 					self.front.source = f"atlas://{img_in}/other/grey"
 		else:
 			self.front.source = self.img_blank
@@ -578,7 +619,7 @@ class Card(RelativeLayout):
 							ability.append(self.img_cont)
 						elif text[0].startswith(auto_ability):
 							ability.append(self.img_auto)
-						elif text[0].startswith(act_aility):
+						elif text[0].startswith(act_ability):
 							ability.append(self.img_act)
 			for inx in range(self.max_ability):
 				if inx < len(ability):
@@ -655,21 +696,21 @@ class Card(RelativeLayout):
 
 		if "Center" in field and self.status == "Rest":
 			if "0" in field:
-				if self.mat in ("mat") and "2" in self.owner:
+				if "mat" in self.mat and "2" in self.owner:
 					self.dx = m * (self.size[0] - self.size[1]) / 2.
-				elif self.mat in ("mat"):
+				elif "mat" in self.mat:
 					self.dx = m * (self.size[0] - self.size[1]) / 2.
 				elif self.mat in ("mk", "fz", "fs", "sfe", "dis", "ns", "zm", "dc", "p3", "lb"):
 					self.dx = m * (self.size[0] - self.size[1])
 				else:
 					self.dx = m * (self.size[0] - self.size[1]) / 2.
 			elif "1" in field:
-				if self.mat in ("mat"):
+				if "mat" in self.mat:
 					self.dx = m * (self.size[0] - self.size[1]) / 2.
 				else:
 					self.dx = m * (self.size[0] - self.size[1]) / 2.
 			elif "2" in field:
-				if self.mat in ("mat"):
+				if "mat" in self.mat:
 					self.dx = m * (self.size[0] - self.size[1]) / 4.
 				elif self.mat in ("mk", "fz", "fs", "sfe", "dis", "ns", "zm", "dc", "p3", "lb"):
 					self.dx = m * 0.001
@@ -920,7 +961,6 @@ class CardImg(RelativeLayout):
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
 
 		# self.text_r.center = self.center
-
 		if data:
 			self.import_data(data)
 
@@ -933,7 +973,7 @@ class CardImg(RelativeLayout):
 			self.colour.append(self.mcolour.lower())
 			self.colour_c = []
 			self.card = str(card["type"])
-			if "." in card["img"]:
+			if card["id"] in card_annex:
 				self.img_file = str(card["img"][:-4])
 			else:
 				self.img_file = str(card["img"])
@@ -1009,16 +1049,16 @@ class CardImg(RelativeLayout):
 			self.update_ability()
 			self.update_trigger()
 
-	def stand(self, a=True):
+	def stand(self):
 		self.status = "Stand"
 
-	def rest(self, a=True):
+	def rest(self):
 		self.status = "Rest"
 
-	def climax(self, a=True):
+	def climax(self):
 		self.status = ""
 
-	def reverse(self, a=True):
+	def reverse(self):
 		self.status = "Reverse"
 
 	def show_back(self):
@@ -1104,9 +1144,9 @@ class CardImg(RelativeLayout):
 				try:
 					self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
 				except KeyError:
-					try:
-						self.front.source = f"atlas://{img_ex}/main/{self.img_file}"
-					except KeyError:
+					if exists(f"{cache}/{self.img_file}"):
+						self.front.source = f"{cache}/{self.img_file}"
+					else:
 						self.front.source = f"atlas://{img_in}/other/grey"
 			else:
 				self.front.source = self.img_blank
@@ -1188,7 +1228,7 @@ class CardImg(RelativeLayout):
 						ability.append(self.img_cont)
 					elif text[0].startswith(auto_ability):
 						ability.append(self.img_auto)
-					elif text[0].startswith(act_aility):
+					elif text[0].startswith(act_ability):
 						ability.append(self.img_act)
 			for inx in range(self.max_ability):
 				if inx < len(ability):

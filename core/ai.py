@@ -27,7 +27,7 @@ class AI:
 		back = [s for s in pdata[self.player]["Back"] if s != ""]
 		center = [s for s in pdata[self.player]["Center"] if s != ""]
 		stand_back = [s for s in back if cdata[s].status == "Stand"]
-		waiting = pdata[self.player]["Waiting"]
+		# waiting = pdata[self.player]["Waiting"]
 		confirm = "pass"
 
 		if not pay[0]:
@@ -118,7 +118,7 @@ class AI:
 					temp.append(tt)
 			payable.append(temp)
 		elif "survive" in effect and pay[1]:
-			play = 0
+			# play = 0
 			attacker = 0
 			for ind in hand:
 				if self.playable(pdata, cdata, ind):
@@ -216,7 +216,7 @@ class AI:
 		clock = len(pdata[self.player]["Clock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
 		back = len([s for s in pdata[self.player]["Back"] if s != ""])
-		stock = len(pdata[self.player]["Stock"])
+		# stock = len(pdata[self.player]["Stock"])
 		deck = len(pdata[self.player]["Library"])
 		climax = [s for s in hand if cdata[s].card == "Climax"]
 
@@ -351,7 +351,7 @@ class AI:
 		encore = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if s != "" and cdata[s].status == "Reverse"]
 		stock = len(pdata[self.player]["Stock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != "" and cdata[s].status != "Reverse"])
-		back = len([s for s in pdata[self.player]["Back"] if s != "" and cdata[s].status != "Reverse"])
+		# back = len([s for s in pdata[self.player]["Back"] if s != "" and cdata[s].status != "Reverse"])
 		hand = pdata[self.player]["Hand"]
 		level = len(pdata[self.player]["Level"])
 
@@ -372,7 +372,7 @@ class AI:
 		return encore
 
 	def main_move(self, pdata, cdata):
-		hand = pdata[self.player]["Hand"]
+		# hand = pdata[self.player]["Hand"]
 		back = [s for s in pdata[self.player]["Back"] if s != ""]
 
 		opp_card = []
@@ -442,13 +442,13 @@ class AI:
 
 	def event(self, pdata, cdata, ind, playble):
 		hand = pdata[self.player]["Hand"]
-		level = len(pdata[self.player]["Level"])
-		clock = len(pdata[self.player]["Clock"])
+		# level = len(pdata[self.player]["Level"])
+		# clock = len(pdata[self.player]["Clock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
-		back = len([s for s in pdata[self.player]["Back"] if s != ""])
-		stock = len(pdata[self.player]["Stock"])
-		deck = len(pdata[self.player]["Library"])
-		climax = [s for s in hand if cdata[s].card == "Climax"]
+		# back = len([s for s in pdata[self.player]["Back"] if s != ""])
+		# stock = len(pdata[self.player]["Stock"])
+		# deck = len(pdata[self.player]["Library"])
+		# climax = [s for s in hand if cdata[s].card == "Climax"]
 
 		card = cdata[ind]
 

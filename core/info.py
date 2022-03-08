@@ -8,6 +8,7 @@ from core.datapath import *
 from core.label import Label
 from core.markreplace import markreplace
 from core.popup import Popup
+from os.path import exists
 
 
 class Info(Popup):
@@ -70,7 +71,7 @@ class Info(Popup):
 		self.sct_size = (self.card[0] * 7.1, self.card[1] * 7.7)
 		self.sct = RelativeLayout(size_hint=(1, 1))
 		self.sct1 = RelativeLayout(size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1))  # ,  # 7
-		self.scv = ScrollView(do_scroll_x=False, size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1))
+		self.scv = ScrollView(do_scroll_x=False, size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1),effect_cls="ScrollEffect")
 		self.lang_btn = Button(size_hint=(None, None), size=(self.card[1] / 2, self.card[1] / 2), text="E", cid="lang", on_press=self.change_lang)
 
 		self.size = (self.sct_size[0] * 1.1, self.sct_size[1] + self.title_size + self.separator_height)
@@ -138,7 +139,7 @@ class Info(Popup):
 						self.label[item].texture_update()
 						self.label[item].size = self.label[item].texture.size
 			self.content_size()
-			self.scv.scroll_y = 1
+			# self.scv.scroll_y = 1
 
 	def import_data(self, card, annex):
 		self.inx = 10
@@ -163,8 +164,10 @@ class Info(Popup):
 
 		if card.img_file in annex:
 			self.img_card.source = f"atlas://{img_in}/annex/{card.img_file}"
+		elif exists(f"{cache}/{card.img_file}"):
+			self.img_card.source = f"{cache}/{card.img_file}"
 		else:
-			self.img_card.source = f"atlas://{img_ex}/main/{card.img_file}"
+			self.img_card.source = f"atlas://{img_in}/other/grey"
 
 		self.label["id"].text = f"[color=ffffff]{card.cid} {card.rarity}[/color]"
 		if any(end in card.cid for end in ("EN", "-E", "-TE", "-PE", "/WX", "/SX")) and "DC/W01" not in card.cid and "LB/W02" not in card.cid:
@@ -520,7 +523,7 @@ class Info(Popup):
 			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)
 		self.sct1.size = (self.sct.size[0], scty)
 
-		self.scv.scroll_y = 1
+		# self.scv.scroll_y = 1
 
 	def actual(self, btn):
 		if f"{btn.cid}_o" in self.pinfo_c and self.lang_btn.text == "E":

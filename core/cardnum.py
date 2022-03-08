@@ -28,7 +28,7 @@ class CardNum(Button):
 		self.bind(size=self._update_rect, pos=self._update_rect)
 		self.update_text(t=card)
 
-	def _update_rect(self, inst, value):
+	def _update_rect(self, inst, lue):
 		self.rect.pos = inst.pos
 		self.rect.size = inst.size
 		self.text_r.pos = inst.pos

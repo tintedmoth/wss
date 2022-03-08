@@ -3,6 +3,7 @@ from kivy.graphics import Rotate
 from kivy.uix.relativelayout import RelativeLayout
 
 from core.datapath import *
+from os.path import exists
 
 
 class Mat(RelativeLayout):
@@ -37,10 +38,14 @@ class Mat(RelativeLayout):
 		if "mat_mat" in data["img"]:
 			self.img_mat = f"atlas://{img_in}/other/mat_mat"
 		else:
-			img = data['img']
-			if "." in img:
-				img = img[:-4]
-			self.img_mat = f"atlas://{img_ex}/main/{img}"
+			# img = data['img']
+			# if "." in img:
+			# 	img = img[:-4]
+			if exists(f"{cache}/{data['img']}"):
+				self.img_mat = f"{cache}/{data['img']}"
+			else:
+				self.img_mat = f"atlas://{img_in}/other/mat_mat"
+
 		if "actual" in data:
 			self.actual = (data["actual"][0] * per, data["actual"][1] * per)
 

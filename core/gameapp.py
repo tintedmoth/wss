@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.loader import Loader
 from kivy.uix.widget import Widget
+# from kivy.core.window import Window, Keyboard
 
 from core.datapath import *
 from core.gamemech import GameMech
@@ -14,6 +15,7 @@ from core.gamemech import GameMech
 class GameApp(App):
 	netroom = ""
 	version = ""
+	dialog = None  # Used to get user confirmation
 
 	def build(self):
 		# self.title = ""
@@ -23,12 +25,12 @@ class GameApp(App):
 		parent.add_widget(app)  # use this hierarchy to make it easy to deal w/buttons
 		return parent
 
-	def on_keyboard(self, window, key, scancode=None, codepoint=None, modifier=None):
+	def on_keyboard(self, window, key, *args):
 		"""
 		used to manage the effect of the escape key
 		"""
 		# to implement at a later time
-		if key == 27:
+		if key in ["escape", 27]:  # if keycode[1] in ["escape", 27]:
 			#
 			# 	if self.gm.current == 'main':
 			# 		return False

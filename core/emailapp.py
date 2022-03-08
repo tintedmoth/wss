@@ -33,9 +33,9 @@ class EmailApp(App):
 		           text="",
 		           create_chooser=False)
 
-	def stop(self, *largs):
+	def stop(self, *args):
 		self.root_window.close()  # Fix app exit on Android.
-		return super(EmailApp, self).stop(*largs)
+		return super(EmailApp, self).stop(*args)
 
 	def end(self, dt):
 		stopTouchApp()

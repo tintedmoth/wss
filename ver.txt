@@ -1,3 +1,12 @@
+0.28.0
+	Fixed playmat error when opponent does not have image
+	Fixed on reverse ability in battle not working in multiplay
+	Fixed Level Up popup not appearing after pressing continue button
+	Fixed popup not showing correct text when loading previous game
+	Changed Image handling and downloading
+	Added filter button to Download product popup
+	Added infinite loading on multiple cards popup (faster loading and reduced objects)
+
 0.27.4
 	Fixed button text on deck building setting
 

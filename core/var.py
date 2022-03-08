@@ -144,6 +144,7 @@ def gdata_init():
 	        # if True encore confirmation popup will appear when overlapping characters
 	        "remove_cards_in_deck": False,
 
+				"HDimg":False,
 	        "load": False,
 	        "check_atk": True,
 	        "check_ctr": False,
@@ -167,6 +168,7 @@ def gdata_init():
 	        "janken_choice": ("l", "k", "p", "s"),
 	        "moveable": [], "playable_climax": [],
 
+				"cont_on":False,
 	        "stack": {"1": [], "2": []},
 	        "stacked": {"0": []},
 	        "save_name": "",
@@ -197,7 +199,7 @@ def gdata_init():
 	        "p_f": True,
 	        "p_max_s": 0,
 	        "p_min_s": -1,
-	        "popup_done": (False, True),  # (popup open, popup done)
+	        "popup_done": (False, False),  # (popup open, popup done)
 	        "p_rows": 1,
 	        "p_l": [],
 	        "p_ld": [],
@@ -406,78 +408,85 @@ def network_init():
 	}
 
 
+def add_db(item):
+	with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
+		temp = json_unzip(jload(rjson))
+
+		for key in list(temp.keys()):
+			for item2 in temp[key]:
+				# if key == "a":
+				# 	if item2 not in se["main"][key]:
+				# 		se["main"][key][item2] = dict(temp[key][item2])
+				if key == "c":
+					if item2 not in se["main"][key]:
+						se["main"][key].append(item2)
+				elif key == "t":
+					if item2 not in sd:
+						sd[item2] = dict(temp[key][item2])
+				elif key == "s":
+					if item2 not in se["main"][key]["Title"]:
+						se["main"][key]["Title"].append(item2)
+					if "w" not in se["main"]:
+						se["main"]["w"] = []
+					if item2 != "":
+						se["main"]["w"].append(item2)
+				elif key == "p":
+					if item2 not in sp:
+						sp[item2] = dict(temp[key][item2])
+				elif key == "m":
+					if item2 not in se["main"][key]:
+						se["main"][key].append(item2)
+
+
 def atlas_make():
 	files = {}
 	to_remove = []
 	for item in se["check"]:
 		files[item] = {}
 		for item1 in se["check"][item]:
-			if item1 == "e" or item1 == "j" or item1 == "d" or item1 == "s":
-				continue
-			files[item][item1] = False
+			# if item1 == "e" or item1 == "j" or item1 == "d" or item1 == "s":
+			# 	continue
+			# files[item][item1] = False
 			if "-d" in item1 and exists(f"{data_ex}/{item1}"):
 				with open(f"{data_ex}/{item1}", "rb") as ft:
 					hash_md5 = md5()
 					for chunk in iter(lambda: ft.read(4096 * 10), b""):
 						hash_md5.update(chunk)
 					if hash_md5.hexdigest() == se["check"][item][item1]:
-						files[item][item1] = True
+						# files[item][item1] = True
 						if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
 							se["main"]["w"].remove(se["check"][item]["s"])
+						add_db(item)
 					else:
 						to_remove.append(f"{data_ex}/{item1}")
-			elif "-" in item1 and exists(f"{img_ex}/{item1}"):
-				with open(f"{img_ex}/{item1}", "rb") as ft:
-					hash_md5 = md5()
-					for chunk in iter(lambda: ft.read(4096 * 10), b""):
-						hash_md5.update(chunk)
-					if hash_md5.hexdigest() == se["check"][item][item1]:
-						files[item][item1] = True
-					else:
-						if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
-							se["main"]["w"].remove(se["check"][item]["s"])
-						to_remove.append(f"{img_ex}/{item1}")
-
-		if all(files[item][s] for s in files[item]):
-			if exists(f"{data_ex}/{item}-d"):
-				with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
-					temp = json_unzip(jload(rjson))
-
-					for key in list(temp.keys()):
-						for item2 in temp[key]:
-							if key == "a":
-								if item2 not in se["main"][key]:
-									se["main"][key][item2] = dict(temp[key][item2])
-							elif key == "c":
-								if item2 not in se["main"][key]:
-									se["main"][key].append(item2)
-							elif key == "t":
-								if item2 not in sd:
-									sd[item2] = dict(temp[key][item2])
-							elif key == "s":
-								if item2 not in se["main"][key]["Title"]:
-									se["main"][key]["Title"].append(item2)
-								if "w" not in se["main"]:
-									se["main"]["w"] = []
-								if item2 != "":
-									se["main"]["w"].append(item2)
-							elif key == "p":
-								if item2 not in sp:
-									sp[item2] = dict(temp[key][item2])
-							elif key == "m":
-								if item2 not in se["main"][key]:
-									se["main"][key].append(item2)
+			else:
+				continue
+			# elif "-" in item1 and exists(f"{img_ex}/{item1}"):
+			# 	with open(f"{img_ex}/{item1}", "rb") as ft:
+			# 		hash_md5 = md5()
+			# 		for chunk in iter(lambda: ft.read(4096 * 10), b""):
+			# 			hash_md5.update(chunk)
+			# 		if hash_md5.hexdigest() == se["check"][item][item1]:
+			# 			files[item][item1] = True
+			# 		else:
+			# 			if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
+			# 				se["main"]["w"].remove(se["check"][item]["s"])
+			# 			to_remove.append(f"{img_ex}/{item1}")
+		#
+		# if all(files[item][s] for s in files[item]):
+		# 	if exists(f"{data_ex}/{item}-d"):
+		# 		add_db(item)
 
 	for item in to_remove:
 		print(item)
 		remove(item)
 
-	if len(se["main"]["a"]) > 0:
-		with open(f"{img_ex}/main.atlas", "w") as atlas:
-			jdump(se["main"]["a"], atlas, separators=(',', ':'), sort_keys=True)
-	else:
-		if exists(f"{img_ex}/main.atlas"):
-			remove(f"{img_ex}/main.atlas")
+	# if len(se["main"]["a"]) > 0:
+	# 	with open(f"{img_ex}/main.atlas", "w") as atlas:
+	# 		jdump(se["main"]["a"], atlas, separators=(',', ':'), sort_keys=True)
+	# else:
+	# 	if exists(f"{img_ex}/main.atlas"):
+	# 		remove(f"{img_ex}/main.atlas")
 
 
 ZIP_KEY = 'I2UHBG58pJ'
@@ -486,6 +495,8 @@ if not exists(data_ex):
 	mkdir(data_ex)
 if not exists(img_ex):
 	mkdir(img_ex)
+if not exists(cache):
+	mkdir(cache)
 
 ab = Ab()
 with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rp:
@@ -559,8 +570,8 @@ phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  # lis
 steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  # list of main phases to display
 icon_lst = ("door", "soul", "gate", "bar", "bag", "book", "shot", "bounce", "counter", "clock", "arrow")
 
-info_popup_dt = 1.5  # sec time before info popup appear after holding card
-info_popup_press = 3  # sec time before info popup appear after holding card
+info_popup_dt = 1.10  # sec time before info popup appear after holding card
+info_popup_press = 3  # clicked times before info popup appear after holding card
 phase_dt = 1.15 * 0.75  # phases transition time
 joke_dt = 0.3  # joke transition time
 ability_dt = 0.001  # ability transition time
