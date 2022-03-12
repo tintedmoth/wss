@@ -39,6 +39,7 @@ class Ability:
 	             "[AUTO] Encore [Put a character from your hand into your waiting room]": "[AUTO] Encore [Put 1 character from your hand into your waiting room]_[AUTO] Encore [Put a character from your hand into your waiting room]"}
 	remove_text = ["Encore [Put 1 character from your hand in your waiting room]", "Encore [Put a character from your hand into your waiting room]", "Encore [Put the top card of your deck into your clock]"]
 	set_only = markreplace["set_only"]
+	skill_name = ("[Deploy]","[Cascade]")
 
 	def pay(self, a=""):
 		t = str(a)
@@ -547,8 +548,8 @@ class Ability:
 				return [self.digit(a), self.digit(a, 1), x, "Name=", self.name(a, s='n'), "power"]
 		elif "put the top card of your clock in your waiting room" in t:
 			return ["heal", 1, "top"]
-		elif "deal  damage to your opponent" in t:
-			return ["damage", self.digit(a), "opp"]
+		# elif "deal  damage to your opponent" in t:
+		# 	return ["damage", self.digit(a), "opp"]
 		elif "all your characters get" in t:
 			if "get + soul" in t:
 				return [-1, self.digit(a), x, "soul"]
@@ -1676,13 +1677,13 @@ class Ability:
 										return ["pay", "may", "cxcombo", "at", "do", ["draw", self.digit(a), "do", [0, self.digit(a, 1), x, "power"]]]
 									else:
 										return ["pay", "may", "cxcombo", "at", "do", ["draw", self.digit(a)]]
-								elif "deal x damage to your opponent" in t:
-									if "x = # of  in your waiting room" in t:
-										return ["pay", "may", "at", "do", ["damage", "x", "Name=", self.name(a, -1, s='n'), "Waiting", "opp"]]
-									elif "x = # of climax cards in your waiting room" in t:
-										return ["pay", "may", "at", "do", ["damage", "x", "Climax", "Waiting", "opp"]]
-								elif "deal  damage to your opponent" in t:
-									return ["pay", "may", "cxcombo", "at", "do", ["damage", self.digit(a), "opp"]]
+								# elif "deal x damage to your opponent" in t:
+								# 	if "x = # of  in your waiting room" in t:
+								# 		return ["pay", "may", "at", "do", ["damage", "x",  "opp"]]
+								# 	elif "x = # of climax cards in your waiting room" in t:
+								# 		return ["pay", "may", "at", "do", ["damage", "x", "Climax", "Waiting", "opp"]]
+								# elif "deal  damage to your opponent" in t:
+								# 	return ["pay", "may", "cxcombo", "at", "do", ["damage", self.digit(a), "opp"]]
 								elif "all your characters get" in t:
 									if "get + power and + soul" in t:
 										return ["pay", "may", "cxcombo", "at", "do", [-1, self.digit(a), x, "power", -1, self.digit(a, 1), x, "soul"]]
@@ -1697,12 +1698,12 @@ class Ability:
 								if "return it to hand" in t:
 									if "in your opponent's center stage" in t:
 										return ["pay", "may", "at", "do", [self.digit(a), "hander", "Opp", "Cost", f"<={self.digit(a, 1)}", "Center"]]
-							elif "search your deck for up to   or  character" in t:
-								if "reveal it" in t and "put it in your hand" in t:
-									return [self.digit(a), "search", f"Trait_{self.trait(a)}_{self.trait(a, 1)}", "upto", "show", "cxcombo", "at"]
-							elif "choose  character in your opponent's center stage" in t:
-								if "that character gets - power" in t:
-									return [self.digit(a), self.digit(a, 1), x, "power", "Opp", "Center"]
+							# elif "search your deck for up to   or  character" in t:
+							# 	if "reveal it" in t and "put it in your hand" in t:
+							# 		return [self.digit(a), "search", f"Trait_{self.trait(a)}_{self.trait(a, 1)}", "upto", "show", "cxcombo", "at"]
+							# elif "choose  character in your opponent's center stage" in t:
+							# 	if "that character gets - power" in t:
+							# 		return [self.digit(a), self.digit(a, 1), x, "power", "Opp", "Center"]
 							elif "choose up to  other of your characters" in t:
 								if "put it in stock" in t:
 									if "choose  of your characters" in t:
@@ -1837,9 +1838,9 @@ class Ability:
 					self.ablt = 9
 		elif "Trigger" in p:
 			if "when your character's trigger check reveals a climax" in t:
-				if n in r[0][-1] and r[0][-1] == r[1][-1] and r[0] != r[1] and "Climax" in ty[0] and r[0] == ty[2]:
-					if "if the trigger icons of that card are" in t or "if that card's trigger icon is" in t:
-						if (("soulsoul trigger icons" in t or "icon is soulsoul" in t) and len([s for s in ty[1] if s == "soul"]) == 2) or ("trigger icon is door" in t and "door" in ty[1]) or ("trigger icon is bounce" in t and "bounce" in ty[1]) or ("trigger icon is stock" in t and "stock" in ty[1]) or ("trigger icon is draw" in t and "draw" in ty[1]) or ("trigger icon is gate" in t and "gate" in ty[1]):
+				if n in r[0][-1] and r[0][-1] == r[1][-1] and r[0] != r[1] and "Climax" in ty[0] and ty[0] == r[2]:
+					if "if the trigger icons of that card are" in t or "if that card's trigger icon is" in t or "in its trigger icon" in t:
+						if (("soulsoul trigger icons" in t or "icon is soulsoul" in t) and len([s for s in ty[1] if s == "soul"]) == 2) or ("trigger icon is door" in t and "door" in ty[1]) or ("trigger icon is bounce" in t and "bounce" in ty[1]) or ("trigger icon is stock" in t and "stock" in ty[1]) or ("trigger icon is draw" in t and "draw" in ty[1]) or (("trigger icon is gate" in t or "with gate in its trigger icon" in t) and "gate" in ty[1]):
 							self.ablt = 9
 					else:
 						self.ablt = 9
@@ -2355,7 +2356,7 @@ class Ability:
 				if "put that character on any position of your back stage" in t:
 					d += ["extra", "do", [-16, "salvage", "ID=_x", "Stage", "Back"]]
 		elif "put the bottom  cards of your opponent's deck into their waiting room" in t or "put the bottom  cards of your opponent's deck in their waiting room" in t or "put the bottom  cards of your opponent's deck in the waiting room" in t:
-			d = ["mill", self.digit(a), "bottom", "opp"]
+			d = ["mill", self.digit(a,self.cond[0]), "bottom", "opp"]
 			self.cond[0] += 1
 			if "x = the number of climax among those cards" in t or "x is the number of climax cards among those cards" in t or "x = # of climax cards among those cards" in t:
 				d += ["if", "extra"]
@@ -2988,6 +2989,10 @@ class Ability:
 				c += ["xdiscard", "xLevel"]
 			elif "x = the level of that card +" in t or "x =  + level of that card" in t:
 				c += ["xmill", "xLevel+x", self.digit(a, self.cond[0])]
+			elif "x = # of  in your waiting room" in t:
+				c += ["Name=", self.name(a, -1, s='n'), "Waiting"]
+			elif "x = # of climax cards in your waiting room" in t:
+				c += ["Climax", "Waiting"]
 		elif "deal  damage to your opponent" in t:
 			if t.count("deal  damage to your opponent") >= 2:
 				if t.count("deal  damage to your opponent") == 3:
@@ -3990,7 +3995,13 @@ class Ability:
 				else:
 					t = t.split("]")[1].split()
 			else:
-				t = t.split("]")[0].split()
+				if any(sk.lower() in t.lower() for sk in self.skill_name):
+					for sk in self.skill_name:
+						if sk.lower() in t.lower():
+							t = t.replace(sk,sk.replace("]","")).split("]")[0].split()
+							break
+				else:
+					t = t.split("]")[0].split()
 		elif t.count("]") < 1:
 			t = t.split("]")[0].split()
 		else:

@@ -1,3 +1,9 @@
+0.28.1
+	Fixed crash on downloading sets
+	Fixed deck building eng/jap filter when downloading new sets without restarting
+	Fixed BFR/S78-084 ability
+	Fixed BFR/S78-082 ability
+
 0.28.0
 	Fixed playmat error when opponent does not have image
 	Fixed on reverse ability in battle not working in multiplay
