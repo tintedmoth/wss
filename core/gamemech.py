@@ -55,7 +55,7 @@ from core.var import *
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
 __author__ = "totuccio"
 __copyright__ = "Copyright © 2020 totuccio"
-__version__ = "0.28.1"
+__version__ = "0.28.2"
 
 
 def list_str(lst, sep=".", sh=False):
@@ -3427,7 +3427,7 @@ class GameMech(Widget):
 			self.decks["rv_close"].y = -Window.height * 2
 			self.decks["rv_rel"].size = (self.decks["sets"].size[0], yscv)
 			self.decks["rv"].y = self.sd["padding"] * 1
-
+		self.decks["rv"].scroll_y = 1
 		self.decks["sets"].open()
 
 	def popup_deck(self, t="start", dt=.0, *args):
@@ -4403,6 +4403,7 @@ class GameMech(Widget):
 				im = "h"
 			else:
 				im = "i"
+
 			if "all" in self.net["var"][0]:
 				dat = {"0": "w", "1": f"{list_str(self.net['var'])}", "2": im}
 			else:
@@ -4421,14 +4422,13 @@ class GameMech(Widget):
 			if "all" in self.net["var"][0]:
 				for item in self.temp:
 					for item1 in se["check"][item[0]]:
-						if im not in item1 and "-d" not in item1:  # == "e" or item1 == "j" or item1 == "d" or item1 == "s" or any(s in item1[-2:] for s in item[2:]):
+						if f"-{im}" not in item1 and "-d" not in item1:  # == "e" or item1 == "j" or item1 == "d" or item1 == "s" or any(s in item1[-2:] for s in item[2:]):
 							continue
 						self.downloads[item1] = [f"{self.net['data']}", 0, 0]
 			else:
 				for item3 in se["check"][self.net["var"][0]]:
-					if im not in item3 and "-d" not in item3:  # == "e" or item == "j" or item == "d" or item == "s" or any(s in item[-2:] for s in self.net["var"][2:]):
+					if f"-{im}" not in item3 and "-d" not in item3:  # == "e" or item == "j" or item == "d" or item == "s" or any(s in item[-2:] for s in self.net["var"][2:]):
 						continue
-
 					self.downloads[item3] = [f"{self.net['data']}", 0, 0]
 
 			self.mcancel_create_bar1.max = len(self.downloads) * 10
@@ -5312,14 +5312,16 @@ class GameMech(Widget):
 						self.gd["p_l"].insert(0, temp)
 						if temp in self.hscv[0]:
 							self.hscv[0].remove(temp)
-						tempid = self.hscv[1].pop(-1)
-						self.cpop[temp].import_data(sc[tempid])
 
-						if tempid in self.decks["add_chosen"]:
-							self.cpop[temp].selected()
-						else:
-							self.cpop[temp].selected(False)
-							
+						if len(self.hscv[1])>0:
+							tempid = self.hscv[1].pop(-1)
+							self.cpop[temp].import_data(sc[tempid])
+
+							if tempid in self.decks["add_chosen"]:
+								self.cpop[temp].selected()
+							else:
+								self.cpop[temp].selected(False)
+
 						if self.sin != 0:
 							self.sin -= 1
 							self.sim -= 1

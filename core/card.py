@@ -522,6 +522,8 @@ class Card(RelativeLayout):
 	def update_image(self):
 		if self.cid != "" and self.cid != "player":
 			try:
+				if "dc_w00_00.gif" in self.img_file:
+					self.img_file = self.img_file.replace(".gif", "")
 				self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
 			except KeyError:
 				if exists(f"{cache}/{self.img_file}"):
@@ -1142,6 +1144,8 @@ class CardImg(RelativeLayout):
 		with self.canvas:
 			if self.cid != "" and self.cid != "player":
 				try:
+					if "dc_w00_00.gif" in self.img_file:
+						self.img_file = self.img_file.replace(".gif","")
 					self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
 				except KeyError:
 					if exists(f"{cache}/{self.img_file}"):

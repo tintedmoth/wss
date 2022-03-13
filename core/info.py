@@ -162,6 +162,9 @@ class Info(Popup):
 		self.lang["namee"] = card.name_t
 		self.lang["namej"] = card.jname
 
+		if "dc_w00_00.gif" in card.img_file:
+			card.img_file = card.img_file.replace(".gif", "")
+
 		if card.img_file in annex:
 			self.img_card.source = f"atlas://{img_in}/annex/{card.img_file}"
 		elif exists(f"{cache}/{card.img_file}"):

@@ -1,3 +1,7 @@
+0.28.2
+	Replace missing img with placeholder img
+	Fixed promo cards download crashing
+
 0.28.1
 	Fixed crash on downloading sets
 	Fixed deck building eng/jap filter when downloading new sets without restarting
