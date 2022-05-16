@@ -17,10 +17,10 @@ class Info(Popup):
 	lang = {"nameE": "", "nameJ": "", "traitj": "", "traite": "", "texte": "", "textj": "", "flavoure": "", "flavourj": "", "coloure": "", "colourj": "", "carde": "", "cardj": ""}  # "triggere":"","triggerj":"","icone":"","iconj":""
 	popdict = {"name": "Card Name", "id": "Card No.", "rarity": "Rarity", "card": "Type", "colour": "Colour", "level": "Level", "cost": "Cost", "power": "Power", "soul": "Soul", "trigger": "Trigger", "trait": "Attribute", "text": "Text", "flavour": "Flavor Text", "icon": "Card Icon", "stock": "Pool", "door": "Door", "salvage": "Door", "gate": "Gate"}
 	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント", "Climax": "クライマックス", "Purple": "紫"}
-	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010"]
+	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010","SHS/W71-041","SHS/W71-035"]
 	# cgst06 = ["mf_s13_072", "im_se04_23", "im_s07_090", "im_s07_054", "mk_s11_076","ab_w11_069","ab_w11_062","ab_w11_055"]
-	reverse_fix = ["IM/SE04-24", "KW/W11-028"]
-	rest_fix = []  #["AB/W11-010"]
+	reverse_fix = ["IM/SE04-24", "KW/W11-028","SHS/W71-091","SHS/W71-005"]
+	rest_fix = ["SHS/W71-093","SHS/W71-048"] #["AB/W11-010"]
 	# reverse_fix = ["im_se04_24","kw_w11_028"]
 	reverse_fix_btn = ["IM/S07-051", "AB/W11-008", "AB/W31-107","N1/WE06-05","N1/WE06-17","BFR/S78-010"]
 
@@ -387,7 +387,7 @@ class Info(Popup):
 					self.inx1 += 1
 				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
 				else:
-					mstr = mstr.replace(item, f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(f"{item}", f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
 				self.inx += 1
 		if "の" in mstr:
 			mstr = self.wrap_jap(mstr)

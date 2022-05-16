@@ -1,3 +1,13 @@
+0.29.0	
+	Change Cont ability text sequence
+	Restructure of Cont Ability funtion
+	Add Jap Saekano Vol 2 cards
+	COM able to do more ability
+
+0.28.3
+	Fixed database update when downloading all package
+	Fixed MK/S11-TE02 ability (who draws card)
+
 0.28.2
 	Replace missing img with placeholder img
 	Fixed promo cards download crashing

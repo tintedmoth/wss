@@ -183,7 +183,7 @@ def gdata_init():
 	        "active_card": None,
 	        "results": 0,
 	        "drawed": [],
-	        "per_poped": ["",[],0,-1],
+	        "per_poped": ["",[],0,-1,0],
 	        "act_pop": {},
 	        "act_poped": "",
 	        # "cancel": True,

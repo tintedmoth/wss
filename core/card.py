@@ -575,14 +575,14 @@ class Card(RelativeLayout):
 					img = "L0"
 				self.level_i.source = f"atlas://{img_in}/other/{img}"
 
-				if self.level_t > self.level and self.pos_new == "Hand":
-					color = (1, 0, 0, 1)
-				elif self.level_t < self.level and self.pos_new == "Hand":
+				if self.level_t > self.level and ("Center" in self.pos_new or "Back" in self.pos_new):
 					color = (0, 1, 0, 1)
+				elif self.level_t < self.level and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (1, 0, 0, 1)
 				elif self.level_t > self.level:
-					color = (0, 1, 0, 1)
-				elif self.level_t < self.level:
 					color = (1, 0, 0, 1)
+				elif self.level_t < self.level:
+					color = (0, 1, 0, 1)
 				else:
 					color = (1, 1, 1, 1)
 
@@ -615,7 +615,6 @@ class Card(RelativeLayout):
 								tt = False
 						# elif text[0].startswith(cont_ability):
 						# 	tt = False
-
 					if tt:
 						if text[0].startswith(cont_ability):
 							ability.append(self.img_cont)
@@ -1034,7 +1033,7 @@ class CardImg(RelativeLayout):
 				for item in self.text_o:
 					if "[counter]" in item.lower():
 						self.icon = "Counter"
-					elif "[clock]" in item.lower() or "] alarm" in item.lower() or "] shift" in item.lower():
+					elif "[clock]" in item.lower() or "[alarm]" in item.lower() or "] alarm" in item.lower() or "] shift" in item.lower():
 						self.icon = "Clock"
 			self.update_icon()
 		elif card == "player":
@@ -1197,14 +1196,14 @@ class CardImg(RelativeLayout):
 					img = "L0"
 				self.level_i.source = f"atlas://{img_in}/other/{img}"
 
-				if self.level_t > self.level and self.pos_new == "Hand":
-					color = (1, 0, 0, 1)
-				elif self.level_t < self.level and self.pos_new == "Hand":
+				if self.level_t > self.level and ("Center" in self.pos_new or "Back" in self.pos_new):
 					color = (0, 1, 0, 1)
+				elif self.level_t < self.level and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (1, 0, 0, 1)
 				elif self.level_t > self.level:
-					color = (0, 1, 0, 1)
-				elif self.level_t < self.level:
 					color = (1, 0, 0, 1)
+				elif self.level_t < self.level:
+					color = (0, 1, 0, 1)
 				else:
 					color = (1, 1, 1, 1)
 
