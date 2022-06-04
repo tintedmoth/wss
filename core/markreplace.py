@@ -37,5 +37,5 @@ markreplace = {
           },
 "anchors" : {"ISTANDBY": 1,"IREST": 1, "ISTAND": 1, "IREVERSE": 1, "IJAUTO": 1, "IJACT": 1, "IJCONT": 1,"AUTO": 2, "ACT": 2, "CONT": 2, "IDOOR": 1, "IDRAW": 1,
            "ISTOCK": 1, "ITREASURE": 2, "IGATE": 1, "IBOUNCE": 1, "ISHOT": 2, "ICHOICE": 2,"IALARM":1,"ICOUNTER":1,"ICXCOMBO":3,"IJCXCOMBO":3,"ISOUL":1},
-"set_only" : {"(Macross Frontier Only)":"Macross Frontier","(Kud Wafter Only)":"Kud Wafter"}
+"set_only" : {"(Macross Frontier Only)":"Macross Frontier","(Kud Wafter Only)":"Kud Wafter","(KMD)":"{KMD}"}
 }

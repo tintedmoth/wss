@@ -606,7 +606,7 @@ class Card(RelativeLayout):
 			atext = []
 			for text in self.text_c:
 				tt = True
-				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability:  # and text[1] > -9:
+				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability and text[1] > -9:
 					if text[0] not in atext:
 						atext.append(text[0])
 					else:

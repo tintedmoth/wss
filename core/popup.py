@@ -4,7 +4,7 @@ from core.datapath import *
 
 
 class Popup(Pop):
-	cid =""
+	cid = ""
 
 	def __init__(self, **kwargs):
 		super(Popup, self).__init__(**kwargs)

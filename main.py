@@ -41,6 +41,7 @@ from core.emailapp import EmailApp
 from core.gameapp import GameApp
 
 window.Window.clearcolor = (0, 0, 0, 1.)
+emailapp = EmailApp()
 gameapp = GameApp()
 
 if __name__ in ("__android__", "__main__"):
@@ -48,5 +49,4 @@ if __name__ in ("__android__", "__main__"):
 		gameapp.run()
 	except:
 		logging.exception("Got exception on main handler")
-		emailapp = EmailApp()
 		emailapp.send_error(gameapp.version, gameapp.netroom)
