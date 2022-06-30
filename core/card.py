@@ -102,7 +102,7 @@ class Card(RelativeLayout):
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = 0
+		self.turn = [0,""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""
@@ -214,7 +214,7 @@ class Card(RelativeLayout):
 			self.marker_l.refresh()
 			self.marker_r = Rectangle(texture=self.marker_l.texture, size=self.marker_l.texture.size,pos=(self.marker_i.pos[0], self.marker_i.pos[1]))
 			self.cover = Rectangle(source=self.img_back, pos=self.pos, size=self.size)
-			self.text_l = CoreLabel(text="", text_size=self.size, color=(1, 1, 1, 1),outline_width=2, halign='center', valign='middle', font_size=self.size[0] * .6)
+			self.text_l = CoreLabel(text="", text_size=self.size, color=(1, 1, 1, 1), outline_width=2, halign='center', valign='middle', font_size=self.size[0] * .6)
 			self.text_l.refresh()
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
 
@@ -506,10 +506,12 @@ class Card(RelativeLayout):
 				self.power_r.size = self.power_l.texture.size
 
 	def update_text(self, t="", f=.6):
-		self.text_l.text = f"{t}"
-		self.text_l.font_size = self.size[0] * f
+		self.text_l = CoreLabel(text=f"{t}", text_size=self.size, color=(1, 1, 1, 1), outline_width=2, halign='center', valign='middle', font_size=self.size[0] * f)
+		# self.text_l.text = f"{t}"
+		# self.text_l.font_size = self.size[0] * f
 		self.text_l.refresh()
 		self.text_r.texture = self.text_l.texture
+
 
 	# self.text_r.size = self.text_l.texture.size
 
@@ -604,6 +606,7 @@ class Card(RelativeLayout):
 		with self.canvas:
 			ability = []
 			atext = []
+
 			for text in self.text_c:
 				tt = True
 				if text[1] != 0 and text[1] != -3 and text[1] != -2 and len(ability) < self.max_ability and text[1] > -9:
@@ -622,6 +625,7 @@ class Card(RelativeLayout):
 							ability.append(self.img_auto)
 						elif text[0].startswith(act_ability):
 							ability.append(self.img_act)
+
 			for inx in range(self.max_ability):
 				if inx < len(ability):
 					self.ability_i[str(inx)].source = ability[inx]
@@ -864,7 +868,7 @@ class CardImg(RelativeLayout):
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = 0
+		self.turn = [0,""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""
@@ -1074,8 +1078,9 @@ class CardImg(RelativeLayout):
 
 	def update_text(self, t="", f=.6):
 		with self.canvas:
-			self.text_l.text = f"{t}"
-			self.text_l.font_size = self.size[0] * f
+			self.text_l = CoreLabel(text=f"{t}", text_size=self.size, color=(1, 1, 1, 1), outline_width=2, halign='center', valign='middle', font_size=self.size[0] * f)
+			# self.text_l.text = f"{t}"
+			# self.text_l.font_size = self.size[0] * f
 			self.text_l.refresh()
 			self.text_r.texture = self.text_l.texture
 
@@ -1365,7 +1370,7 @@ class CardEmpty:
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = 0
+		self.turn = [0,""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""

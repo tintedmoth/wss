@@ -157,7 +157,7 @@ def gdata_init():
 	        "pay_status": "",
 	        "do_status": "",
 	        "done": "",
-	        "do": [0, []],
+	        "do": [0, [],[]],
 	        "do_both": [],
 	        "decker": False,
 	        "selected": "",
@@ -249,6 +249,7 @@ def gdata_init():
 	        "reserve": {"1": [], "2": []},
 	        "check_reserve": False,
 	        "confirm_pop": False,
+	        "popup_pop":False,
 	        "phase": "", "pp": -1,
 	        "starting_player": "", "second_player": "", "active": "", "opp": "", "rev": False, "turn": 0, "inx": 0,
 	        "rev_counter": False,
@@ -294,6 +295,8 @@ def gdata_init():
 	        "reshuffle_trigger": "",
 	        "level_up_trigger": "",
 	        "level_up": False,
+	        "rrev":False,
+	        "drev":False,
 	        "damage": 0,
 	        "damage_refresh": 0,
 	        "ability_trigger": "",
@@ -364,7 +367,7 @@ def gdata_init():
 	        "notargetfield": False,
 	        "brainstorm": 0,
 	        "brainstorm_c": [0, []],
-	        "resonance": [False, []],
+	        "resonance": [False, [],0],
 	        "random_reveal": [],
 	        "confirm": False,
 	        "confirm1": [False, 0],
@@ -405,7 +408,6 @@ def network_init():
 		"varlvl": [],
 		"act": ["", "", 0, [], [], 0, -1]
 	}
-
 
 def add_db(item):
 	with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:

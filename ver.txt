@@ -1,8 +1,14 @@
+0.30.0
+	Added Jap Miss Kobayashi's Dragon Maid cards
+
+0.29.3
+	Fixed SHS/W71-035 ability
+	Added back button on staked ability popup
+
 0.29.2
 	Fixed TD image not updating when downloading
-	Fixed P3/S01-09T and SHS/W56-005 and SHS/W71-035 ability
+	Fixed P3/S01-09T and SHS/W56-005 ability
 	Restructure of Cont ability code
-	Added back button on staked ability popup
 
 0.29.1
 	Added confirmation on app exit

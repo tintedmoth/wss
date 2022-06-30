@@ -17,14 +17,11 @@ class Info(Popup):
 	lang = {"nameE": "", "nameJ": "", "traitj": "", "traite": "", "texte": "", "textj": "", "flavoure": "", "flavourj": "", "coloure": "", "colourj": "", "carde": "", "cardj": ""}  # "triggere":"","triggerj":"","icone":"","iconj":""
 	popdict = {"name": "Card Name", "id": "Card No.", "rarity": "Rarity", "card": "Type", "colour": "Colour", "level": "Level", "cost": "Cost", "power": "Power", "soul": "Soul", "trigger": "Trigger", "trait": "Attribute", "text": "Text", "flavour": "Flavor Text", "icon": "Card Icon", "stock": "Pool", "door": "Door", "salvage": "Door", "gate": "Gate"}
 	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント", "Climax": "クライマックス", "Purple": "紫"}
-	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010","SHS/W71-041","SHS/W71-035"]
-	# cgst06 = ["mf_s13_072", "im_se04_23", "im_s07_090", "im_s07_054", "mk_s11_076","ab_w11_069","ab_w11_062","ab_w11_055"]
-	reverse_fix = ["IM/SE04-24", "KW/W11-028","SHS/W71-091","SHS/W71-005"]
+	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010","SHS/W71-041","SHS/W71-035","KMD/W96-027","KMD/W96-055"]
+	reverse_fix = ["IM/SE04-24", "KW/W11-028","SHS/W71-091","SHS/W71-005","KMD/W96-T05","KMD/W96-086"]
 	rest_fix = ["SHS/W71-093","SHS/W71-048"] #["AB/W11-010"]
 	# reverse_fix = ["im_se04_24","kw_w11_028"]
 	reverse_fix_btn = ["IM/S07-051", "AB/W11-008", "AB/W31-107","N1/WE06-05","N1/WE06-17","BFR/S78-010"]
-
-	# reverse_fix_btn = ["im_s07_051","ab_w11_008"]
 
 	def __init__(self, pad=1, card=(100, 100), **kwargs):
 		super(Info, self).__init__(**kwargs)
@@ -332,7 +329,7 @@ class Info(Popup):
 
 		for ss in self.set_only:
 			if ss in mstr:
-				mstr = mstr.replace(ss, f"{{{self.set_only[ss]}}}")
+				mstr = mstr.replace(ss, f"{self.set_only[ss]}")
 
 		if "'" in mstr:
 			if "'s " in mstr:

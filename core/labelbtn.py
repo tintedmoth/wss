@@ -7,6 +7,7 @@ from core.label import Label
 
 
 class Labelbtn(RelativeLayout):
+	a = ""
 	def __init__(self, size=(0, 0), cid="", **kwargs):
 		super(Labelbtn, self).__init__(**kwargs)
 		self.size_hint = (None, None)
@@ -27,7 +28,7 @@ class Labelbtn(RelativeLayout):
 		for img in self.ian:
 			self.add_widget(self.ian[img])
 
-	def replaceImage(self):
+	def replaceImage(self,p=False):
 		for n in self.ian:
 			self.ian[str(n)].source = f"atlas://{img_in}/other/blank"
 
@@ -39,5 +40,8 @@ class Labelbtn(RelativeLayout):
 		for item in self.btn.anchors:
 			self.ian[str(self.inx)].size = (self.test[item[-1]].texture.size[0] * 1.05, self.test[item[-1]].texture.size[1] * 1.05)
 			self.ian[str(self.inx)].source = f"atlas://{img_in}/other/{item[:-3]}"
-			self.ian[str(self.inx)].pos = (self.size[1] / 9 + self.btn.anchors[item][0] + self.btn.x, self.btn.size[1] - self.size[1] / 15 - self.btn.anchors[item][1] - self.test[item[-1]].texture.size[1] + self.btn.y)
+			if p:
+				self.ian[str(self.inx)].pos = (self.size[1] / 17 + self.btn.anchors[item][0] + self.btn.x, self.btn.size[1] - self.size[1] / 19 - self.btn.anchors[item][1] - self.test[item[-1]].texture.size[1] + self.btn.y)
+			else:
+				self.ian[str(self.inx)].pos = (self.size[1] / 9 + self.btn.anchors[item][0] + self.btn.x, self.btn.size[1] - self.size[1] / 15 - self.btn.anchors[item][1] - self.test[item[-1]].texture.size[1] + self.btn.y)
 			self.inx += 1

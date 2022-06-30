@@ -2,7 +2,7 @@ markreplace = {
 "markreplace":{
 	" Alarm": " [b]Alarm[/b]", " Bond": " [b]Bond[/b]", " BOND": " [b]Bond[/b]",
 	" ENCORE": " [b]Encore[/b]", " Encore": " [b]Encore[/b]", " Assit": " [b]Assist[/b]", " ASSIST": " [b]Assist[/b]",
-	" Backup": " [b]Backup[/b]", " BACKUP": " [b]Backup[/b]", " Brainstorm": " [b]Brainstorm[/b]",
+	" Backup": " [b]Backup[/b]", " BACKUP": " [b]Backup[/b]", " Resonance": " [b]Resonance[/b]", " RESONANCE": " [b]Resonance[/b]", " Brainstorm": " [b]Brainstorm[/b]",
 	" BRAINSTORM": " [b]Brainstorm[/b]", " Change": " [b]Change[/b]", " CHANGE": " [b]Change[/b]", " Accelerate": " [b]Accelerate[/b]", " ACCELERATE": " [b]Accelerate[/b]",
 	" Memory": " [b]Memory[/b]", " MEMORY": " [b]Memory[/b]"," RECOLLECTION":" [b]Memory[/b]"," Bodyguard": " [b]Great Performance[/b]",
 	" Experience": " [b]Experience[/b]"," EXPERIENCE": " [b]Experience[/b]","if \"": "if a card named \"","Level-Up":"level up",
@@ -26,6 +26,7 @@ markreplace = {
 # "(11)": "⑪", "(12)": "⑫", "(13)": "⑬", "(14)": "⑭", "(15)": "⑮",
 # "(16)": "⑯", "(17)": "⑰", "(18)": "⑱ ", "(19)": "⑲", "(20)": "⑳",}
 # " 1 ":" one "," 2 ":" two ","up to 2": "up to two",
+"stock":{"&bl;":"[","&br;":"]", "①":"(1)",  "②":"(2)", "③":"(3)", "④":"(4)", "⑤":"(5)", "⑥":"(6)"},
 "square" : {"[REST]": "IREST", "[STAND]": "ISTAND", "[REVERSE]": "IREVERSE","[Rest": "[IREST","Rested":"IREST"," Rest": "IREST"," Standing": "ISTAND",
          "[COUNTER]": "ICOUNTER","Reversed":"IREVERSE","Reverse":"IREVERSE","Stand":"ISTAND","[SOUL]":"ISOUL",
           "[AUTO]": "AUTO", "[ACT]": "ACT", "[CONT]": "CONT", "[DOOR]": "IDOOR", "[STANDBY]": "ISTANDBY",
