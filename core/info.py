@@ -443,6 +443,7 @@ class Info(Popup):
 			self.img_anchors[itt].y = -self.card[1] * 20
 
 		i1 = 0
+		print(self.label["text"].anchors)
 		for item in self.label["text"].anchors:
 			# if "cgst06" in item:
 			# 	continue

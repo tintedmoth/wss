@@ -48,7 +48,7 @@ class Ability:
 	set_only = markreplace["set_only"]
 	skill_name = ("[Deploy]", "[Cascade]")
 	donot_text = ["if not"]
-	isnot_text = ["if it is not"]
+	isnot_text = ["if it is not","if it's not"]
 
 	def pay(self, a=""):
 		self.cond = [0, 0, 0, 0]
@@ -804,7 +804,7 @@ class Ability:
 						if brt[1] >= self.digit(a):
 							self.cond[0] += 1
 							self.ablt = 9
-		elif "encore [" in t and "cannot use \"[auto] encore\"" not in aa:
+		elif "encore [" in t and ("cannot use \"[auto] encore\"" not in aa and "may not use \"[auto] encore\"" not in aa):
 			if r[0] == r[1] and any(field in pos[0] for field in self.stage) and "Waiting" in pos[1] and "Waiting" in pos[3]:
 				if "[put  character card from your hand to the waiting room]" in t or "[put  character from your hand in your waiting room]" in t:
 					return [1, "Character", "may", "encore"]
@@ -831,7 +831,7 @@ class Ability:
 		elif "when you use an act" in t:
 			if act and r[0][-1] == act[-1] and r[0][-1] == r[1][-1]:
 				self.ablt = 9
-		elif ("when this is placed on the stage from your hand or by a  effect" in t or "when this is placed on stage from your hand or by a  effect" in t) and "by a \"change\" effect" in aa:
+		elif ("when this is placed on the stage from your hand or by a  effect" in t or "when this is placed on stage from your hand or by a  effect" in t or "when this is placed from hand to the stage or via " in t) and ("by a \"change\" effect" in aa or "via change to the stage" in t):
 			if ("Hand" in pos[0] and r[0] == r[1] and v[0] == "Stand" and any(field in pos[1] for field in self.stage)) or (std[0] and std[2] == r[0] and std[0][-1] == r[1][-1] and std[0] != r[1] and r[0] == r[1] and any(field in pos[1] for field in ("Center", "Back")) and "Waiting" in pos[0] and "Change" in std):
 				self.ablt = 1
 		elif "when your other  is placed to the stage via change" in t:
@@ -843,6 +843,9 @@ class Ability:
 		elif "when this is placed from hand to the stage or at the beginning of your main phase" in t:
 			if ("Hand" in pos[0] and r[0] == r[1] and v[0] == "Stand" and any(field in pos[1] for field in self.stage)) or (pp < 0 and "Main" in p and n in r[0][-1]):
 				self.ablt = 3
+		elif "when this is placed to the stage via the  effect of " in t and "[auto] effect of \"" in aa:
+			if std[0] and std[2] == r[0] and std[0][-1] == r[1][-1] and std[0] != r[1] and r[0] == r[1] and (f"\"{std[1].lower()}\" to the stage" in aa or f"effect of \"{std[1].lower()}\"" in aa) and any(field in pos[1] for field in ("Center", "Back")) and all(field not in pos[0] for field in ("Center", "Back")):
+				self.ablt = 1
 		elif "when your other  character or this is placed from hand to stage" in t:
 			if (r[0] != r[1] and r[0][-1] == r[1][-1] and self.trait(a) in tr[1] and "Hand" in pos[2] and any(field in pos[3] for field in self.stage) and "Stand" in v[1]) or (
 					"Hand" in pos[0] and r[0] == r[1] and v[0] == "Stand" and any(field in pos[1] for field in self.stage)):
@@ -869,13 +872,13 @@ class Ability:
 		elif "when this is placed from hand or waiting room to the stage" in t:
 			if r[0] == r[1] and ((any(field in pos[1] for field in self.stage) and "Waiting" in pos[0]) or ("Hand" in pos[0] and v[0] == "Stand" and any(field in pos[1] for field in self.stage))):
 				self.ablt = 1
-		elif "when this is put in your waiting room from the stage" in t or "when this is placed from the stage to the waiting room" in t or "when this goes from stage to the waiting room" in t or "when this is put in the waiting room from the stage" in t:
+		elif "when this is put in your waiting room from the stage" in t or "when this is placed from the stage to the waiting room" in t or "when this goes from stage to the waiting room" in t or "when this is put in the waiting room from the stage" in t or "when this is placed from stage to the waiting room" in t:
 			if r[0] == r[1] and any(field in pos[0] for field in ("Center", "Back")) and "Waiting" in pos[1]:
 				self.ablt = 1
 				if "you may pay the cost" in t:
 					if "send this to memory" in t:
 						return ["pay", "may", "played", "do", [0, "memorier"]]
-				elif "you may put this rested in the slot this was in" in t or "you may return this to its previous stage position as rest" in t:
+				elif "you may put this rested in the slot this was in" in t or "you may return this to its previous stage position as rest" in t or "you may put it rested in the slot this was in" in t:
 					return ["pay", "may", "played", "do", [0, "revive", "Stage", "do", [0, "rested"]]]
 		elif "when another of your character whose level is  or lower is placed from the stage to the waiting room" in t:
 			if r[0][-1] == r[1][-1] and r[0] != r[1] and any(field in pos[2] for field in ("Center", "Back")) and "Waiting" in pos[3] and lr[1] <= self.digit(a):
@@ -964,7 +967,7 @@ class Ability:
 				elif "when the damage you received is canceled" in t and cnc[1] and cnc[0] in r[0][-1]:
 					self.ablt = 2
 		elif "Battle" in p and (("when this's battle opponent becomes reverse" in t and "\"[auto] when this's battle" not in aa) or ("when the battle opponent of this becomes reverse" in t and "\"[auto] when the battle opponent" not in aa) or ("when this character's battle opponent becomes reverse" in t and "\"[auto] when this character's battle opponent" not in aa)):
-			if r[0] != r[1] and r[1] in rev and r[0][-1] != r[1][-1] and r[0] in baind and r[1] in baind and suop[1] == "Reverse":  # (n == "1" and v[1] == "Reverse") or (n == "2" and v[0] == "Reverse")
+			if r[0] != r[1] and r[1] in rev and r[0][-1] != r[1][-1] and r[0] in baind and r[1] in baind and ((r[0] == baind[0] and suop[1] == "Reverse") or (r[0] == baind[1] and suop[0] == "Reverse")):  # (n == "1" and v[1] == "Reverse") or (n == "2" and v[0] == "Reverse")
 				if r[0] == baind[0]:
 					self.target = baind[1]
 				elif r[0] == baind[1]:
@@ -1076,6 +1079,13 @@ class Ability:
 				if "during your opponent's turn" in t:
 					if n in r[0][-1]:
 						self.ablt = 0
+		elif "when another  character of yours becomes reverse" in t:
+			if r[0] != r[1] and r[1] in rev and r[0][-1] == r[1][-1] and v[1] == "Reverse" and self.trait(a) in tr[1]:
+				self.ablt = 9
+			if "becomes reverse in battle" in t and "Battle" not in p:
+				self.ablt = 0
+			if "Encore" in p:
+				self.ablt = 0
 		elif "when your other character becomes reverse" in t or "when another of your characters becomes reverse" in t:
 			if r[0] != r[1] and r[1] in rev and r[0][-1] == r[1][-1] and r[0] not in baind and r[1] in baind and ((n == "1" and v[0] == "Reverse") or (n == "2" and v[1] == "Reverse")):  # and batt:
 				self.ablt = 9
@@ -1197,8 +1207,7 @@ class Ability:
 		elif "Declaration" in p:
 			if "when this attacks or is attacked" in t:
 				if atk != "" and r[0] in baind and n in r[1][-1] and (r[0] == r[1] or (r[0] != r[1] and r[0][-1] != r[1][-1])):
-					if "put the top card of your stock under this as marker" in t:
-						return [1, "marker", "top", "Stock"]
+					self.ablt = 9
 			elif "when this attacks" in t:
 				if r[0] == r[1] and n in r[1][-1] and atk != "" and r[0] == baind[0]:
 					if "\" is in the climax area" in aa or "\" is in your climax area" in aa or "\" on your climax area" in aa:
@@ -1206,7 +1215,6 @@ class Ability:
 							self.cx = True
 							self.ablt = 2
 							self.cond[1] += 2
-
 							if "your opponent searches your deck for  level  or higher character" in t:
 								if "put it in your hand" in t:
 									return [self.digit(a), "searchopp", f"CLevel_>={self.digit(a, 1)}"]
@@ -1393,7 +1401,7 @@ class Ability:
 				self.cond[1] += 2
 			elif "when your character's trigger check reveals a climax" in t or "when the trigger check of this reveals a climax" in t or "when your trigger check reveals a climax" in t:
 				if n in r[0][-1] and r[0][-1] == r[1][-1] and r[0] != r[1] and "Climax" in ty[0] and ty[0] == r[2]:
-					if "if the trigger icons of that card are" in t or "if that card's trigger icon is" in t or "in its trigger icon" in t or "if that card has a " in t or "climax card with a " in t or "reveals a climax with a ":
+					if "if the trigger icons of that card are" in t or "if that card's trigger icon is" in t or "in its trigger icon" in t or "if that card has a " in t or "climax card with a " in t or "reveals a climax with a " in t:
 						if (("soulsoul trigger icons" in t or "icon is soulsoul" in t) and len([s for s in ty[1] if s == "soul"]) == 2) or (("trigger icon is door" in t or "climax with a door trigger" in t) and "door" in ty[1]) or ("trigger icon is bounce" in t and "bounce" in ty[1]) or ("trigger icon is stock" in t and "stock" in ty[1]) or ("trigger icon is draw" in t and "draw" in ty[1]) or (("trigger icon is gate" in t or "with gate in its trigger icon" in t) and "gate" in ty[1]) or (("card has a treasure icon" in t or "with a treasure trigger" in t) and "treasure" in ty[1]):
 							self.ablt = 9
 					else:
@@ -1637,13 +1645,13 @@ class Ability:
 			c = [self.digit(a, self.cond[0]), "cards", "Stock", "lower"]
 			self.cond[0] += 1
 		elif "if the character opposite this has no traits" in t:
-			c = ["opposite", "#traits", 0, "#lower"]
+			c = ["Opposite", "OPtraits", 0, "OPlower"]
 		elif "if the character opposite this is level  or higher" in t or "if the level of the character opposite this is  or higher" in t:
 			self.cond[0] += 1
-			c = ["opposite", "olevel", self.digit(a)]
+			c = ["Opposite", "OPlevel", self.digit(a)]
 		elif "if the character opposite this is level " in t:
 			self.cond[0] += 1
-			c = ["opposite", "olevel", self.digit(a), "=="]
+			c = ["Opposite", "OPlevel", self.digit(a), "OP=="]
 		elif "if there are no markers underneath this" in t or "if there are no markers under this" in t:
 			c = [0, "markers", "lower", "under"]
 		elif "if the level of the battle opponent of this is higher than the level of your opponent" in t or "if the level of this's battle opponent is higher than your opponent's level" in t:
@@ -1755,7 +1763,9 @@ class Ability:
 		else:
 			return []
 
-	def convert(self, a, t, aa):
+	def convert(self, a, t, aa=""):
+		if aa == "":
+			aa = self.a_replace(a)
 		if "until the next end of your opponent's turn" in t or "until the end of your opponent's next turn" in t or "until end of your opponent's next turn" in t:
 			x = 2
 		elif "for the turn" in t or "until end of turn" in t or "\" for the turn."in aa:
@@ -1921,7 +1931,7 @@ class Ability:
 			elif "if it's either a  character or an event" in t:
 				d.extend(["TraitEv", self.trait(a, self.cond[2])])
 				self.cond[2] += 1
-			elif "if it's a climax card" in t or "if the revealed card is a climax" in t:
+			elif "if it's a climax" in t or "if the revealed card is a climax" in t:
 				d.extend(["Climax"])
 			elif "if that card is not a  character" in t or "if it's not a  character" in t or "revealed card is not a  character" in t:
 				d.extend(["Trait", self.trait(a, self.cond[2]), "not", "if"])
@@ -1948,10 +1958,13 @@ class Ability:
 			elif "x = the level of the revealed card" in t or "x is the number of soul trigger icons on that card" in t:
 				d.append("continue")
 
+			if "if it's not" in t:
+				t = self.isnot_filter(a, t, aa)
+
 			if "put it in your hand" in t:
 				d.extend(["do", ["draw", 1]])
 				d = self.discard_card(d, a, t, aa)
-			elif "put it in your clock" in t:
+			elif "put it in your clock" in t or "put it in clock" in t:
 				d.append("clock")
 				if "if" in d:
 					d.remove("if")
@@ -2036,7 +2049,7 @@ class Ability:
 			if "may draw  card" in t:
 				c[0] = "drawupto"
 				c.append("upto")
-			if "if you do" in t:
+			if "if you do," in t:
 				c.extend(["if", 1])
 			c = self.discard_card(c, a, t, aa)
 
@@ -2072,7 +2085,7 @@ class Ability:
 			if "faceup as marker" in t:
 				c.append("face-up")
 		elif "put the top card of your deck" in t and ("under this as marker" in t or "underneath this as a marker" in t):
-			c = [1, "marker", "top"]
+			c = [3, "marker", "top"]
 		elif "place this underneath  or  face-up as marker" in t:
 			c = [1, "marker", f"Name=_{self.name(a, self.cond[1], s='n')}_{self.name(a, self.cond[1] + 2, s='n')}", "face-up", "Stage", "self"]
 			if "you may place this underneath":
@@ -2128,8 +2141,15 @@ class Ability:
 			c = [-3, "clocker", "target", self.target, "Opp"]
 		elif "reverse that character" in t:
 			c = [-3, "reverser", "target", self.target, "Opp"]
-		elif "put all of the markers underneath this into the waiting room" in t:
+		elif "put the top card of your clock face-down under this as marker" in t:
+			c = [1, "marker","top","Clock"]
+		elif "put the top card of your stock under this as marker" in t:
+			c = [1, "marker", "top", "Stock"]
+		elif "put all of the markers underneath this into the waiting room" in t or "put all markers from under this in the waiting room" in t:
 			c = [-1, "marker", "Return", "Waiting"]
+			if "choose   either in your" in t:
+				gg, t = self.seperate("choose   either in your", a, t, aa)
+				c.extend(gg)
 		elif "put  marker underneath this in your stock" in t:
 			c = [self.digit(a), "marker", "Return", "Stock"]
 		elif "put all characters of all players except this in their respective waiting rooms" in t:
@@ -2309,9 +2329,16 @@ class Ability:
 		elif "choose  character opposite this" in t:
 			if "put it in your opponent's waiting room" in t or "put it in the waiting room" in t:
 				c = [1, "waitinger", "Opposite"]
+		elif "choose the character opposite this" in t:
+			if "that character gets + soul" in t:
+				c = [1,self.digit(a, self.cond[0]),x,"soul","Opposite","Opp"]
 		elif "choose either this or  of your  " in t:
 			if "put it in your waiting room" in t:
 				c = [self.digit(a), "waitinger", "Name=", self.name(a, s="n"), "This"]
+		elif "choose   either in your hand or in your waiting room" in t and "\" either in your" in aa:
+			c = [self.digit(a,self.cond[0]),"salvage",f"Name=_{self.name(a,self.cond[1],s='n')}","&Hand"]
+			if "put it rested in any slot on the stage" in t:
+				c.extend(["Stage", "extra","do", [-16, "rested"]])
 		elif "choose another of your  characters" in t:
 			if "that character gets + power" in t:
 				c = [1, self.digit(a, self.cond[0]), x, "power", "Trait", self.trait(a, self.cond[2]), "Other"]
@@ -2470,8 +2497,9 @@ class Ability:
 				c = [self.digit(a), "decker"]
 			c += ["Level", f"<={self.digit(a, 1)}", "Opp", "upto"]
 		elif "choose up to  of your opponent's character" in t:
-			if "return that character to their hand" in t:
+			if "return that character to their hand" in t or "return it to the hand" in t:
 				c = [self.digit(a, self.cond[0]), "hander", "Opp", "upto"]
+				self.cond[0]+=1
 			elif "that character gets + soul and the following ability" in t:
 				c = [self.digit(a, self.cond[0]), self.digit(a, self.cond[0] + 1), x, "soul", "Opp", "upto", "extra", "do", [-16, self.name(a, s='a'), x, "give"]]
 			elif "send it to memory" in t:
@@ -2519,7 +2547,7 @@ class Ability:
 				c.extend(["Stage"])
 			if "character in your clock with  in name" in t:
 				c[2] = f"CLevelN_<={self.digit(a, self.cond[0] + 1)}_{self.name(a, self.cond[1], s='n')}"
-			if "if you do" in t or "if so" in t:
+			if "if you do," in t or "if so," in t:
 				c.extend(["if", c[1]])
 			if "at the next end of your opponent's turn" in t and "put that character in clock" in t:
 				c.extend(["extra", "do", [-16, "[AUTO] At the end of of your opponent's next turn, put this card into your clock.", -3, "give"]])
@@ -2540,6 +2568,11 @@ class Ability:
 		elif "choose  of your other characters with  in name" in t:
 			if "put it in your stock" in t:
 				c = [self.digit(a, self.cond[0]), "stocker", "Name", self.name(a, s='n'), "Other"]
+			elif "that character gets + level" in t:
+				c = [self.digit(a, self.cond[0]), self.digit(a, self.cond[0] + 1), x, "level", "Name", self.name(a, s='n'), "Other"]
+				self.cond[0]+=2
+				if "level and + power" in t:
+					c.extend(["extra","do",[-16,self.digit(a,self.cond[0]),x,"power"]])
 			elif "that character gets + power" in t:
 				c = [self.digit(a, self.cond[0]), self.digit(a, self.cond[0] + 1), x, "power", "Name", self.name(a, s='n'), "Other"]
 		elif "choose  climax in your waiting room" in t or "choose  climax card in your waiting room" in t:
@@ -2748,7 +2781,7 @@ class Ability:
 				if "if you rest  character" in t:
 					c.extend(["if", self.digit(a, self.cond[0])])
 					self.cond[0] += 1
-				elif "if you do" in t or "if so" in t:
+				elif "if you do," in t or "if so," in t:
 					c.extend(["if", c[0]])
 
 				if "search your deck for up to   character" in t:
@@ -2933,7 +2966,7 @@ class Ability:
 				else:
 					c.extend(cd)
 
-			if "if you do" in t or "if so" in t:
+			if "if you do," in t or "if so," in t:
 				c.extend(["if", c[0]])
 
 			if "search your deck for up to  climax card" in t:
@@ -3131,6 +3164,7 @@ class Ability:
 			self.cond[2] += 1
 		elif "search your deck for up to  character with " in t or "search your deck for up to  character with " in t:
 			c = [self.digit(a, self.cond[0]), "search", "", "upto"]
+			self.cond[0]+=1
 			# if "put them in your hand" in t or "put it in your hand" in t:
 			# 	c = [self.digit(a, self.cond[0]), "search", "", "upto"]
 			if "put it in any slot on the stage" in t:
@@ -3138,7 +3172,12 @@ class Ability:
 			if "reveal it" in t or "reveal them" in t or "show it" in t:
 				c.append("show")
 
-			if "character with the same name as that character" in t:
+			if "character with  in name and up to  character with  in name" in t:
+				c[2] = f"EachNameC_{self.name(a,self.cond[1],s='n')}_{self.name(a,self.cond[1]+2,s='n')}"
+				c[0] += self.digit(a,self.cond[0])
+				self.cond[0]+=1
+				self.cond[1]+=4
+			elif "character with the same name as that character" in t:
 				c[2] = "EName="
 			elif "character with no traits" in t:
 				c[2] = "Trait_"
@@ -3260,6 +3299,8 @@ class Ability:
 				b = [-1, self.digit(a, self.cond[0]), x, "level"]
 			elif ("get " in t and "characters get \"[" in self.a_replace(a)) or "get the following ability" in t:
 				b = [-1, self.name(a, s='a'), x, "give"]
+			if "your opponent may not use \"[auto] encore\"" in aa:
+				b.extend(["do", [-21, "[CONT] Your opponent cannot use \"[AUTO] Encore\" until end of turn.", x, "give"]])
 		elif "all your other characters get" in t:
 			if "get + power" in t:
 				b = [-2, self.digit(a), x, "power"]
@@ -3267,27 +3308,31 @@ class Ability:
 				b = [-2, self.digit(a), x, "level"]
 		elif "this randomly gets between +~+ power" in t:
 			b = [0, self.digit(a), x, "random", self.digit(a, 1), "power"]
-		elif "this gets + level and + power" in t:
-			b = [0, self.digit(a, 1), x, "power", "do", [0, self.digit(a), x, "level"]]
-		elif "this gets + power and" in t:
-			if "and + soul" in t:
-				b = [0, self.digit(a, self.cond[0]), x, "power", "do", [0, self.digit(a, self.cond[0] + 1), x, "soul"]]
-			elif "and the following ability" in t or "power and \"[" in aa:
-				b = [0, self.digit(a, self.cond[0]), x, "power", "do", [0, self.name(a, s='a'), x, "give"]]
-			elif "and your opponent cannot use" in t and "cannot use \"[auto] encore\"" in aa:
-				b = [0, self.digit(a, self.cond[0]), x, "power", "do", [-21, "[CONT] Your opponent cannot use \"[AUTO] Encore\" until end of turn.", x, "give"]]
-			elif "your opponent cannot play event cards and \"backup\" from his or her hand" in t:
-				b = [0, self.digit(a, self.cond[0]), x, "power", "do", [-21, "[CONT] Your opponent cannot play event cards and \"Backup\" from his or her hand.", x, "give"]]
+		elif "this gets + level" in t:
+			b = [0, self.digit(a,self.cond[0]), x, "level"]
+			self.cond[0]+=1
+			if "level and + power" in t:
+				b.extend(["extra","do",[-16, self.digit(a, self.cond[0]), x, "power"]])
 		elif "this gets the following  abilities" in t:
 			b = [0, f"{self.name(a, s='a')}_{self.name(a, 1, s='a')}", x, "give"]
 		elif "this gets the following ability" in t or ("this gets " in t and "this gets \"[" in aa):
 			b = [0, self.name(a, s='a'), x, "give"]
 		elif "this gets + power" in t or "this get + power" in t or "this gets - power" in t:
 			b = [0, self.digit(a, self.cond[0]), x, "power"]
+			self.cond[0]+=1
 			if "for each different trait on your characters" in t:
 				b += ["#", "Traits"]
-			if "at the end of turn" in t and ("put this in your memory" in t or "send this to memory" in t):
-				b += ["do", [0, "[AUTO] At the end of the turn, put this card into your memory.", -3, "AUTO", "give"]]
+
+			if "power and + soul" in t:
+				b.extend(["extra","do", [0, self.digit(a, self.cond[0]), x, "soul"]])
+			elif "power and the following ability" in t or "power and \"[" in aa:
+				b.extend(["extra","do", [-16, self.name(a, s='a'), x, "give"]])
+			elif "power and your opponent cannot use" in t and "cannot use \"[auto] encore\"" in aa:
+				b.extend(["extra","do", [-21, "[CONT] Your opponent cannot use \"[AUTO] Encore\" until end of turn.", x, "give"]])
+			elif "your opponent cannot play event cards and \"backup\" from his or her hand" in t:
+				b.extend(["extra","do", [-21, "[CONT] Your opponent cannot play event cards and \"Backup\" from his or her hand.", x, "give"]])
+			elif "at the end of turn" in t and ("put this in your memory" in t or "send this to memory" in t):
+				b.extend(["do", [0, "[AUTO] At the end of the turn, put this card into your memory.", -3, "AUTO", "give"]])
 				t = t[:t.index("at the end of turn")]
 		elif "this gets + soul" in t:
 			b = [0, self.digit(a, self.cond[0]), x, "soul"]
@@ -3346,6 +3391,11 @@ class Ability:
 				e += ["do", [0, self.name(a, s='at'), 3, "give"]]
 		elif "put this at the bottom of your deck" in t or "put this on the bottom of your deck" in t or "put this on the bottom of the deck" in t:
 			e = [0, "decker", "bottom"]
+		elif "put this on the bottom of the stock" in t:
+			if t.index("put this on the bottom of the stock") < 20:
+				g = [0, "stoker", "bottom"]
+			else:
+				e = [0, "stoker", "bottom"]
 		elif "put this in your stock" in t or "put this in stock" in t:
 			e = [0, "stocker"]
 		elif "put this in your memory" in t or "send this to memory" in t:
@@ -3604,7 +3654,10 @@ class Ability:
 				d.extend(["OTrait", self.trait(a, self.cond[2])])
 				self.cond[2] += 1
 		elif "if the character opposite this has no traits" in t:
-			d.extend(["Opposite", "#traits", 0, "#lower"])
+			d.extend(["Opposite", "OPtraits", 0, "OPlower"])
+		elif "if the level of the character opposite this is  or higher" in t:
+			d.extend(["Opposite","OPlevel",self.digit(a,self.cond[0])])
+			self.cond[0]+=1
 		elif "during battles involving this" in t or "during this's battle" in t or "in battles involving this" in t:
 			d.extend(["Battle"])
 			if "if the battle opponent of this is level  or higher" in t:
@@ -3679,7 +3732,7 @@ class Ability:
 				d.extend(["Text", self.text_name[self.name(a, self.cond[1], s='n')]])
 				self.cond[1] += 2
 			elif "level  or lower characters" in t:
-				d.extend(["LevelC", self.digit(a, self.cond[0]), "lower"])
+				d.extend(["LevelC", self.digit(a, self.cond[0]), "Llower"])
 				self.cond[0] += 1
 		elif "for each character in your opponent's back stage" in t or "for each of your opponent's back stage character" in t:
 			d.extend(["Each", "opp", "Back"])
@@ -3689,6 +3742,9 @@ class Ability:
 			d.extend(["Each", "Stand", "opp"])
 		elif "for each different trait on your characters" in t:
 			d.extend(["Each", "Traits"])
+		elif "for each your other level  or lower character" in t:
+			d.extend(["Each","LevelC",self.digit(a,self.cond[0]),"Llower"])
+			self.cond[0]+=1
 
 		if "you're level  or higher" in t or "your level is  or higher" in t:
 			d.extend(["plevel", self.digit(a, self.cond[0])])
@@ -3802,7 +3858,7 @@ class Ability:
 					c[0] = -32
 			elif "get + power" in t or "gets + power" in t:
 				if "whose level is  or lower" in t:
-					c = [-2, self.digit(a, self.cond[0] + 1), x, "LevelC", self.digit(a, self.cond[0]), "lower", "power"]
+					c = [-2, self.digit(a, self.cond[0] + 1), x, "LevelC", self.digit(a, self.cond[0]), "Llower", "power"]
 				else:
 					c = [-2, self.digit(a, self.cond[0]), x, "power"]
 			elif "get + level" in t or "gets + level" in t:
@@ -4020,6 +4076,9 @@ class Ability:
 		c = []
 		if "if there are no characters in your back stage, you cannot play this from hand" in t:
 			c = [0, "Character", "Back", "lower", "play"]
+		elif "if you don't have a character with either  and/or  in name" in t and "you cannot play this from your hand" in t:
+			c = [0, "Name", f"{self.name(a, self.cond[1], s='n')}_{self.name(a, self.cond[1]+2, s='n')}", "lower", "play"]
+			self.cond[1] += 4
 		elif ((("if you don't have a character with  in name" in t or "if you do not have a character with  in name" in t) and "\" in name" in a.lower()) or ("if you don't have a " in t and "if you don't have a \"" in a.lower())) and ("you may not play this from hand" in t or "you cannot play this from your hand" in t or "you may not play this" in t):
 			c = [0, "Name", self.name(a, self.cond[1], s='n'), "lower", "play"]
 			self.cond[1] += 2
@@ -4099,6 +4158,17 @@ class Ability:
 			return b
 		else:
 			return []
+
+	def marker(self,a=""):
+		self.cond=[0,0,0,0]
+		t = self.text(a)
+		c = []
+		if "when a marker is placed under this" in t:
+			if "if there are  or more markers under this" in t:
+				c = ["markers",self.digit(a,self.cond[0])]
+				self.cond[0]+=1
+				c.extend(["do",self.convert(a,t.split("if there are  or more markers under this")[1])])
+		return c
 
 	def trigger(self, a=""):
 		c = []

@@ -1,3 +1,10 @@
+0.31.0
+	Added Jap Devil Survivor 2 The Animation cards	
+
+0.30.1
+	Fixed text input box size
+	Fixed damage check for win condition
+
 0.30.0
 	Added Jap Miss Kobayashi's Dragon Maid cards
 

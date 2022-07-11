@@ -209,8 +209,8 @@ class Card(RelativeLayout):
 
 			self.marker_i = Rectangle(source=self.img_blank, size=marker_size,pos=self.ability_i["0"].pos)
 			# pos=(self.ability_i["0"].pos[0] - ability_size[0]-marker_pos[0] * self.card_size[0],self.ability_i["0"].pos[1]))
-
-			self.marker_l = CoreLabel(text="", text_size=self.marker_i.size, color=(1, 1, 1, 1), outline_width=1.9,font_size=marker_size[1] * .8, halign='center', valign='middle', size=marker_size)
+			self.marker_size = marker_size
+			self.marker_l = CoreLabel(text="", text_size=self.marker_i.size, color=(1, 1, 1, 1), outline_width=1.9,font_size=marker_size[1] * .6, halign='center', valign='middle', size=marker_size)
 			self.marker_l.refresh()
 			self.marker_r = Rectangle(texture=self.marker_l.texture, size=self.marker_l.texture.size,pos=(self.marker_i.pos[0], self.marker_i.pos[1]))
 			self.cover = Rectangle(source=self.img_back, pos=self.pos, size=self.size)
@@ -746,7 +746,11 @@ class Card(RelativeLayout):
 	def update_marker(self, m=0):
 		if m > 0:
 			self.marker = True
-			self.marker_l.text = f"{m}"
+			# self.marker_l.text = f"{m}"
+			if m>9:
+				self.marker_l = CoreLabel(text=f"{m}", text_size=self.marker_i.size, color=(1, 1, 1, 1), outline_width=1.9,font_size=self.marker_size[1] * .5, halign='center', valign='middle', size=self.marker_size)
+			else:
+				self.marker_l = CoreLabel(text=f"{m}", text_size=self.marker_i.size, color=(1, 1, 1, 1), outline_width=1.9,font_size=self.marker_size[1] * .6, halign='center', valign='middle', size=self.marker_size)
 			self.marker_i.source = self.img_back
 		else:
 			self.marker = False
@@ -825,7 +829,7 @@ class Card(RelativeLayout):
 				elif waiting and item[1] >= 0:
 					item[1] = 0
 
-	def selected(self, s=True):
+	def selected_c(self, s=True):
 		if s:
 			self.select = True
 			self.slc.source = self.img_select
@@ -1333,7 +1337,7 @@ class CardImg(RelativeLayout):
 			for itemr in to_remove:
 				text.remove(itemr)
 
-	def selected(self, s=True):
+	def selected_c(self, s=True):
 		if s:
 			self.select = True
 			self.slc.source = self.img_select

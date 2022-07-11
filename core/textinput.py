@@ -8,7 +8,6 @@ class TextInput(Ti):
 
 	def __init__(self, cid="", **kwargs):
 		super(TextInput, self).__init__(**kwargs)
-		self.size_hint = (None, None)
 		self.cid = cid
 		self.font_name = f"{font_in}/{font}"
 		self.multiline = False

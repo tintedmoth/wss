@@ -46,7 +46,11 @@ class CardNum(Button):
 
 	def update_text(self, t="", f=.6):
 		with self.canvas:
-			self.text_l.text = f"{t}"
-			self.text_l.font_size = self.size[0] * f
+			self.text_l = CoreLabel(text=f"{t}", text_size=self.size, color=(1, 1, 1, 1), outline_width=2, halign='center', valign='middle', font_size=self.size[0] * f)
+			# self.text_l.text = f"{t}"
+			# self.text_l.font_size = self.size[0] * f
 			self.text_l.refresh()
 			self.text_r.texture = self.text_l.texture
+
+	def selected_c(self, s=True):
+		pass

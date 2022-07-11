@@ -19,11 +19,9 @@ class AI:
 		self.ab = Ab()
 
 	def filter_cards(self,lst,ind,pdata,cdata,gdata):
-		print("gdata['search_type']",gdata["search_type"])
 		lst1 = []
 		if "CLevelE" in gdata["search_type"]:
 			level = gdata["search_type"].split("_")[-1]
-			print(level)
 			if "<=" in level:
 				lst1 = [s for s in lst if ("Character" in cdata[s].card and cdata[s].level <= int(level[-1])) or "Event" in cdata[s].card]
 
@@ -121,7 +119,7 @@ class AI:
 		if "WDecker" in pay[0]:
 			loc = pdata[self.player]["Waiting"]
 			ind = pay[0].index("WDecker")
-			print("pay[0]",pay[0],ind,len(loc),loc)
+
 			if len(loc)>=pay[0][ind + 1]:
 				if pay[0][ind + 2] == "Climax" or pay[0][ind + 2] == "Character" or pay[0][ind + 2] == "Event":
 					hand1 = [h for h in loc if cdata[h].card == pay[0][ind + 2]]
@@ -133,14 +131,14 @@ class AI:
 					hand1 = [h for h in loc if any(name in cdata[h].trait for name in pay[0][ind + 3].split("_"))]
 				else:
 					hand1 = loc
-				print(hand1)
+
 				hand1 = sorted(hand1, key=lambda e: (cdata[e].level, cdata[e].power), reverse=True)
 
 				if "AI_pay" not in payable:
 					payable.append("AI_pay")
 				payable.append("WDecker")
 				payable.append(hand1[:pay[0][ind + 1]])
-				print(payable)
+
 		if "janken" in effect and payable:
 			pass
 		elif "confirm" in effect and payable:
@@ -175,13 +173,27 @@ class AI:
 				if "searchopp" in effect:
 					search = sorted(search, key=lambda e: cdata[e].level)
 				else:
-					search = sorted(search, key=lambda e: (cdata[e].power,cdata[e].level), reverse=True)
+					search = sorted(search, key=lambda e: (cdata[e].power, cdata[e].level), reverse=True)
 
 				payable.append("AI_search")
+				chosen = []
 				if pay[1] and len(search) >= 1:
-					payable.append(search[:effect[0]])
+					if "EachNameC" in effect[2]:
+						name = effect[2].split("_")[1:]
+						for xin in search:
+							if any(nn in cdata[xin].name for nn in name):
+								for nn in list(name):
+									if nn in cdata[xin].name:
+										chosen.append(xin)
+										name.remove(nn)
+										break
+							if len(name)==0:
+								break
+					else:
+						chosen.extend(search[:effect[0]])
 				else:
-					payable.append([""])
+					chosen.append("")
+				payable.append(chosen)
 		elif ("discard" in effect or "mdiscard" in effect) and pay[1]:
 			discard = list(gdata["p_l"])
 
@@ -242,9 +254,9 @@ class AI:
 			if "hand" in gdata["effect"]:
 				temp.append(effect[0])
 				temp.append(effect[effect.index("hand")+1])
-				print(temppl)
+
 				discard = self.filter_cards(temppl,card.ind,pdata,cdata,gdata)
-				print(discard)
+
 				pick = []
 				if len(discard)>0:
 					pick = sample(temppl,effect[effect.index("hand")+1])
@@ -350,14 +362,22 @@ class AI:
 	def get_filtered_cards(self,cards,pdata, cdata, gdata):
 		if "Name=" in gdata["effect"]:
 			cards = [s for s in cards if gdata["effect"][gdata["effect"].index("Name=")+1] in cdata[s].name]
+		elif "Name" in gdata["effect"]:
+			cards = [s for s in cards if any(name in cdata[s].name for name in gdata["effect"][gdata["effect"].index("Name") + 1])]
 		return cards
 
-	def choose_stage_target(self,des,pdata,cdata,gdata):
+	def choose_stage_target(self,des,pdata,cdata,gdata,cards=[]):
+		if not cards:
+			cards = self.get_stage_target(pdata, cdata, gdata)
 		choose = []
 		if "Waiting" in des:
 			choose.append("AI_Stage")
-			cards = self.get_stage_target(pdata,cdata,gdata)
-			choose.append(choice(cards))
+			choose.append(sample(cards,gdata["pay"][gdata["pay"].index("Waiting")+1]))
+		elif"Buff" in des:
+			choose.append("AI_Stage")
+
+			choose.append(sample(cards,gdata["effect"][0]))
+
 		return choose
 
 	def playable(self, pdata, cdata, ind):

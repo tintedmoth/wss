@@ -26,8 +26,7 @@ class ImgButton(Image):
 		with self.canvas.before:
 			self.rect = Rectangle(source=self.blank, pos=self.pos_select, size=self.size_select)
 		with self.canvas:
-			self.btn = Button(size=self.size, pos=self.pos, size_hint=(None, None), cid=self.cid, opacity=0,
-			                  height=self.height)
+			self.btn = Button(size=self.size, pos=self.pos, size_hint=(None, None), cid=self.cid, opacity=0, height=self.height)
 			self.add_widget(self.btn)
 		self.bind(size=self._update_rect, pos=self._update_rect)
 
@@ -39,7 +38,7 @@ class ImgButton(Image):
 		self.height = inst.size[1]
 		self.btn.height = inst.size[1]
 
-	def selected(self, s=True):
+	def selected_c(self, s=True):
 		if s:
 			self.select = True
 			self.rect.source = self.img_select
