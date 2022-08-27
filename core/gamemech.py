@@ -450,6 +450,7 @@ class GameMech(Widget):
 
 	def check_game(self, dt=0):
 		self.shelve_load()
+		self.main_scrn.disabled = False
 		if self.gd["game_start"]:
 			Clock.schedule_once(partial(self.popup_text, "LoadGame"))
 		else:
@@ -5459,6 +5460,7 @@ class GameMech(Widget):
 		self.main_scrn.add_widget(img)
 		self.main_scrn.add_widget(boxv2)
 		self.parent.add_widget(self.main_scrn)
+		self.main_scrn.disabled = True
 
 		self.start_setting()
 
@@ -6121,7 +6123,7 @@ class GameMech(Widget):
 	# self.sd["popup"]["popup"].dismiss()
 
 	def add_building_popup(self, *args):
-		self.sd["popup"]["popup"].title = "Add a card to deck"
+		self.sd["popup"]["popup"].title = "Add cards to deck"
 		self.gd["confirm_var"] = {"o": "1", "c": "Add", "m": 1}
 		self.popup_start()
 
@@ -10032,6 +10034,7 @@ class GameMech(Widget):
 		# print("tt")
 		# print(len(self.sd["popup"]["popup"].title))
 		# print(tt, 6 * starting_hand)
+		# print(tt)
 		if len(self.sd["popup"]["popup"].title) < (6 * starting_hand):
 			tt += 1.5
 		if tt < 2.5:
@@ -10039,8 +10042,11 @@ class GameMech(Widget):
 		if tt>2.5 and len(self.sd["popup"]["popup"].title)%(6 * starting_hand)<=(6 * starting_hand)*0.75:
 			tt+=1
 		# print(tt)
+		# print(self.gd["p_c"])
 
 		if self.gd["p_rows"] > 6:
+			if "Add" in self.gd["p_c"]:
+				tt = 0.5
 			self.sd["popup"]["p_scv"].do_scroll_y = True
 			self.gd["p_yscv"] = self.gd["p_height"] * (self.gd["p_rows"] - 0.5)
 			self.gd["p_yssct"] = self.gd["p_height"] * (self.gd["p_rows"] + 0)
@@ -10091,9 +10097,9 @@ class GameMech(Widget):
 				upto = "up to "
 			else:
 				upto = ""
-			tt = "top"
+			td = "top"
 			if "bottom" in self.gd["effect"]:
-				tt = "bottom"
+				td = "bottom"
 			opp = ""
 			if "opp" in self.gd["effect"]:
 				opp = "opponets's "
@@ -10143,7 +10149,7 @@ class GameMech(Widget):
 						dd = f"put it in your hand"
 					elif "clock" in self.gd["p_c"]:
 						dd = f"put them in your {opp}clock"
-					self.sd["btn"]["label"].text = f"Look at {fix}{self.gd['p_look']} cards from {tt} of your {opp}deck. Choose {upto}{self.gd['p_max_s']} {c}, reveal {cc}, and {dd}, and put the rest in the waiting room."
+					self.sd["btn"]["label"].text = f"Look at {fix}{self.gd['p_look']} cards from {td} of your {opp}deck. Choose {upto}{self.gd['p_max_s']} {c}, reveal {cc}, and {dd}, and put the rest in the waiting room."
 				else:
 					if "stacked" in self.gd["effect"]:
 						self.sd["btn"]["label"].text = f"Choose {upto}{self.gd['p_max_s']} face down stack of cards and put them in your hand. Return the rest into your deck, and shuffle your deck."
@@ -10153,7 +10159,7 @@ class GameMech(Widget):
 				if "all" in self.gd["effect"]:
 					upto = ""
 				opp = ""
-				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {tt} of your {opp}deck. Choose {upto}{self.gd['p_max_s']} of them and "
+				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {td} of your {opp}deck. Choose {upto}{self.gd['p_max_s']} of them and "
 				if "waiting" in self.gd["p_c"]:
 					self.sd["btn"]["label"].text += f"put it in your {opp}waiting room."
 				elif "tdeck" in self.gd["p_c"] or "tbdeck" in self.gd["p_c"]:
@@ -10161,21 +10167,21 @@ class GameMech(Widget):
 				elif "bdeck" in self.gd["p_c"]:
 					self.sd["btn"]["label"].text += f"put it on the bottom your {opp}deck."
 			elif "reorder" in self.gd["p_c"] and "fix" in self.gd["p_c"]:
-				self.sd["btn"]["label"].text = f"Look at the {tt} {(self.gd['p_look'])} cards of your deck, and put them on the {tt} of your deck in any order."
+				self.sd["btn"]["label"].text = f"Look at the {td} {(self.gd['p_look'])} cards of your deck, and put them on the {tt} of your deck in any order."
 			elif "reorder" in self.gd["p_c"]:
 				if "any" in self.gd["effect"]:
-					self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {tt} of your deck, and choose {upto}{self.gd['p_max_s']} of those cards and put them on the {tt} of your deck in any order."
+					self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {td} of your deck, and choose {upto}{self.gd['p_max_s']} of those cards and put them on the {tt} of your deck in any order."
 				else:
-					self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {tt} of your deck, and put them on the {tt} of your deck in any order."
+					self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {td} of your deck, and put them on the {tt} of your deck in any order."
 				if "waity" in self.gd["effect"]:
 					self.sd["btn"]["label"].text = f'{self.sd["btn"]["label"].text[:-1]} and put the remaining cards in the waiting room.'
 			elif "stack" in self.gd["p_c"]:
 				# if len(self.gd["effect"][self.gd["effect"].index("stack")+1])
 				self.sd["btn"]["label"].text = f"Choose {self.gd['p_min_s']} or {self.gd['p_max_s']} cards to add into the first stacks of cards. The rest will make the other stack of cards."
 			elif "look" in self.gd["p_c"]:
-				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {tt} of your deck, and put them back in the same order."
+				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {td} of your deck, and put them back in the same order."
 			else:
-				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {tt} of your deck. Choose {upto}{self.gd['p_max_s']} of them and put it on top of the deck, and put the rest in the waiting room."
+				self.sd["btn"]["label"].text = f"Look at up to {self.gd['p_look']} cards from {td} of your deck. Choose {upto}{self.gd['p_max_s']} of them and put it on top of the deck, and put the rest in the waiting room."
 			if "fix" in self.gd["p_c"] and ("top" in self.gd["effect"] or "stack" in self.gd["effect"] or "stacked" in self.gd["effect"]) and self.gd["p_look"] >= 1 and self.gd["p_max_s"] > 0:
 				pos = (self.sd["padding"] * 0.5, self.sd["padding"] * 2 + self.sd["card"][1] * 2)
 				self.gd["p_yscat"] -= self.sd["card"][1] / 2.
@@ -10726,7 +10732,7 @@ class GameMech(Widget):
 						self.pop_btn_disable(phase)
 
 	def check_back_hidden(self,card):
-		if card.back:
+		if card.back and "Add" not in self.gd["p_c"]:
 			if card.ind[-1] != "1":
 				return False
 			elif card.ind[-1] == "1" and not card.back_info:
