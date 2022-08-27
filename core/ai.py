@@ -375,9 +375,11 @@ class AI:
 			choose.append(sample(cards,gdata["pay"][gdata["pay"].index("Waiting")+1]))
 		elif"Buff" in des:
 			choose.append("AI_Stage")
-
-			choose.append(sample(cards,gdata["effect"][0]))
-
+			if len(cards)>0:
+				choose.append(sample(cards,gdata["effect"][0]))
+			else:
+				for x in range(gdata["effect"][0]):
+					choose.append("")
 		return choose
 
 	def playable(self, pdata, cdata, ind):
@@ -397,11 +399,11 @@ class AI:
 		return False
 
 	def play_stage(self, pdata, cdata, gdata):
+		move = []
 		if "Stage" in gdata["effect"]:
 			center = [s for s in pdata[self.player]["Center"] if s != ""]
 			back = [s for s in pdata[self.player]["Back"] if s != ""]
 			level = len([s for s in pdata[self.player]["Level"] if s != ""])
-			move = []
 
 			if len(gdata["target"]) % 2 != 0:
 				cid = gdata["target"][-1]
@@ -606,6 +608,7 @@ class AI:
 		return play
 
 	def encore(self, pdata, cdata, gdata):
+		enc = True
 		encore = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if s != "" and cdata[s].status == "Reverse"]
 		stock = len(pdata[self.player]["Stock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != "" and cdata[s].status != "Reverse"])
@@ -614,16 +617,29 @@ class AI:
 		level = len(pdata[self.player]["Level"])
 
 		playable = []
+		if gdata["no_encore"][self.player]:
+			enc = False
 
-		if len(encore) > 0 and stock >= 3 + level:
-			for ind in hand:
-				if self.playable(pdata, cdata, ind):
-					playable.append(ind)
+		if enc:
+			for card in list(encore):
+				for text in cdata[card].text_c:
+					if text[0].startswith("[CONT]") and text[1] != 0 and text[1] > -9:
+						eff = self.ab.cont(text[0])
+						if eff and "no_target_self" in eff:
+							encore.remove(card)
+							break
 
-			playable = [s for s in playable if cdata[s].card == "Character"]
+			if len(encore) > 0 and stock >= 3 + level:
+				for ind in hand:
+					if self.playable(pdata, cdata, ind):
+						playable.append(ind)
 
-			if center <= 0 and len(playable) <= 1 and self.player not in gdata["active"]:
-				encore.sort(key=lambda x: cdata[x].power, reverse=True)
+				playable = [s for s in playable if cdata[s].card == "Character"]
+
+				if center <= 0 and len(playable) <= 1 and self.player not in gdata["active"]:
+					encore.sort(key=lambda x: cdata[x].power, reverse=True)
+			else:
+				encore = []
 		else:
 			encore = []
 

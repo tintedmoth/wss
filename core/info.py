@@ -17,11 +17,14 @@ class Info(Popup):
 	lang = {"nameE": "", "nameJ": "", "traitj": "", "traite": "", "texte": "", "textj": "", "flavoure": "", "flavourj": "", "coloure": "", "colourj": "", "carde": "", "cardj": ""}  # "triggere":"","triggerj":"","icone":"","iconj":""
 	popdict = {"name": "Card Name", "id": "Card No.", "rarity": "Rarity", "card": "Type", "colour": "Colour", "level": "Level", "cost": "Cost", "power": "Power", "soul": "Soul", "trigger": "Trigger", "trait": "Attribute", "text": "Text", "flavour": "Flavor Text", "icon": "Card Icon", "stock": "Pool", "door": "Door", "salvage": "Door", "gate": "Gate"}
 	jap = {"Red": "赤", "Blue": "青", "Yellow": "黄", "Green": "緑", "Character": "キャラ", "Event": "イベント", "Climax": "クライマックス", "Purple": "紫"}
-	cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010","SHS/W71-041","SHS/W71-035","KMD/W96-027","KMD/W96-055"]
-	reverse_fix = ["IM/SE04-24", "KW/W11-028","SHS/W71-091","SHS/W71-005","KMD/W96-T05","KMD/W96-086"]
-	rest_fix = ["SHS/W71-093","SHS/W71-048"] #["AB/W11-010"]
-	# reverse_fix = ["im_se04_24","kw_w11_028"]
-	reverse_fix_btn = ["IM/S07-051", "AB/W11-008", "AB/W31-107","N1/WE06-05","N1/WE06-17","BFR/S78-010"]
+	cgst06=[]
+	reverse_fix=[]
+	rest_fix=[]
+	reverse_fix_btn=[]
+	# cgst06 = ["MF/S13-072", "IM/SE04-23", "IM/S07-090", "IM/S07-054", "MK/S11-076", "AB/W11-069", "AB/W11-062", "AB/W11-055", "NS/W04-054","NS/W04-010","BFR/S78-066","BFR/S78-010","SHS/W56-001","SHS/W71-041","SHS/W71-035","KMD/W96-027","KMD/W96-055"]
+	# reverse_fix = ["IM/SE04-24", "KW/W11-028","SHS/W71-091","SHS/W71-005","KMD/W96-T05","KMD/W96-086"]
+	# rest_fix = ["SHS/W71-093","SHS/W71-048"] #["AB/W11-010"]
+	# reverse_fix_btn = ["IM/S07-051", "AB/W11-008", "AB/W31-107","N1/WE06-05","N1/WE06-17","BFR/S78-010"]
 
 	def __init__(self, pad=1, card=(100, 100), **kwargs):
 		super(Info, self).__init__(**kwargs)
@@ -56,11 +59,11 @@ class Info(Popup):
 					textsize = sized
 
 			if item in self.pinfo_lst[:-2] or item[:-2] in self.pinfo_lst[-2:]:
-				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, halign='center', valign='middle', markup=True, size=sized, size_hint=(None, None))
+				self.label[item] = Label(text="・", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, halign='center', valign='middle', markup=True, size=sized, size_hint=(None, None))
 				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None), cid=item, on_press=self.actual)  #,font_size=self.fsize)
 			else:
 				self.label[f"{item}_btn"] = Button(text=self.popdict[item], size=sized, size_hint=(None, None), cid=item, on_press=self.actual)  #,font_size=self.fsize)
-				self.label[item] = Label(text="　", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, valign='middle', markup=True, size_hint=(None, None), size=sized)
+				self.label[item] = Label(text="・", color=(1, 1, 1, 1), text_size=textsize, font_size=self.fsize, valign='middle', markup=True, size_hint=(None, None), size=sized)
 
 		self.jap_wrap = [False, []]
 		self.wrap = self.card[0] * 7
@@ -94,7 +97,7 @@ class Info(Popup):
 			self.sct1.add_widget(self.label[f"{item}_btn"])
 		self.test = {}
 		for nx in range(1, 5):
-			self.test[str(nx)] = Label(text="　" * nx, font_size=self.fsize, valign='middle')
+			self.test[str(nx)] = Label(text="・" * nx, font_size=self.fsize, valign='middle')
 			self.test[str(nx)].texture_update()
 
 		self.img_anchors = {}
@@ -143,20 +146,21 @@ class Info(Popup):
 		self.lang_btn.text = "E"
 		ability = []
 		for key in self.lang:
-			self.lang[key] = "[color=ffffff]　[/color]"
+			self.lang[key] = "[color=ffffff][/color]"
 
 		for label in self.pinfo_lst:
-			self.label[label].text = "[color=ffffff]　[/color]"
+			self.label[label].text = "[color=ffffff][/color]"
 
 		for label in self.pinfo_c:
 			if "_c" in label:
-				self.pinfo_c[label] = "[color=ffff00]　[/color]"
+				self.pinfo_c[label] = "[color=ffff00][/color]"
 			else:
-				self.pinfo_c[label] = "[color=ffffff]　[/color]"
+				self.pinfo_c[label] = "[color=ffffff][/color]"
 
 		self.jap_wrap = [False, list(card.jtext_o)]
-		self.title = card.name_t
-		self.lang["namee"] = card.name_t
+
+		self.title = card.name_t.replace("\n"," / ")
+		self.lang["namee"] = card.name_t.replace("\n"," / ")
 		self.lang["namej"] = card.jname
 
 		if "dc_w00_00.gif" in card.img_file:
@@ -244,11 +248,11 @@ class Info(Popup):
 				continue
 			else:
 				if item == 0:
-					self.label["trigger"].text = f"[color=ffffff][anchor=i{card.trigger[item]}{self.inx}1]　[/color]"
+					self.label["trigger"].text = f"[color=ffffff][anchor=i{card.trigger[item]}{self.inx}1]・[/color]"
 					self.inx += 1
 				# self.lang["triggerj"] = f"[color=ffffff]{self.jap[card.trigger[item]]}[/color]"
 				else:
-					self.label["trigger"].text += f" [color=ffffff][anchor=i{card.trigger[item]}{self.inx}1]　[/color]"
+					self.label["trigger"].text += f" [color=ffffff][anchor=i{card.trigger[item]}{self.inx}1]・[/color]"
 					self.inx += 1
 		# self.lang["triggerj"] = f" [color=ffffff]{self.jap[card.trigger[item]]}[/color]"
 
@@ -299,7 +303,7 @@ class Info(Popup):
 				cc = "alarm"
 			else:
 				cc = card.icon.lower()
-			self.label["icon"].text = f"[color=ffffff][anchor=i{cc}{self.inx}1]　[/color]"
+			self.label["icon"].text = f"[color=ffffff][anchor=i{cc}{self.inx}1]・[/color]"
 			self.inx += 1
 
 		for item in self.pinfo_lst:
@@ -365,26 +369,26 @@ class Info(Popup):
 			for nx in range(mstr.count(item)):
 				# if self.inx1 < 1 and f"\"{item}" in mStr and self.img_card.source.split("/")[-1] in self.cgst06:
 				if self.inx1 < 1 and f"\"{item}" in mstr and any(sx in self.label["id"].text for sx in self.cgst06):
-					mstr = mstr.replace(f"\"{item}", f"\n\"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(f"\"{item}", f"\n\"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
-				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
+				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ",1)
 				elif self.inx1 < 1 and not btn and "IREST" in item and any(sx in self.label["id"].text for sx in self.rest_fix):
 					# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
-					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
 				elif self.inx1 < 1 and not btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix):
 					# elif self.inx1 < 1 and not btn and "IREVERSE" in item and self.img_card.source.split("/")[-1] in self.reverse_fix:
-					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
-				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
+				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ",1)
 				elif self.inx1 < 1 and btn and "IREVERSE" in item and any(sx in self.label["id"].text for sx in self.reverse_fix_btn):
 					# elif self.inx1 < 1 and btn and "IREVERSE" in item and self.img_card.source.split("/")[
 					# 	-1] in self.reverse_fix_btn:
-					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(item, f"\n[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ", 1)
 					self.inx1 += 1
-				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ",1)
+				# mStr = mStr.replace(f"\"{item}", f" [anchor=cgst06]\" [anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ",1)
 				else:
-					mstr = mstr.replace(f"{item}", f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'　' * self.anchors_text[item]} ", 1)
+					mstr = mstr.replace(f"{item}", f"[anchor={item1.lower()}{self.inx}{self.anchors_text[item]}]{'・' * self.anchors_text[item]} ", 1)
 				self.inx += 1
 		if "の" in mstr:
 			mstr = self.wrap_jap(mstr)
@@ -443,7 +447,7 @@ class Info(Popup):
 			self.img_anchors[itt].y = -self.card[1] * 20
 
 		i1 = 0
-		print(self.label["text"].anchors)
+
 		for item in self.label["text"].anchors:
 			# if "cgst06" in item:
 			# 	continue

@@ -256,6 +256,7 @@ def gdata_init():
 	        "mulligan": [[], []],
 	        "encore_type": "",
 	        "attack_start": True,
+	        "contadd":{},
 	        "dmg": 0,
 	        "attack": 0,
 	        "clear": True,
@@ -288,7 +289,8 @@ def gdata_init():
 	        "clocker_rev": False,
 	        "noact": {"1": False, "2": False},
 	        "noclimax": {"1": False, "2": False},
-	        "anyclimax": {"1": False, "2": False},
+	        "anyClrclimax": {"1": False, "2": False},
+	        "anyClrChname": {"1": [], "2": []},
 	        "noclock": {"1": False, "2": False},
 	        "climax_play": False,
 	        "reshuffle": False,
@@ -298,6 +300,7 @@ def gdata_init():
 	        "rrev":False,
 	        "drev":False,
 	        "damage": 0,
+	        "damage_trigger":"",
 	        "damage_refresh": 0,
 	        "ability_trigger": "",
 	        "power": (),
@@ -305,6 +308,7 @@ def gdata_init():
 	        "stock": 0,
 	        "numbers": "",
 	        "play_card": "",
+	        "check_clock":False,
 	        "ability_effect": [],
 	        "ability": "",
 	        "ability_doing": "",
@@ -329,6 +333,8 @@ def gdata_init():
 	        "stack_pop": False,
 	        "confirm_temp": {},
 	        "btn_id": "",
+	        "ifcount":0,
+	        "refresh_point":False,
 	        "trev": "",
 	        "search": "",
 	        "damageref": False,
@@ -336,7 +342,8 @@ def gdata_init():
 	        "reflev": [],
 	        "choose": False,
 	        "encore": {"1": [], "2": []},
-	        "noencore": {"1": False, "2": False},
+	        "stock_payed":False,
+	        "no_encore": {"1": False, "2": False},
 	        "search_type": "",
 	        "counter": [],
 	        "counter_id": "",
@@ -357,9 +364,11 @@ def gdata_init():
 	        "auto_effect": [],
 	        "bodyguard": False,
 	        "move": "",
+	        "markerstock":[],
 	        "astock": {"1": [], "2": []},
+	        "astock_select":False,
 	        "estock": {"1": [], "2": []},
-	        "mstock": "",
+	        "mstock": ["",0],
 	        "if": [],
 	        "ld": False,
 	        "astock_pop": False,
@@ -408,6 +417,7 @@ def network_init():
 		"varlvl": [],
 		"act": ["", "", 0, [], [], 0, -1]
 	}
+
 
 def add_db(item):
 	with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
@@ -479,7 +489,6 @@ def atlas_make():
 		# 		add_db(item)
 
 	for item in to_remove:
-		print(item)
 		remove(item)
 
 	# if len(se["main"]["a"]) > 0:
@@ -596,3 +605,5 @@ COMPUTER = True
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
 act_ability = "[ACT]"
+
+cont_waiting = ["SHS/W98-040"]

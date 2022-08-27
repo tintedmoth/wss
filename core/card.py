@@ -141,6 +141,7 @@ class Card(RelativeLayout):
 		self.size = card
 		self.marker = False
 		self.wmarker = False
+		self.back_info = True
 
 		self.img_blank = f"atlas://{img_in}/other/blank"
 		self.img_none = f"atlas://{img_in}/other/none"
@@ -371,13 +372,15 @@ class Card(RelativeLayout):
 		else:
 			self.rotation.angle = angle
 
-	def show_back(self):
+	def show_back(self,i=True):
 		self.back = True
+		self.back_info =i
 		with self.canvas:
 			self.cover.source = self.img_back
 
 	def show_front(self):
 		self.back = False
+		self.back_info = True
 		with self.canvas:
 			self.cover.source = self.img_blank
 
@@ -442,8 +445,8 @@ class Card(RelativeLayout):
 				self.name_c = []
 				if not (self.pos_old == "Hand" and self.pos_new == "Hand"):
 					self.level_c = []
+					self.cost_c = []
 				self.colour_c = []
-				self.cost_c = []
 				self.trait_c = []
 				self.text_c = []
 				self.wmarker = False
@@ -451,13 +454,13 @@ class Card(RelativeLayout):
 					if item != "":
 						self.text_c.append([item, -1])
 				self.update_trait()
-				self.update_name()
 				self.update_power()
 				self.update_cost()
 				self.update_soul()
 				self.update_ability()
 				self.update_colour()
 				self.update_level()
+				self.update_name()
 
 	def update_trait(self):
 		self.trait_t = []
@@ -741,7 +744,7 @@ class Card(RelativeLayout):
 		if self.card == "Character":
 			for item in self.name_c:
 				if item[1] != 0:
-					self.name_t += f" - {item[0]}"
+					self.name_t += f"\n{item[0]}"
 
 	def update_marker(self, m=0):
 		if m > 0:
@@ -878,6 +881,7 @@ class CardImg(RelativeLayout):
 		self.jflavour = ""
 		self.jtrait = ()
 		self.back = False
+		self.back_info = True
 		self.status = ""
 		self.pos_old = ""
 		self.pos_new = ""
@@ -1070,13 +1074,15 @@ class CardImg(RelativeLayout):
 	def reverse(self):
 		self.status = "Reverse"
 
-	def show_back(self):
+	def show_back(self,i=True):
 		self.back = True
+		self.back_info = i
 		with self.canvas:
 			self.cover.source = self.img_back
 
 	def show_front(self):
 		self.back = False
+		self.back_info = True
 		with self.canvas:
 			self.cover.source = self.img_blank
 
@@ -1380,6 +1386,7 @@ class CardEmpty:
 		self.jflavour = ""
 		self.jtrait = ()
 		self.back = True
+		self.back_info = True
 		self.movable = False
 		self.status = ""
 		self.pos_old = ""
