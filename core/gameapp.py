@@ -36,7 +36,6 @@ class GameApp(App):
 		return parent
 
 	def on_keyboard(self, window, key, *args):
-		print(key)
 		"""
 		used to manage the effect of the escape key
 		"""

@@ -1,3 +1,9 @@
+0.32.2
+	Fixed error email
+
+0.32.1
+	Fixed DS2/SE16-43 ability
+
 0.32.0
 	Added Jap Black Rock Shooter cards
 

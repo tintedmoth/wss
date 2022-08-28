@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from zipfile import ZipFile
 
 import certifi as cfi
+from core.mail import mail
 from kivy.animation import Animation
 from kivy.app import App
 from kivy.clock import Clock
@@ -55,7 +56,7 @@ from core.var import *
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
 __author__ = "totuccio"
 __copyright__ = "Copyright © 2020 totuccio"
-__version__ = "0.32.0"
+__version__ = "0.32.2"
 
 
 def list_str(lst, sep=".", sh=False):
@@ -152,6 +153,7 @@ class GameMech(Widget):
 
 	def start_setting(self, *args):
 		self.parent.parent.version = __version__
+		mail[0] = __version__
 		self.scale_mat()
 		self.mat["1"]["mat"] = Mat("1", self.mat["1"]["per"])
 		self.mat["2"]["mat"] = Mat("2", self.mat["2"]["per"])
@@ -4903,6 +4905,7 @@ class GameMech(Widget):
 	def mcheck_data(self, request, result):
 		self.net["failed"] = False
 		self.net["got"] = True
+		mail[1] = self.net["room"]
 		# var = result.decode('UTF-8')
 		var = str(result)
 		# print(var)  # @@@
@@ -4937,8 +4940,6 @@ class GameMech(Widget):
 				self.net["status"] = "shuffle"
 				self.net["game"] = "online"
 				self.gd["com"] = False
-				global netroom
-				netroom = self.net["room"]
 				self.start_game()
 			elif "r1_" in var and self.net["player"] == 1 and self.net["ready"] == 0:
 				self.mcreate_popup.dismiss()

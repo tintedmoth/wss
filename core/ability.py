@@ -1721,7 +1721,11 @@ class Ability:
 			d = ["alarm", "do", d]
 
 		if p:
-			if "do" in d:
+			if "give" in d:
+				d.insert(d.index("give"), p[0])
+				if len(p) == 2:
+					d.insert(d.index(p[0]), p[1])
+			elif "do" in d:
 				if "if" in d:
 					d.insert(d.index("if"), p[0])
 				else:
@@ -4480,9 +4484,10 @@ class Ability:
 		c = []
 		if "if there are no characters in your back stage, you cannot play this from hand" in t:
 			c = [0, "Character", "Back", "lower", "play"]
-		elif "if you don't have a character with either  and/or  in name" in t and "you cannot play this from your hand" in t:
+		elif "if you don't have  character with either  and/or  in name" in t and "you cannot play this from your hand" in t:
 			c = [0, "Name", f"{self.name(a, self.cond[1], s='n')}_{self.name(a, self.cond[1] + 2, s='n')}", "lower", "play"]
 			self.cond[1] += 4
+			self.cond[0]+=1
 		elif ((("if you don't have a character with  in name" in t or "if you do not have a character with  in name" in t) and "\" in name" in a.lower()) or ("if you don't have a " in t and "if you don't have a \"" in a.lower())) and ("you may not play this from hand" in t or "you cannot play this from your hand" in t or "you may not play this" in t):
 			c = [0, "Name", self.name(a, self.cond[1], s='n'), "lower", "play"]
 			self.cond[1] += 2

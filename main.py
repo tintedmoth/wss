@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import SMTPHandler
 from os import mkdir, environ
 from os.path import exists
 
@@ -9,7 +10,10 @@ if not exists(data_ex):
 
 with open(f"{data_ex}/log", "w",encoding="utf-8") as log_file:
 	pass
-logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG)
+logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+smtp_handler = logging.handlers.SMTPHandler(mailhost=('smtp.totuccio.com', 587), fromaddr='tsws@totuccio.com', toaddrs=['tintedmoth@gmail.com'], subject='Error', credentials=('tsws@totuccio.com','error3mail'), secure=())
+smtp_handler.setLevel(logging.ERROR)
+logging.getLogger().addHandler(smtp_handler)
 
 environ["KIVY_NO_CONSOLELOG"] = "1"
 
@@ -26,27 +30,24 @@ if platform == 'android':
 		else:
 			print("Did not get all permissions")
 
-
 	# Ensures that the permissions are checked before proceeding
-	while not (check_permission(Permission.WRITE_EXTERNAL_STORAGE) and check_permission(Permission.READ_EXTERNAL_STORAGE)):
-		print("Both perms granted?: ", check_permission(Permission.WRITE_EXTERNAL_STORAGE) and check_permission(Permission.READ_EXTERNAL_STORAGE))
-		request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE], permission_callback)
+	# while not (check_permission(Permission.WRITE_EXTERNAL_STORAGE) and check_permission(Permission.READ_EXTERNAL_STORAGE)):
+	# 	print("Both perms granted?: ", check_permission(Permission.WRITE_EXTERNAL_STORAGE) and check_permission(Permission.READ_EXTERNAL_STORAGE))
+	# 	request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE], permission_callback)
 
 from kivy.config import Config
 
 Config.set("graphics", "fullscreen", "auto")
 
 import kivy.core.window as window
-from core.emailapp import EmailApp
+from core.mail import mail
 from core.gameapp import GameApp
 
 window.Window.clearcolor = (0, 0, 0, 1.)
-emailapp = EmailApp()
 gameapp = GameApp()
 
 if __name__ in ("__android__", "__main__"):
 	try:
 		gameapp.run()
 	except:
-		logging.exception("Got exception on main handler")
-		emailapp.send_error(gameapp.version, gameapp.netroom)
+		logging.exception(f"Got exception on main handler {mail[0]} {mail[1]}")
