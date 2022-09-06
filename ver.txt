@@ -1,3 +1,10 @@
+0.33.0
+	Added Jap Saekano - How to Raise a Boring Girlfriend Fine cards
+	Added Jap Nichijou cards
+	Added Jap Katanagatari cards
+	Changed button text size
+	Fixed Clock Phase not Clocking after leveling up 
+
 0.32.2
 	Fixed error email
 
