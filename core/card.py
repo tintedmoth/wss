@@ -1178,7 +1178,7 @@ class CardImg(RelativeLayout):
 				self.colour.append(item[0].lower())
 		with self.canvas:
 			if self.cid != "" and self.cid != "player":
-				self.colour_i.source = f"atlas://{img_in}/other/{''.join(s[0].lower() for s in self.colour)}"
+				self.colour_i.source = f"atlas://{img_in}/other/{''.join(s[0] for s in self.colour)}"
 			else:
 				self.colour_i.source = self.img_blank
 

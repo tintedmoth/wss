@@ -50,6 +50,7 @@ class Colours(RelativeLayout):
         for c in self.colour_t:
             self.colour_t[c] = False
         self.colour = ""
+
         for c in colours:
             self.colour_t[c[0].lower()] = True
             if not self.ordered:

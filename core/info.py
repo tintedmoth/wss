@@ -522,7 +522,7 @@ class Info(Popup):
 				col += 1
 
 		self.replaceImage()
-		if len(self.title) > 40:
+		if len(self.title) > 42:
 			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6 - self.card[1] / 3)
 		else:
 			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)

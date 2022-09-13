@@ -122,16 +122,19 @@ class AI:
 						payable.append("Discard")
 						payable.append("AI_pay")
 						payable.append(hand1[:pay[0][ind + 1]])
-		if "WDecker" in pay[0]:
+		if "WDecker" in pay[0] or "Zwei" in pay[0]:
 			loc = pdata[self.player]["Waiting"]
-			ind = pay[0].index("WDecker")
+			if "WDecker" in pay[0]:
+				ind = pay[0].index("WDecker")
+			elif "Zwei" in pay[0]:
+				ind = pay[0].index("WDecker")
 
 			if len(loc)>=pay[0][ind + 1]:
 				if pay[0][ind + 2] == "Climax" or pay[0][ind + 2] == "Character" or pay[0][ind + 2] == "Event":
 					hand1 = [h for h in loc if cdata[h].card == pay[0][ind + 2]]
 				# elif "CXName=" in pay[0][ind + 2]:
 				# 	hand1 = [h for h in loc if pay[0][ind + 3] in cdata[h].name]
-				elif "Name" in pay[0][ind + 2]:
+				elif "Name" in pay[0][ind + 2] or "ZName" in pay[0][ind + 2]:
 					hand1 = [h for h in loc if any(name in cdata[h].name for name in pay[0][ind + 3].split("_"))]
 				elif "Trait" in pay[0][ind + 2]:
 					hand1 = [h for h in loc if any(name in cdata[h].trait for name in pay[0][ind + 3].split("_"))]
@@ -142,7 +145,10 @@ class AI:
 
 				if "AI_pay" not in payable:
 					payable.append("AI_pay")
-				payable.append("WDecker")
+				if "WDecker" in pay[0]:
+					payable.append("WDecker")
+				elif "Zwei" in pay[0]:
+					payable.append("WDecker")
 				payable.append(hand1[:pay[0][ind + 1]])
 
 		if "janken" in effect and payable:
@@ -376,9 +382,10 @@ class AI:
 		if not cards:
 			cards = self.get_stage_target(pdata, cdata, gdata)
 		choose = []
+		if des:
+			choose.append("AI_Stage")
 		if "Waiting" in des:
 			cards = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if s != ""]
-			choose.append("AI_Stage")
 			if "WOther" in gdata["pay"]:
 				ind = gdata["ability_trigger"].split("_")[1]
 				if ind in cards:
@@ -386,8 +393,19 @@ class AI:
 			if "WTrait" in gdata["pay"]:
 				cards = [s for s in cards if any(tr in cdata[s].trait_t for tr in gdata["pay"][gdata["pay"].index("WTrait")+1].split("_"))]
 			choose.append(sample(cards,gdata["pay"][gdata["pay"].index("Waiting")+1]))
-		elif"Buff" in des:
-			choose.append("AI_Stage")
+		elif "Marker" in des:
+			if "Zwei" in gdata["pay"]:
+				if "ZMarkers" in gdata["pay"]:
+					if gdata["pay"][gdata["pay"].index("ZMarkers")+1] == 0 and "ZMlower" in gdata["pay"]:
+						cards = [s for s in cards if s not in pdata[s[-1]["marker"]] or (s in pdata[s[-1]["marker"]] and len(pdata[s[-1]["marker"]][s])<=0)]
+				if "ZMName=" in gdata["pay"]:
+					cards = [s for s in cards if gdata["pay"][gdata["pay"].index("ZMName=") + 1] in cdata[s].name_t]
+				if len(cards) > 0:
+					choose.append(sample(cards, gdata["pay"][gdata["pay"].index("ZMarkers")+1]))
+				else:
+					for x in range(gdata["pay"][gdata["pay"].index("ZMarkers")+1]):
+						choose.append("")
+		elif "Buff" in des:
 			if len(cards)>0:
 				choose.append(sample(cards,gdata["effect"][0]))
 			else:
