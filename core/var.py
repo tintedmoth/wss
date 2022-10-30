@@ -5,20 +5,14 @@ from json import dump as jdump
 from json import dumps as jdumps
 from json import load as jload
 from json import loads as jloads
-from os import remove, mkdir
-from os.path import exists
+from os import remove
 from zlib import compress as zcom
 from zlib import decompress as zdecom
-
 from core.ability import Ability as Ab
 from core.datapath import *
-
-
 def json_zip(j):
 	j = {ZIP_KEY: benco(zcom(jdumps(j, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))).decode('ascii')}
 	return j
-
-
 def json_unzip(j, insist=True):
 	try:
 		assert (j[ZIP_KEY])
@@ -28,26 +22,20 @@ def json_unzip(j, insist=True):
 			raise RuntimeError("JSON not in the expected format {" + str(ZIP_KEY) + ": zipstring}")
 		else:
 			return j
-
 	try:
 		j = zdecom(bdeco(j[ZIP_KEY]))
 	except:
 		raise RuntimeError("Could not decode/unzip the contents")
-
 	try:
 		j = jloads(j)
 	except:
 		raise RuntimeError("Could interpret the unzipped contents")
-
 	return j
-
-
 def pdata_init():
 	return {
 		"1": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "colour": [], "janken": "",
 		      "marker": {},
-		      # "dict": {},"encore": [],
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -85,7 +73,6 @@ def pdata_init():
 		"2": {"Hand": [], "Res": [], "Clock": [], "Library": [], "Level": [], "Climax": [], "Stock": [], "Memory": [],
 		      "Center": ["", "", ""], "Back": ["", ""], "Waiting": [], "encore": [], "colour": [], "janken": "",
 		      "marker": {},
-		      # "dict": {},
 		      "deck": {},
 		      "name": "",
 		      "deck_name": "",
@@ -120,8 +107,6 @@ def pdata_init():
 		               "Battle": False,
 		               "Encore": False,
 		               "End": False}}}
-
-
 def gdata_init():
 	return {"debug": True,
 	        "d_rotation": False,
@@ -132,18 +117,11 @@ def gdata_init():
 	        "multiplay_btn": True,
 	        "download_btn": True,
 	        "show_opp_hand": False,
-	        "show_wait_popup": True,  # Popup while waiting for opp network move
+	        "show_wait_popup": True,  
 	        "com": True,
-	        # "ai": None,
-	        # "multi": False,
-	        # "level_both": False,
 	        "confirm_requirement": True,
-	        # if True a popup appear when requirement are not met. if False cards won't be able to go into the field (playmat)
-	        "overlap_confirm": True,  # if True confirmation popup will appear when overlapping characters
-	        # "encore_overlap_confirm": True,
-	        # if True encore confirmation popup will appear when overlapping characters
+	        "overlap_confirm": True,  
 	        "remove_cards_in_deck": False,
-
 				"HDimg":False,
 	        "load": False,
 	        "check_atk": True,
@@ -163,11 +141,9 @@ def gdata_init():
 	        "selected": "",
 	        "selected_o": "",
 	        "stage": ["Center0", "Center1", "Center2", "Back0", "Back1"],
-
 	        "fields": ["Hand", "Center", "Back"],
 	        "janken_choice": ("l", "k", "p", "s"),
 	        "moveable": [], "playable_climax": [],
-
 				"cont_on":False,
 	        "stack": {"1": [], "2": []},
 	        "stacked": {"0": []},
@@ -186,7 +162,6 @@ def gdata_init():
 	        "per_poped": ["",[],0,-1,0],
 	        "act_pop": {},
 	        "act_poped": "",
-	        # "cancel": True,
 	        "reshuffle_trigger_temp": "",
 	        "mill_check": [],
 	        "cancel_dmg": False,
@@ -200,7 +175,7 @@ def gdata_init():
 	        "p_f": True,
 	        "p_max_s": 0,
 	        "p_min_s": -1,
-	        "popup_done": (False, False),  # (popup open, popup done)
+	        "popup_done": (False, False),  
 	        "p_rows": 1,
 	        "p_l": [],
 	        "p_ld": [],
@@ -236,7 +211,6 @@ def gdata_init():
 	        "touch_move_x": tuple(),
 	        "touch_move_y": tuple(),
 	        "old_pos": tuple(),
-
 	        "popup_encore": True,
 	        "auto_recheck": False,
 	        "counter_icon": {"1": [True, True], "2": [True, True]},
@@ -379,6 +353,7 @@ def gdata_init():
 	        "estock_pop": False,
 	        "notargetfield": False,
 	        "brainstorm": 0,
+	        "stack_return":False,
 	        "brainstorm_c": [0, []],
 	        "resonance": [False, [],0],
 	        "random_reveal": [],
@@ -395,8 +370,6 @@ def gdata_init():
 	        "battle": [],
 	        "attack_t": {"d": [True, True, True], "s": [True, True, True], "f": [True, True, True]}
 	        }
-
-
 def network_init():
 	return {
 		"url": "https://www.totuccio.com/ws/ws.php",
@@ -421,17 +394,11 @@ def network_init():
 		"varlvl": [],
 		"act": ["", "", 0, [], [], 0, -1]
 	}
-
-
 def add_db(item):
 	with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
 		temp = json_unzip(jload(rjson))
-
 		for key in list(temp.keys()):
 			for item2 in temp[key]:
-				# if key == "a":
-				# 	if item2 not in se["main"][key]:
-				# 		se["main"][key][item2] = dict(temp[key][item2])
 				if key == "c":
 					if item2 not in se["main"][key]:
 						se["main"][key].append(item2)
@@ -451,24 +418,18 @@ def add_db(item):
 				elif key == "m":
 					if item2 not in se["main"][key]:
 						se["main"][key].append(item2)
-
-
 def atlas_make():
 	files = {}
 	to_remove = []
 	for item in se["check"]:
 		files[item] = {}
 		for item1 in se["check"][item]:
-			# if item1 == "e" or item1 == "j" or item1 == "d" or item1 == "s":
-			# 	continue
-			# files[item][item1] = False
 			if "-d" in item1 and exists(f"{data_ex}/{item1}"):
 				with open(f"{data_ex}/{item1}", "rb") as ft:
 					hash_md5 = md5()
 					for chunk in iter(lambda: ft.read(4096 * 10), b""):
 						hash_md5.update(chunk)
 					if hash_md5.hexdigest() == se["check"][item][item1]:
-						# files[item][item1] = True
 						if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
 							se["main"]["w"].remove(se["check"][item]["s"])
 						add_db(item)
@@ -476,138 +437,62 @@ def atlas_make():
 						to_remove.append(f"{data_ex}/{item1}")
 			else:
 				continue
-			# elif "-" in item1 and exists(f"{img_ex}/{item1}"):
-			# 	with open(f"{img_ex}/{item1}", "rb") as ft:
-			# 		hash_md5 = md5()
-			# 		for chunk in iter(lambda: ft.read(4096 * 10), b""):
-			# 			hash_md5.update(chunk)
-			# 		if hash_md5.hexdigest() == se["check"][item][item1]:
-			# 			files[item][item1] = True
-			# 		else:
-			# 			if "w" in se["main"] and se["check"][item]["s"] in se["main"]["w"]:
-			# 				se["main"]["w"].remove(se["check"][item]["s"])
-			# 			to_remove.append(f"{img_ex}/{item1}")
-		#
-		# if all(files[item][s] for s in files[item]):
-		# 	if exists(f"{data_ex}/{item}-d"):
-		# 		add_db(item)
-
 	for item in to_remove:
 		remove(item)
-
-	# if len(se["main"]["a"]) > 0:
-	# 	with open(f"{img_ex}/main.atlas", "w") as atlas:
-	# 		jdump(se["main"]["a"], atlas, separators=(',', ':'), sort_keys=True)
-	# else:
-	# 	if exists(f"{img_ex}/main.atlas"):
-	# 		remove(f"{img_ex}/main.atlas")
-
-
 ZIP_KEY = 'I2UHBG58pJ'
-
-if not exists(data_ex):
-	mkdir(data_ex)
-if not exists(img_ex):
-	mkdir(img_ex)
-if not exists(cache):
-	mkdir(cache)
-
 ab = Ab()
 with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rp:
 	se = json_unzip(jload(rp))
 with open(f"{data_in}/cdata.db", "r", encoding="utf-8") as rc:
 	sc = json_unzip(jload(rc))
-
 sp = se["playmat"]
 sd = se["main"]["t"]
 sn = se["neo"]
-
 annex_img = []
 with open(f"{img_in}/annex.atlas", "r", encoding="utf-8") as ax:
 	ann = jload(ax)
 	for f in ann:
 		for an in ann[f].keys():
 			annex_img.append(an)
-
 other_img = []
 with open(f"{img_in}/other.atlas", "r", encoding="utf-8") as ox:
 	ann = jload(ox)
 	for f in ann:
 		for an in ann[f].keys():
 			other_img.append(an)
-
 if exists(f"{data_ex}/cej.db"):
 	with open(f"{data_ex}/cej.db", "r", encoding="utf-8") as rd:
 		scej = json_unzip(jload(rd))
 		for deck in scej:
 			sd[deck] = dict(scej[deck])
-
-			# if sd[deck]["c"]:
-			# 	icx = 0
-			# 	ict = 0
-			# 	iqt = 0
-			# 	ina = {}
-			# 	for card in scej[deck]["deck"]:
-			# 		ilt = 4
-			# 		for text in sc[card]["text"]:
-			# 			eff = ab.cont(text)
-			# 			if "limit" in eff:
-			# 				ilt = 50
-			# 				break
-			# 		if sc[card]["name"] not in ina:
-			# 			ina[sc[card]["name"]] = 0
-			# 		if scej[deck]["deck"][card] > ilt:
-			# 			if ina[sc[card]["name"]] < ilt:
-			# 				iqt = ilt - ina[sc[card]["name"]]
-			# 		else:
-			# 			if ina[sc[card]["name"]] < ilt:
-			# 				iqt = ilt - ina[sc[card]["name"]]
-			# 				if scej[deck]["deck"][card] <= iqt:
-			# 					iqt = scej[deck]["deck"][card]
-			#
-			# 		if iqt > 0:
-			# 			if sc[card]["type"] == "Climax":
-			# 				icx += iqt
-			# 			ict += iqt
-			# 			ina[sc[card]["name"]] += iqt
-			#
-			# 	if not (ict == 50 and icx <= 8):
-			# 		sd[deck]["c"] = False
 else:
 	scej = {}
 	with open(f"{data_ex}/cej.db", "w") as w_d:
 		jdump(json_zip(scej), w_d, separators=(',', ':'))
-
 atlas_make()
-
-phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  # list of main phases to display
-steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  # list of main phases to display
+phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  
+steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  
 icon_lst = ("door", "soul", "gate", "bar", "bag", "book", "shot", "bounce", "counter", "clock", "arrow")
-
-info_popup_dt = 1.10  # sec time before info popup appear after holding card
-info_popup_press = 3  # clicked times before info popup appear after holding card
-phase_dt = 1.15 * 0.75  # phases transition time
-joke_dt = 0.3  # joke transition time
-ability_dt = 0.001  # ability transition time
-move_dt = 0.35  # card movement transition time
-move_dt_btw = move_dt * 1.25  # transition time between card movement
-popup_dt = 0.2  # transition time between card movement
-# move_dt_btw = move_dt * 1.42  # transition time between card movement
+info_popup_dt = 1.10  
+info_popup_press = 3  
+phase_dt = 1.15 * 0.75  
+joke_dt = 0.3  
+ability_dt = 0.001  
+move_dt = 0.35  
+move_dt_btw = move_dt * 1.25  
+popup_dt = 0.2  
 reveal_dt = 1.15
 server_dt = 1
-match_dt = 2  # check if room full every x second
-shuffle_dt = 0.02  # shuffling card speed
-shuffle_n = 7  # shuffle repetition
-starting_hand = 5  # number of cards when starting the game
-hand_limit = 7  # max number of cards allowed at the end of turn
-dbuild_limit = 5  # max col number of cards allowed at deck building
-popup_max_cards = 7  # max number of cards allowed width vise
+match_dt = 2  
+shuffle_dt = 0.02  
+shuffle_n = 7  
+starting_hand = 5  
+hand_limit = 7  
+dbuild_limit = 5  
+popup_max_cards = 7  
 select2cards = 5
-
 COMPUTER = True
-
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
 act_ability = "[ACT]"
-
 cont_waiting = ["SHS/W98-040"]

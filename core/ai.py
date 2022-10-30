@@ -1,30 +1,16 @@
 from random import sample, choice
 from core.ability import Ability as Ab
-
-
 class AI:
 	def __init__(self, player):
 		self.player = player
-		# if self.player == "1":
-		# 	gdata["opp"] = "2"
-		# elif self.player == "2":
-		# 	gdata["opp"] = "1"
-		# self.colour = {"yellow": 0, "green": 0, "red": 0, "blue": 0, "0": [], "1": [], "2": [], "3": [], "CX": []}
-		# self.level = {"0": 0, "1": 0, "2": 0, "3": 0, "CX": 0}
-		# self.hand = {"0": 0, "1": 0, "2": 0, "3": 0, "CX": 0}
-		# self.open_front = 0
-		# self.open_back = 0
-		# self.fill_data()
 		self.counter = [1500]
 		self.ab = Ab()
-
 	def filter_cards(self,lst,ind,pdata,cdata,gdata):
 		lst1 = []
 		if "CLevelE" in gdata["search_type"]:
 			level = gdata["search_type"].split("_")[-1]
 			if "<=" in level:
 				lst1 = [s for s in lst if ("Character" in cdata[s].card and cdata[s].level <= int(level[-1])) or "Event" in cdata[s].card]
-
 		elif "CLevel" in gdata["search_type"]:
 			if "_standby" in gdata["search_type"]:
 				lst1 = [s for s in lst if "Character" in cdata[s].card and cdata[s].level_t <= len(pdata[gdata["p_owner"]]["Level"]) + 1]
@@ -40,12 +26,9 @@ class AI:
 				lst1 = [s for s in lst if len(cdata[s].trait_t) <= 0 and "Character" in cdata[s].card]
 			else:
 				lst1 = [s for s in lst if any(trait in cdata[s].trait_t for trait in gdata["search_type"].split("_")[1:])]
-
 		elif "" in gdata["search_type"]:
 			lst1 = lst
-
 		return lst1
-
 	def ability(self, pdata, cdata,gdata):
 		pay = (gdata["pay"], gdata["payed"])
 		effect = gdata["effect"]
@@ -57,20 +40,15 @@ class AI:
 		back = [s for s in pdata[self.player]["Back"] if s != ""]
 		center = [s for s in pdata[self.player]["Center"] if s != ""]
 		stand_back = [s for s in back if cdata[s].status == "Stand"]
-		# waiting = pdata[self.player]["Waiting"]
 		confirm = "pass"
-
 		if not pay[1]:
 			payable = ["np"]
 		else:
 			payable = [""]
-
 		if "sspace" in gdata["p_l"]:
 			gdata["p_l"].remove("sspace")
-
 		if "pay" in effect and "do" in effect:
 			effect = effect[effect.index("do")+1]
-
 		if "Stock" in pay[0] and not stock >= pay[0][pay[0].index("Stock") + 1]:
 			payable.append("pass")
 		if "Rest" in pay[0]:
@@ -79,15 +57,13 @@ class AI:
 				payable = pay[0]
 			elif pay[0][ind + 1] >= 1 and stand >= 1:
 				if len(back) > 0 and len(stand_back) > 0:
-					# payable = pay[0]
 					payable.append("AI_pay")
 					payable.append(back[0])
 		if "Clock" in pay[0]:
 			ind = pay[0].index("Clock")
 			if pay[0][ind + 1] >= 1 and len(hand) >= 1:
-				# payable = pay[0]
 				payable.append("AI_pay")
-				payable.append(choice(hand))  # @ Random
+				payable.append(choice(hand))  
 		if any("Discard" in str(pp) for pp in pay[0]):
 			dis = [pp for pp in pay[0] if "Discard" in str(pp)]
 			for dd in dis:
@@ -100,21 +76,16 @@ class AI:
 				else:
 					loc = pdata[self.player]["Hand"]
 					ind = pay[0].index("Discard")
-
 				if pay[0][ind + 1] >= 1 and len(loc) >= 1:
 					if pay[0][ind + 2] == "Climax" or pay[0][ind + 2] == "Character" or pay[0][ind + 2] == "Event":
 						hand1 = [h for h in loc if cdata[h].card == pay[0][ind + 2]]
-					# elif "CXName=" in pay[0][ind + 2]:
-					# 	hand1 = [h for h in loc if pay[0][ind + 3] in cdata[h].name]
 					elif "Name" in pay[0][ind + 2]:
 						hand1 = [h for h in loc if any(name in cdata[h].name for name in pay[0][ind + 3].split("_"))]
 					elif "Trait" in pay[0][ind + 2]:
 						hand1 = [h for h in loc if any(name in cdata[h].trait for name in pay[0][ind + 3].split("_"))]
 					else:
 						hand1 = loc
-
 					hand1 = sorted(hand1, key=lambda e: (cdata[e].level, cdata[e].power), reverse=True)
-
 					if "AI_pay" in payable:
 						for hh in hand1[:pay[0][ind + 1]]:
 							payable[payable.index("AI_pay")+1].append(hh)
@@ -128,21 +99,16 @@ class AI:
 				ind = pay[0].index("WDecker")
 			elif "Zwei" in pay[0]:
 				ind = pay[0].index("WDecker")
-
 			if len(loc)>=pay[0][ind + 1]:
 				if pay[0][ind + 2] == "Climax" or pay[0][ind + 2] == "Character" or pay[0][ind + 2] == "Event":
 					hand1 = [h for h in loc if cdata[h].card == pay[0][ind + 2]]
-				# elif "CXName=" in pay[0][ind + 2]:
-				# 	hand1 = [h for h in loc if pay[0][ind + 3] in cdata[h].name]
 				elif "Name" in pay[0][ind + 2] or "ZName" in pay[0][ind + 2]:
 					hand1 = [h for h in loc if any(name in cdata[h].name for name in pay[0][ind + 3].split("_"))]
 				elif "Trait" in pay[0][ind + 2]:
 					hand1 = [h for h in loc if any(name in cdata[h].trait for name in pay[0][ind + 3].split("_"))]
 				else:
 					hand1 = loc
-
 				hand1 = sorted(hand1, key=lambda e: (cdata[e].level, cdata[e].power), reverse=True)
-
 				if "AI_pay" not in payable:
 					payable.append("AI_pay")
 				if "WDecker" in pay[0]:
@@ -150,7 +116,6 @@ class AI:
 				elif "Zwei" in pay[0]:
 					payable.append("WDecker")
 				payable.append(hand1[:pay[0][ind + 1]])
-
 		if "janken" in effect and payable:
 			pass
 		elif "confirm" in effect and payable:
@@ -161,7 +126,6 @@ class AI:
 			salvage = list(gdata["p_l"])
 			if pay[1] and len(salvage) >= 1:
 				salvage = sorted(salvage, key=lambda e: (cdata[e].level,cdata[e].power), reverse=True)
-
 				payable.append("AI_salvage")
 				if pay[1] and len(salvage) >= 1:
 					payable.append(salvage[:effect[0]])
@@ -173,7 +137,6 @@ class AI:
 			salvage = list(gdata["p_l"])
 			if pay[1] and len(salvage) >= 1:
 				salvage = sorted(salvage, key=lambda e: (cdata[e].level,cdata[e].power), reverse=True)
-
 				payable.append("AI_schange")
 				if pay[1] and len(salvage) >= 1:
 					payable.append(salvage[:effect[0]])
@@ -186,7 +149,6 @@ class AI:
 					search = sorted(search, key=lambda e: cdata[e].level)
 				else:
 					search = sorted(search, key=lambda e: (cdata[e].power, cdata[e].level), reverse=True)
-
 				payable.append("AI_search")
 				chosen = []
 				if pay[1] and len(search) >= 1:
@@ -208,7 +170,6 @@ class AI:
 				payable.append(chosen)
 		elif ("discard" in effect or "mdiscard" in effect) and pay[1]:
 			discard = list(gdata["p_l"])
-
 			if pay[1] and len(discard) >= 1:
 				discard = sorted(discard, key=lambda e: (cdata[e].power, cdata[e].level), reverse=True)
 				if "invert" in gdata["effect"]:
@@ -245,12 +206,7 @@ class AI:
 			temp = []
 			temppl = list(gdata["p_l"])
 			if "stack" in effect:
-				# if len(effect[effect.index("stack")+1])<2:
-				# 	sst = [effect[effect.index("stack")+1][0]]
-				# else:
 				sst = effect[effect.index("stack")+1][0]
-				# for st in sst:
-					# payble.append(st)
 				for rr in range(sst):
 					tt = choice(temppl)
 					temppl.remove(tt)
@@ -262,13 +218,10 @@ class AI:
 					temp.append("l")
 				else:
 					temp.append("t")
-
 			if "hand" in gdata["effect"]:
 				temp.append(effect[0])
 				temp.append(effect[effect.index("hand")+1])
-
 				discard = self.filter_cards(temppl,card.ind,pdata,cdata,gdata)
-
 				pick = []
 				if len(discard)>0:
 					pick = sample(temppl,effect[effect.index("hand")+1])
@@ -278,13 +231,11 @@ class AI:
 					temp.append("W")
 			payable.append(temp)
 		elif "survive" in effect and pay[1]:
-			# play = 0
 			attacker = 0
 			for ind in hand:
 				if self.playable(pdata, cdata,gdata, ind):
 					if "Character" in cdata[ind].card:
 						attacker += 1
-
 			for indd in stage:
 				if cdata[indd].status != "Reverse":
 					attacker += 1
@@ -293,39 +244,55 @@ class AI:
 		elif "rest" in effect and pay[1]:
 			pick = []
 			var = []
-			if effect[0] > 1:
+			print("ai",effect)
+			if effect[0] > 0:
 				for ind in back:
-					if cdata[ind].status != "Rest":
-						pick.append(ind)
+					if "Stand" in effect and cdata[ind].status != "Stand":
+						continue
+					if "Other" in effect and ind == card.ind:
+						continue
+					if "Trait" in effect and all(tt not in cdata[ind].trait_t for tt in effect[effect.index("Trait")+1].split("_")):
+						continue
+					pick.append(ind)
 				if effect[0] > len(pick):
 					for ind in pick:
 						var.append(ind)
 					pick = []
 					for ind in center:
-						if cdata[ind].status != "Rest":
-							pick.append(ind)
-					temp = sample(pick, effect[0] - len(var))
-					for ind in temp:
-						var.append(ind)
+						if "Stand" in effect and cdata[ind].status != "Stand":
+							continue
+						if "Other" in effect and ind == card.ind:
+							continue
+						if "Trait" in effect and all(tt not in cdata[ind].trait_t for tt in effect[effect.index("Trait") + 1].split("_")):
+							continue
+						pick.append(ind)
+					print(pick,var)
+					if pick:
+						if effect[0] - len(var)>=len(pick):
+							temp = sample(pick, effect[0] - len(var))
+							for ind in temp:
+								var.append(ind)
+						else:
+							var.append(choice(pick))
 				else:
 					var.append(choice(pick))
-					if len(var) < effect[0]:
-						for ind in pick:
-							if ind not in var:
-								var.append(ind)
-
+				if len(var) < effect[0]:
+					for ind in pick:
+						if ind not in var:
+							var.append(ind)
+			if len(var)<effect[0]:
+				for x in range(len(var)-effect[0]):
+					var.append("")
 			payable.append("AI_target")
 			payable.append(var)
 		elif "stand" in effect and pay[1]:
 			if "swap" in effect and "this" in effect:
 				payable.append("AI_target")
-
 				if effect[0] > 0 and len(gdata["p_l"])>0:
 					var = list(gdata["p_l"])
 					if card in var:
 						var.remove(card)
 					temp = sample(var, effect[0])
-
 					payable.append(temp)
 				else:
 					payable.append([""])
@@ -338,11 +305,9 @@ class AI:
 					payable.append(memo[:effect[0]])
 				else:
 					payable.append([""]*effect[0])
-
 		if payable:
 			confirm = payable
 		return confirm
-
 	def get_stage_target(self,pdata, cdata, gdata):
 		ind = gdata["ability_trigger"].split("_")[1]
 		p = ind[-1]
@@ -361,7 +326,6 @@ class AI:
 			cards = [s for s in pdata[p]["Center"] + pdata[p]["Back"] if s != ""]
 		if "other" in gdata["effect"] and ind in cards:
 			cards.remove(ind)
-
 		for card in list(cards):
 			for text in cdata[card].text_c:
 				if text[0].startswith("[CONT]") and text[1] != 0 and text[1] > -9:
@@ -370,14 +334,12 @@ class AI:
 						cards.remove(card)
 						break
 		return cards
-
 	def get_filtered_cards(self,cards,pdata, cdata, gdata):
 		if "Name=" in gdata["effect"]:
 			cards = [s for s in cards if gdata["effect"][gdata["effect"].index("Name=")+1] in cdata[s].name]
 		elif "Name" in gdata["effect"]:
 			cards = [s for s in cards if any(name in cdata[s].name for name in gdata["effect"][gdata["effect"].index("Name") + 1])]
 		return cards
-
 	def choose_stage_target(self,des,pdata,cdata,gdata,cards=[]):
 		if not cards:
 			cards = self.get_stage_target(pdata, cdata, gdata)
@@ -412,7 +374,6 @@ class AI:
 				for x in range(gdata["effect"][0]):
 					choose.append("")
 		return choose
-
 	def playable(self, pdata, cdata,gdata, ind):
 		level = len(pdata[self.player]["Level"])
 		card = cdata[ind]
@@ -428,21 +389,18 @@ class AI:
 					if card.cost <= len(pdata[ind[-1]]["Stock"]):
 						return True
 		return False
-
 	def play_stage(self, pdata, cdata, gdata):
 		move = []
+		print(gdata["effect"])
 		if "Stage" in gdata["effect"]:
 			center = [s for s in pdata[self.player]["Center"] if s != ""]
 			back = [s for s in pdata[self.player]["Back"] if s != ""]
 			level = len([s for s in pdata[self.player]["Level"] if s != ""])
-
 			if len(gdata["target"]) % 2 != 0:
 				cid = gdata["target"][-1]
 				card = cdata[cid]
-
 				center = sorted(center, key=lambda x: cdata[x].level)
 				back = sorted(back, key=lambda x: cdata[x].level)
-
 				if card.level > level:
 					if len(back) < 2:
 						move.append(f'Back{pdata[self.player]["Back"].index("")}')
@@ -453,7 +411,6 @@ class AI:
 						move.append(f'Center{pdata[self.player]["Center"].index("")}')
 					else:
 						move.append(f'Center{pdata[self.player]["Center"].index(center[0])}')
-
 				if not move:
 					st = choice(["Center", "Back"])
 					if st == "Center":
@@ -464,6 +421,7 @@ class AI:
 				if move:
 					move.insert(0, "AI_PlayStage")
 		elif "move" in gdata["effect"] and "move" in gdata["ability_doing"]:
+			print(gdata["target"])
 			if len(gdata["target"]) % 2 != 0:
 				field = gdata["stage"]
 				if "Back" in gdata["status"]:
@@ -472,37 +430,13 @@ class AI:
 					field = [n for n in field if "Center" in n]
 				if "Open" in gdata["status"]:
 					field = [n for n in field if pdata[self.player][n[:-1]][int(n[-1])]==""]
+				print(field)
 				if field:
 					move.append(choice(field))
 				if move:
 					move.insert(0, "AI_PlayStage")
 		return move
-
-	# def fill_data(self):
-	# 	for inx in range(50):
-	# 		card = cdata[str(inx + 1)]
-	#
-	# 		if card.card == "Climax":
-	# 			self.level["CX"] += 1
-	# 			if card.mcolour not in self.colour["CX"]:
-	# 				self.colour["CX"].append(card.mcolour)
-	# 		else:
-	# 			self.level[str(card.level)] += 1
-	# 			if card.mcolour not in self.colour[str(card.level)]:
-	# 				self.colour[str(card.level)].append(card.mcolour)
-	#
-	# 		self.colour[card.mcolour.lower()] += 1
-
-	# def update_hand(self):
-	# 	for ind in pdata[self.player]["Hand"]:
-	# 		card = cdata[ind]
-	# 		if card.card == "Climax":
-	# 			self.hand["CX"] += 1
-	# 		else:
-	# 			self.hand[str(card.level)] += 1
-
 	def mulligan(self, pdata, cdata):
-		# self.update_hand()
 		discard = []
 		level = len([s for s in pdata[self.player]["Level"] if s != ""])
 		for ind in pdata[self.player]["Hand"]:
@@ -511,20 +445,15 @@ class AI:
 			elif cdata[ind].level>=level:
 				discard.append(ind)
 		return discard
-
 	def clock(self, pdata, cdata,gdata):
-		# self.update_hand()
 		hand = pdata[self.player]["Hand"]
 		level = len(pdata[self.player]["Level"])
 		clock = len(pdata[self.player]["Clock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
 		back = len([s for s in pdata[self.player]["Back"] if s != ""])
-		# stock = len(pdata[self.player]["Stock"])
 		deck = len(pdata[self.player]["Library"])
 		climax = [s for s in hand if cdata[s].card == "Climax"]
-
 		clist = []
-
 		if level == 3 and (clock >= 6 or (clock >= 5 and deck < 6)):
 			discard = "pass"
 		elif center == 3 and back == 2 and len(hand) >= 7:
@@ -542,7 +471,6 @@ class AI:
 						clist.append(ind)
 				elif level > 1:
 					clist.append(ind)
-
 			if len(clist) < 1:
 				if level > 1 and "Blue" not in pdata[self.player]["colour"]:
 					clist = [s for s in hand if cdata[s].mcolour == "Blue"]
@@ -555,39 +483,28 @@ class AI:
 					for ind in hand:
 						if not self.playable(pdata, cdata,gdata, ind):
 							clist.append(ind)
-
 			if len(clist) > 0:
 				discard = choice(clist)
 			else:
 				discard = "pass"
-
 		return discard
-
 	def level_up(self, pdata, cdata):
-		# self.update_hand()
 		level = [s for s in pdata[self.player]["Clock"] if cdata[s].card != "Climax"]
 		discard = choice(level)
 		return discard
-
 	def hand_limit(self, pdata, cdata):
-		# self.update_hand()
 		discard = []
 		hand = list(pdata[self.player]["Hand"])
-
 		for inx in range(len(pdata[self.player]["Hand"][7:])):
 			r = choice(hand)
 			discard.append(r)
 			hand.remove(r)
-
 		return discard
-
 	def main_play(self, pdata, cdata, gdata):
-		# self.update_hand()
 		hand = pdata[self.player]["Hand"]
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
 		back = len([s for s in pdata[self.player]["Back"] if s != ""])
 		stock = len(pdata[self.player]["Stock"])
-
 		stock_req = 0
 		playable = []
 		play = []
@@ -601,9 +518,7 @@ class AI:
 				playable.append(ind)
 				if any("assist" in nx.lower() for nx in cdata[ind].text_o):
 					assist.append(ind)
-
 		playable = sorted(playable, key=lambda x: cdata[x].level, reverse=True)
-
 		if len(assist) > 0 and back < 2:
 			occ = []
 			for ind in assist:
@@ -618,7 +533,6 @@ class AI:
 						break
 				if back >= 2:
 					break
-
 		if len(playable) > 0 and center < 3:
 			occ = []
 			for ind in playable:
@@ -627,8 +541,6 @@ class AI:
 					continue
 				elif card.card == "Event":
 					continue
-				# event = self.event(ind,playable)
-				# play.append(event)
 				elif card.cost > stock:
 					continue
 				else:
@@ -639,30 +551,23 @@ class AI:
 							occ.append(ind)
 							occ.append(inx)
 							center += 1
-
 						if center >= 1 and gdata["turn"] == 1:
 							break
 						elif center >= 3:
 							break
-
 		if len(play) < 1:
 			play = "pass"
-
 		return play
-
 	def encore(self, pdata, cdata, gdata):
 		enc = True
 		encore = [s for s in pdata[self.player]["Center"] + pdata[self.player]["Back"] if s != "" and cdata[s].status == "Reverse"]
 		stock = len(pdata[self.player]["Stock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != "" and cdata[s].status != "Reverse"])
-		# back = len([s for s in pdata[self.player]["Back"] if s != "" and cdata[s].status != "Reverse"])
 		hand = pdata[self.player]["Hand"]
 		level = len(pdata[self.player]["Level"])
-
 		playable = []
 		if gdata["no_encore"][self.player]:
 			enc = False
-
 		if enc:
 			for card in list(encore):
 				for text in cdata[card].text_c:
@@ -671,38 +576,29 @@ class AI:
 						if eff and "no_target_self" in eff:
 							encore.remove(card)
 							break
-
 			if len(encore) > 0 and stock >= 3 + level:
 				for ind in hand:
 					if self.playable(pdata, cdata,gdata, ind):
 						playable.append(ind)
-
 				playable = [s for s in playable if cdata[s].card == "Character"]
-
 				if center <= 0 and len(playable) <= 1 and self.player not in gdata["active"]:
 					encore.sort(key=lambda x: cdata[x].power, reverse=True)
 			else:
 				encore = []
 		else:
 			encore = []
-
 		return encore
-
 	def main_move(self, pdata, cdata):
-		# hand = pdata[self.player]["Hand"]
 		back = [s for s in pdata[self.player]["Back"] if s != ""]
-
 		opp_card = []
 		pl_card = []
 		place = [0, 1, 2]
 		move = []
 		assist_move = False
-
 		if self.player == "1":
 			opp = "2"
 		elif self.player == "2":
 			opp = "1"
-
 		c = 0
 		m = (2, 1, 0)
 		for ind in range(3):
@@ -712,9 +608,7 @@ class AI:
 				card = cdata[pdata[opp]["Center"][ind]]
 				opp_card.append((card.power_t, m[int(card.pos_new[-1])]))
 			c += 1
-
 		opp_card = sorted(opp_card, key=lambda e: e[0], reverse=True)
-
 		for ind in pdata[self.player]["Center"]:
 			if ind == "":
 				continue
@@ -732,9 +626,7 @@ class AI:
 						if opp_card[r][1] == m[int(cdata[ind].pos_new[-1])]:
 							opp_card.remove(opp_card[r])
 							break
-
 		pl_card = sorted(pl_card, key=lambda e: e[0], reverse=True)
-
 		for item in pl_card:
 			for enemy in opp_card:
 				if not assist_move and item[0] > enemy[0] and enemy[1] in place:
@@ -750,33 +642,20 @@ class AI:
 				elif item[0] > enemy[0] and enemy[1] in place:
 					move.append((item[2], "Center", enemy[1]))
 					place.remove(enemy[1])
-
 		if len(move) < 1:
 			move = "pass"
-
 		return move
-
 	def event(self, pdata, cdata, ind, playble):
 		hand = pdata[self.player]["Hand"]
-		# level = len(pdata[self.player]["Level"])
-		# clock = len(pdata[self.player]["Clock"])
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
-		# back = len([s for s in pdata[self.player]["Back"] if s != ""])
-		# stock = len(pdata[self.player]["Stock"])
-		# deck = len(pdata[self.player]["Library"])
-		# climax = [s for s in hand if cdata[s].card == "Climax"]
-
 		card = cdata[ind]
-
 		if card.name == "Car Ears Magnifying Glass":
 			if len(playble.remove(ind)) >= center:
 				pass
-
 	def climax(self, pdata, cdata):
 		hand = pdata[self.player]["Hand"]
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
 		climax = [s for s in hand if cdata[s].card == "Climax" and cdata[s].mcolour in pdata[self.player]["colour"]]
-
 		if len(climax) > 1 and center > 1:
 			climax = choice(climax)
 		elif len(climax) > 0 and center >= 2:
@@ -784,21 +663,17 @@ class AI:
 		else:
 			climax = "pass"
 		return climax
-
 	def confirm_popup(self, effect, req):
 		ans = ""
 		if req:#and "salvage" in effect:
 			ans = "1"
-
 		return ans
-
 	def attack(self, pdata, cdata, gdata):
 		attack = []
 		if self.player == "2":
 			popp = "1"
 		else:
 			popp = self.player
-
 		for inx in range(3):
 			if gdata["bodyguard"]:
 				opp = 1
@@ -807,7 +682,6 @@ class AI:
 				opp = (2, 1, 0)[inx]
 				att = ["a","f","d","s"]
 			t =""
-
 			if pdata[self.player]["Center"][inx] != "":
 				card = cdata[pdata[self.player]["Center"][inx]]
 				for item in card.text_c:
@@ -869,29 +743,22 @@ class AI:
 						if "d" in att:
 							t = "d"
 						p = ""
-
 					if t != "":
 						attack.append([pdata[self.player]["Center"][inx], t, inx, opp, p])
-
 		if len(attack) < 1:
 			attack = "pass"
 		else:
 			attack = sorted(attack, key=lambda e: cdata[e[0]].power_t, reverse=True)
-
 		return attack
-
 	def counter_step(self, pdata, cdata, gdata, opp, pl):
 		hand = pdata[self.player]["Hand"]
 		level = len(pdata[self.player]["Level"])
 		card = cdata[pl]
 		copp = cdata[opp]
-
 		counter = []
-
 		if card.power_t < copp.power_t:
 			if card.level >= level - 1 and card.power_t + self.counter[0] > copp.power_t:
 				counter = [s for s in hand if cdata[s].icon == "Counter" and gdata["nobackup"][pl[-1]] and gdata["counter_icon"][pl[-1]][0]]
 		if len(counter) < 1:
 			counter = "pass"
-
 		return counter

@@ -1,11 +1,7 @@
 from kivy.uix.popup import Popup as Pop
-
 from core.datapath import *
-
-
 class Popup(Pop):
 	cid = ""
-
 	def __init__(self, **kwargs):
 		super(Popup, self).__init__(**kwargs)
 		self.title_font = f"{font_in}/{font}"
