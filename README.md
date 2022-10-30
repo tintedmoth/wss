@@ -1,10 +1,12 @@
 # README.md
 Hopefully you enjoy this app or find this app useful. This app was made as a hobby project to test out decks on the go when it was not possible to play friendly match with a friend.
 
+Email: tintedmoth@gmail.com
+
+Ko-fi: https://ko-fi.com/tintedmoth
+
 
 ### Reporting bugs and/or errors ###
-
-Email: tsWS@totuccio.com
 
 If you found or encounter any errors/bugs/incorrect data/missing data/crashes, feel free to email me on the above email. I'll try to reply them as soon as I can. If it is an error/crash the app would automatically open an email and append an error log. It would be helpful if you can include a description on what where you doing before the error/crash or a step on how to reproduce the error/crash consistently. This would help me a lot to troubleshoot and fix the app.
 
@@ -21,7 +23,6 @@ All logos, images, names are copyright of their perspective owners. The image us
 Single Player
  - Improve AI
  - Add more Ability
- - Eng/Jap Info (missing parts)
 
 Multiplayer
  - Private room
@@ -38,4 +39,4 @@ Multiplayer
  
  
  #
- Special thanks to Jason and Mervin.
+ Special thanks to Jason, Ken, Mervin.
