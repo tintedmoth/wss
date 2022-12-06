@@ -31,7 +31,6 @@ Multiplayer
 Single player
  - All cards ability should be working on player side
  - AI will not play event from hand
- - AI will only activate mandatory ability
  - AI might not activate optional ability
 
 Multiplayer
