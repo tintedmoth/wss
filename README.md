@@ -1,7 +1,7 @@
 # README.md
 Hopefully you enjoy this app or find this app useful. This app was made as a hobby project to test out decks on the go when it was not possible to play friendly match with a friend.
 
-I made a poll to decide the next set I will be adding in the app.  
+Poll to decide the next set I will be adding in the app.
 Link: https://forms.gle/NRojEgjiNyDByXiR8
 
 
