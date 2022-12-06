@@ -35,7 +35,3 @@ Single player
 
 Multiplayer
  - All cards ability should be working for both player
- 
- 
- #
- Special thanks to Jason, Ken, Mervin.
