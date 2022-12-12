@@ -1,0 +1,36 @@
+[{
+    "type": "bool",
+    "title": "Show missing requirement popup",
+    "desc": "Show a popup if requirement are not meet while playing a card",
+    "section": "Settings",
+    "key": "confirm_requirement"
+  },
+  {
+    "type": "bool",
+    "title": "Show overlap popup",
+    "desc": "Show a popup when playing over a card in stage",
+    "section": "Settings",
+    "key": "overlap_confirm"
+  },
+  {
+    "type": "bool",
+    "title": "Show counter popup",
+    "desc": "Show a popup confirmation when there are no playable counter cards",
+    "section": "Settings",
+    "key": "show_counter_popup"
+  },
+  {
+    "type": "bool",
+    "title": "Show waiting popup",
+    "desc": "Show a popup while waiting for opponent's move in multiplayer",
+    "section": "Settings",
+    "key": "show_wait_popup"
+  },
+  {
+    "type": "bool",
+    "title": "Download Higher Quality Image",
+    "desc": "If not ON, lower quality image will be downloaded",
+    "section": "Settings",
+    "key": "HDimg"
+  }
+]

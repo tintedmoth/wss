@@ -58,16 +58,15 @@ class Info(Popup):
 		self.jap_wrap = [False, []]
 		self.wrap = self.card[0] * 7
 		self.label["wrap"] = Label(text="", font_size=self.fsize, valign='middle', markup=True, size_hint=(None, None))
-		self.sct_size = (self.card[0] * 7.1, self.card[1] * 7.7)
+		self.sct_size = (self.card[0] * 7.1, self.card[1] * 8.5)
 		self.sct = RelativeLayout(size_hint=(1, 1))
-		self.sct1 = RelativeLayout(size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1))  
-		self.scv = ScrollView(do_scroll_x=False, size_hint=(1, None), size=(self.card[0] * 7.1, self.card[1] * 7.1), effect_cls="ScrollEffect")
+		self.sct1 = RelativeLayout(size_hint=(1, None), size=(self.sct_size[0], self.card[1] * 7.9))  
+		self.scv = ScrollView(do_scroll_x=False, size_hint=(1, None), size=(self.sct_size[0] + self.pad, self.card[1] * 6.9), effect_cls="ScrollEffect")
 		self.lang_btn = Button(size_hint=(None, None), size=(self.card[1] / 2, self.card[1] / 2), text="E", cid="lang", on_press=self.change_lang)
 		self.size = (self.sct_size[0] * 1.1, self.sct_size[1] + self.title_size + self.separator_height)
 		self.content = self.sct
 		self.sct.center = self.content.center
 		self.pos_c = self.sct_size[0] / 2
-		self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)
 		self.sct.add_widget(self.scv)
 		self.sct.add_widget(self.cls_btn)
 		self.sct.add_widget(self.lang_btn)
@@ -140,10 +139,10 @@ class Info(Popup):
 		self.lang["namej"] = card.jname
 		if "dc_w00_00.gif" in card.img_file:
 			card.img_file = card.img_file.replace(".gif", "")
-		if card.img_file in annex:
-			self.img_card.source = f"atlas://{img_in}/annex/{card.img_file}"
-		elif exists(f"{cache}/{card.img_file}"):
+		if exists(f"{cache}/{card.img_file}"):
 			self.img_card.source = f"{cache}/{card.img_file}"
+		elif card.img_file in annex:
+			self.img_card.source = f"atlas://{img_in}/annex/{card.img_file}"
 		else:
 			self.img_card.source = f"atlas://{img_in}/other/grey"
 		self.label["id"].text = f"[color=ffffff]{card.cid} {card.rarity}[/color]"
@@ -179,6 +178,8 @@ class Info(Popup):
 				self.pinfo_c["power_c"] = f"[color=ffff00]{card.power_t}[/color]"
 				self.pinfo_c["soul_o"] = f"[color=ffffff]{card.soul}[/color]"
 				self.pinfo_c["soul_c"] = f"[color=ffff00]{card.soul_t}[/color]"
+		self.pinfo_c["trait_o"] = "[color=ffffff] [/color]"
+		self.pinfo_c["trait_c"] = "[color=ffff00] [/color]"
 		for item in range(len(card.trait_t)):
 			if card.trait_t[item] == "" or card.trait_t[item] == "None" or card.trait_t[item] is None:
 				continue
@@ -192,6 +193,7 @@ class Info(Popup):
 					self.pinfo_c["trait_o"] += f" - [color=ffffff]{card.trait_t[item]}[/color]"
 					self.pinfo_c["trait_c"] += f" - [color=ffff00]{card.trait_t[item]}[/color]"
 		self.lang["traite"] = str(self.pinfo_c["trait_o"])
+		self.lang["traitj"] = "[color=ffffff] [/color]"
 		for nx in range(len(card.jtrait)):
 			if card.jtrait[nx] == "" or card.jtrait[nx] == "None" or card.jtrait[nx] is None:
 				continue
@@ -276,11 +278,11 @@ class Info(Popup):
 			if ss in mstr:
 				mstr = mstr.replace(ss, f"{self.set_only[ss]}")
 		if "'" in mstr:
-			if "'s " in mstr:
-				mstr = mstr.replace("'s ", "¬s ")
+			if "'s " in mstr or "'ll " in mstr:
+				mstr = mstr.replace("'s ", "?s ").replace("'ll ", "?ll ")
 			mstr = mstr.replace("'", "\"")
-			if "¬s " in mstr:
-				mstr = mstr.replace("¬s ", "'s ")
+			if "?s " in mstr or "?ll " in mstr:
+				mstr = mstr.replace("?s ", "'s ").replace("?ll ", "'ll ")
 		if "(" in mstr:
 			ita = f"({mstr.split('(')[-1]}"
 			if ")\"" not in ita:
@@ -393,9 +395,9 @@ class Info(Popup):
 				col += 1
 		self.replaceImage()
 		if len(self.title) > 42:
-			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6 - self.card[1] / 3)
+			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6.9 - self.card[1] / 3)
 		else:
-			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6)
+			self.scv.size = (self.sct_size[0] + self.pad, self.card[1] * 6.9)
 		self.sct1.size = (self.sct.size[0], scty)
 	def actual(self, btn):
 		if f"{btn.cid}_o" in self.pinfo_c and self.lang_btn.text == "E":

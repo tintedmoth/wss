@@ -244,7 +244,6 @@ class AI:
 		elif "rest" in effect and pay[1]:
 			pick = []
 			var = []
-			print("ai",effect)
 			if effect[0] > 0:
 				for ind in back:
 					if "Stand" in effect and cdata[ind].status != "Stand":
@@ -266,7 +265,6 @@ class AI:
 						if "Trait" in effect and all(tt not in cdata[ind].trait_t for tt in effect[effect.index("Trait") + 1].split("_")):
 							continue
 						pick.append(ind)
-					print(pick,var)
 					if pick:
 						if effect[0] - len(var)>=len(pick):
 							temp = sample(pick, effect[0] - len(var))
@@ -378,20 +376,19 @@ class AI:
 		level = len(pdata[self.player]["Level"])
 		card = cdata[ind]
 		if card.card == "Climax":
-			if gdata["any_Clrclimax"][ind[-1]] or card.mcolour in pdata[ind[-1]]["colour"]:
+			if gdata["any_Clrclimax"][ind[-1]] or card.mcolour.lower() in pdata[ind[-1]]["colour"]:
 				return True
 		else:
 			if card.level == 0:
 				if len(pdata[ind[-1]]["Stock"]) >= card.cost_t:
 					return True
 			elif card.level <= level:
-				if card.mcolour in pdata[ind[-1]]["colour"] or (gdata["any_ClrChname"][ind[-1]] and card.card == "Character" and any(nn in card.name for nn in gdata["any_ClrChname"][ind[-1]])):
+				if card.mcolour.lower() in pdata[ind[-1]]["colour"] or (gdata["any_ClrChname"][ind[-1]] and card.card == "Character" and any(nn in card.name for nn in gdata["any_ClrChname"][ind[-1]])):
 					if card.cost <= len(pdata[ind[-1]]["Stock"]):
 						return True
 		return False
 	def play_stage(self, pdata, cdata, gdata):
 		move = []
-		print(gdata["effect"])
 		if "Stage" in gdata["effect"]:
 			center = [s for s in pdata[self.player]["Center"] if s != ""]
 			back = [s for s in pdata[self.player]["Back"] if s != ""]
@@ -421,7 +418,6 @@ class AI:
 				if move:
 					move.insert(0, "AI_PlayStage")
 		elif "move" in gdata["effect"] and "move" in gdata["ability_doing"]:
-			print(gdata["target"])
 			if len(gdata["target"]) % 2 != 0:
 				field = gdata["stage"]
 				if "Back" in gdata["status"]:
@@ -430,7 +426,6 @@ class AI:
 					field = [n for n in field if "Center" in n]
 				if "Open" in gdata["status"]:
 					field = [n for n in field if pdata[self.player][n[:-1]][int(n[-1])]==""]
-				print(field)
 				if field:
 					move.append(choice(field))
 				if move:
@@ -510,13 +505,12 @@ class AI:
 		play = []
 		assist = []
 		for ind in hand:
-			card = cdata[ind]
-			if card.card == "Climax":
+			if cdata[ind].card == "Climax":
 				continue
 			elif self.playable(pdata, cdata,gdata, ind):
-				stock_req += card.cost
+				stock_req += cdata[ind].cost
 				playable.append(ind)
-				if any("assist" in nx.lower() for nx in cdata[ind].text_o):
+				if any("] assist" in nx.lower() for nx in cdata[ind].text_o):
 					assist.append(ind)
 		playable = sorted(playable, key=lambda x: cdata[x].level, reverse=True)
 		if len(assist) > 0 and back < 2:

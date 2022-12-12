@@ -34,42 +34,43 @@ move_dt = 0.35
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
 act_ability = "[ACT]"
-card_annex = ["ws01v",
-      "MK/S11-E101",
-      "MK/S11-E103",
-      "MK/S11-E105",
-      "MK/S11-TE02",
-      "MK/S11-TE03",
-      "MK/S11-TE04",
-      "MK/S11-TE05",
-      "MK/S11-TE08",
-      "MK/S11-TE09",
-      "MK/S11-TE10",
-              "MK/S11-TE11",
-              "MK/S11-TE14",
-              "MK/S11-TE15",
-              "CGS/WS01-T01",
-              "CGS/WS01-T02",
-              "CGS/WS01-T03",
-              "CGS/WS01-T04",
-              "CGS/WS01-T05",
-              "CGS/WS01-T06",
-              "CGS/WS01-T07",
-              "CGS/WS01-T08",
-              "CGS/WS01-T09",
-              "CGS/WS01-T10",
-              "CGS/WS01-T11",
-              "CGS/WS01-T12",
-              "CGS/WS01-T13",
-              "CGS/WS01-T14",
-              "CGS/WS01-T15",
-              "CGS/WS01-T16",
-              "CGS/WS01-T17",
-              "CGS/WS01-T18",
-              "CGS/WS01-T19",
-              "CGS/WS01-T20",
-              "CGS/WS01-T21"
-              ]
+card_annex = [
+	"ws01v",
+	"MK/S11-E101",
+	"MK/S11-E103",
+	"MK/S11-E105",
+	"MK/S11-TE02",
+	"MK/S11-TE03",
+	"MK/S11-TE04",
+	"MK/S11-TE05",
+	"MK/S11-TE08",
+	"MK/S11-TE09",
+	"MK/S11-TE10",
+	"MK/S11-TE11",
+	"MK/S11-TE14",
+	"MK/S11-TE15",
+	"CGS/WS01-T01",
+	"CGS/WS01-T02",
+	"CGS/WS01-T03",
+	"CGS/WS01-T04",
+	"CGS/WS01-T05",
+	"CGS/WS01-T06",
+	"CGS/WS01-T07",
+	"CGS/WS01-T08",
+	"CGS/WS01-T09",
+	"CGS/WS01-T10",
+	"CGS/WS01-T11",
+	"CGS/WS01-T12",
+	"CGS/WS01-T13",
+	"CGS/WS01-T14",
+	"CGS/WS01-T15",
+	"CGS/WS01-T16",
+	"CGS/WS01-T17",
+	"CGS/WS01-T18",
+	"CGS/WS01-T19",
+	"CGS/WS01-T20",
+	"CGS/WS01-T21"
+]
 class Card(RelativeLayout):
 	def __init__(self, code="", card=(100, 100), owner="", per=1, data="", **kwargs):
 		super(Card, self).__init__(**kwargs)
@@ -93,7 +94,7 @@ class Card(RelativeLayout):
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = [0,""]
+		self.turn = [0,"",""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""
@@ -163,8 +164,8 @@ class Card(RelativeLayout):
 			power_b = (img_p[0] * p_size * self.per, img_p[1] * p_size * self.per)
 			self.slc = Rectangle(source=self.img_blank,pos=(self.pos[0] - self.size[1] / 20, self.pos[1] - self.size[1] / 20),size=(self.size[0] + self.size[1] / 10, self.size[1] * 1.1))
 			self.front = Rectangle(source=self.img_blank, pos=self.pos, size=self.size)
+			self.cost_i = Rectangle(source=self.img_blank, pos=pos_cost, size=(img_c[0] * l_c_size * self.per, img_c[1] * l_c_size * self.per))
 			self.level_i = Rectangle(source=self.img_blank, pos=pos_level,size=(img_l[0] * l_c_size * self.per,img_l[1] * l_c_size * self.per))
-			self.cost_i = Rectangle(source=self.img_blank, pos=pos_cost,size=(img_c[0] * l_c_size * self.per,img_c[1] * l_c_size * self.per))
 			self.icon_i = Rectangle(source=self.img_blank, pos=pos_icon,size=(img_i[0] * i_size * self.per,img_i[1] * i_size * self.per))
 			self.colour_i = Rectangle(source=self.img_blank, size=(power_b[1], power_b[1]),pos=(self.size[0] - power_b[1] - pos_colour[0], pos_colour[1]))
 			for x in range(self.max_ability):
@@ -178,9 +179,12 @@ class Card(RelativeLayout):
 			for n in range(self.max_trigger):
 				self.trigger_i[str(n)] = Rectangle(source=self.img_blank,pos=(self.size[0] - trigger_pos[0] * self.size[0] - (img_t[0] * t_size * self.per) * (n + 1),self.size[1] - img_t[1] * t_size * self.per - trigger_pos[1] *self.size[1]),size=(img_t[0] * t_size * self.per, img_t[1] * t_size * self.per))
 			self.trigger_i["0"].source = self.img_none
+			self.cost_l = CoreLabel(text="0", color=(0, 0, 0, 1), halign='center', font_size=self.cost_i.size[1] * 0.55)
+			self.cost_l.refresh()
+			self.cost_r = Rectangle(texture=self.cost_l.texture, size=self.cost_l.texture.size, pos=(self.cost_i.pos[0] * 1.6, self.cost_i.pos[1] - self.cost_i.size[1] * 0.03))
 			self.level_l = CoreLabel(text="0", color=(1, 1, 1, 1), halign='center',font_size=self.level_i.size[1] * 0.55)
 			self.level_l.refresh()
-			self.level_r = Rectangle(texture=self.level_l.texture, size=self.level_l.texture.size,pos=(self.level_i.pos[0] * 1.6, self.level_i.pos[1] - self.level_i.size[1] * 0.03))
+			self.level_r = Rectangle(texture=self.level_l.texture, size=self.level_l.texture.size,pos=(self.level_i.pos[0] * 1.6, self.level_i.pos[1] - self.level_i.size[1] * 0.1))
 			self.power_l = CoreLabel(text="", text_size=self.power_b.size, color=(1, 1, 1, 1),halign='center', font_size=self.power_b.size[1] * 0.8, valign='middle')
 			self.power_l.refresh()
 			self.power_r = Rectangle(texture=self.power_l.texture, size=self.power_l.texture.size,pos=(power_text[0] * self.size[0], power_text[1] * self.size[1]))
@@ -209,7 +213,7 @@ class Card(RelativeLayout):
 			self.colour.append(self.mcolour.lower())
 			self.colour_c = []
 			self.card = str(card["type"])
-			if card["id"] in card_annex:
+			if card["id"] in card_annex and not exists(f"{cache}/{card['img']}"):
 				self.img_file = str(card["img"][:-4])
 			else:
 				self.img_file = str(card["img"])
@@ -245,9 +249,9 @@ class Card(RelativeLayout):
 				self.jtext_o = []
 			self.update_colour()
 			self.level = int(card["level"])
+			self.update_level()
 			self.cost = int(card["cost"])
 			self.update_cost()
-			self.update_level()
 			self.power = int(card["power"])
 			self.soul = int(card["soul"])
 			self.update_power()
@@ -447,12 +451,12 @@ class Card(RelativeLayout):
 			try:
 				if "dc_w00_00.gif" in self.img_file:
 					self.img_file = self.img_file.replace(".gif", "")
-				self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
-			except KeyError:
 				if exists(f"{cache}/{self.img_file}"):
 					self.front.source = f"{cache}/{self.img_file}"
 				else:
-					self.front.source = f"atlas://{img_in}/other/grey"
+					self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
+			except KeyError:
+				self.front.source = f"atlas://{img_in}/other/grey"
 		else:
 			self.front.source = self.img_blank
 	def update_colour(self):
@@ -475,10 +479,29 @@ class Card(RelativeLayout):
 				if item[1] != 0:
 					self.cost_t += item[0]
 			with self.canvas:
-				self.cost_i.source = f"atlas://{img_in}/other/C{self.cost_t}"
+				self.cost_i.source = f"atlas://{img_in}/other/cost"
+				if self.cost_t > self.cost and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (0, 1, 0, 1)
+				elif self.cost_t < self.cost and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (1, 0, 0, 1)
+				elif self.cost_t > self.cost:
+					color = (1, 0, 0, 1)
+				elif self.cost_t < self.cost:
+					color = (0, 1, 0, 1)
+				else:
+					color = (0, 0, 0, 1)
+				self.cost_l = CoreLabel(text=f"{self.cost_t}", color=color, halign='center', font_size=self.cost_i.size[1]*0.7, outline_width=0)
+				self.cost_l.refresh()
+				self.cost_r.texture = self.cost_l.texture
+				self.cost_r.size = self.cost_l.texture.size
+				self.cost_r.pos = (self.cost_i.pos[0] + (self.cost_i.size[0] - self.cost_r.size[0]) / 2, self.cost_i.pos[1] + self.cost_i.size[1] * 0.3)
 		else:
 			with self.canvas:
 				self.cost_i.source = self.img_blank
+				self.cost_l.text = ""
+				self.cost_l.refresh()
+				self.cost_r.texture = self.cost_l.texture
+				self.cost_r.size = self.cost_l.texture.size
 	def update_level(self):
 		if self.card != "Climax":
 			self.clean_c("level")
@@ -502,11 +525,11 @@ class Card(RelativeLayout):
 					color = (0, 1, 0, 1)
 				else:
 					color = (1, 1, 1, 1)
-				self.level_l = CoreLabel(text=f"{self.level_t}", color=color, halign='center', font_size=self.level_i.size[1] * 0.55)
+				self.level_l = CoreLabel(text=f"{self.level_t}", color=color, halign='center', font_size=self.level_i.size[1] * 0.5)
 				self.level_l.refresh()
 				self.level_r.texture = self.level_l.texture
 				self.level_r.size = self.level_l.texture.size
-				self.level_r.pos = (self.level_i.pos[0] + (self.level_i.size[0] - self.level_r.size[0]) / 2, self.level_i.pos[1] + self.level_i.size[1] * 0.08)
+				self.level_r.pos = (self.level_i.pos[0] + (self.level_i.size[0] - self.level_r.size[0]) / 2, self.level_i.pos[1] + self.level_i.size[1] * 0.15)
 		else:
 			self.level_i.source = self.img_blank
 			self.level_l.text = ""
@@ -752,7 +775,7 @@ class CardImg(RelativeLayout):
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = [0,""]
+		self.turn = [0,"",""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""
@@ -813,8 +836,8 @@ class CardImg(RelativeLayout):
 			power_b = (img_p[0] * p_size * self.per, img_p[1] * p_size * self.per)
 			self.slc = Rectangle(source=self.img_blank, pos=(self.pos[0] - self.size[1] / 20, self.pos[1] - self.size[1] / 20), size=(self.size[0] + self.size[1] / 10, self.size[1] * 1.1))
 			self.front = Rectangle(source=self.img_blank, pos=self.pos, size=self.size)
-			self.level_i = Rectangle(source=self.img_blank, pos=pos_level, size=(img_l[0] * l_c_size * self.per, img_l[1] * l_c_size * self.per))
 			self.cost_i = Rectangle(source=self.img_blank, pos=pos_cost, size=(img_c[0] * l_c_size * self.per, img_c[1] * l_c_size * self.per))
+			self.level_i = Rectangle(source=self.img_blank, pos=pos_level, size=(img_l[0] * l_c_size * self.per, img_l[1] * l_c_size * self.per))
 			self.icon_i = Rectangle(source=self.img_blank, pos=pos_icon, size=(img_i[0] * i_size * self.per,img_i[1] * i_size * self.per))
 			self.colour_i = Rectangle(source=self.img_blank, size=(power_b[1], power_b[1]), pos=(self.size[0] - power_b[1] - pos_colour[0], pos_colour[1]))
 			for x in range(self.max_ability):
@@ -825,6 +848,9 @@ class CardImg(RelativeLayout):
 			self.soul_l = CoreLabel(text="", text_size=(soul_size[0] * 1.5, self.power_b.size[1]), color=(1, 1, 1, 1), outline_width=1.9, halign='center', valign='middle', font_size=self.power_b.size[1] * 0.8)
 			self.soul_l.refresh()
 			self.soul_r = Rectangle(texture=self.soul_l.texture, size=self.soul_l.texture.size, pos=(self.power_b.pos[0] + pos_soul[0] / 4 + soul_size[0], pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
+			self.cost_l = CoreLabel(text="0", color=(0, 0, 0, 1), halign='center', font_size=self.cost_i.size[1] * 0.7)
+			self.cost_l.refresh()
+			self.cost_r = Rectangle(texture=self.cost_l.texture, size=self.cost_l.texture.size, pos=(self.cost_i.pos[0] * 1.6, self.cost_i.pos[1] - self.cost_i.size[1] * 0.3))
 			self.level_l = CoreLabel(text="0", color=(1, 1, 1, 1), halign='center', font_size=self.level_i.size[1] * 0.55)
 			self.level_l.refresh()
 			self.level_r = Rectangle(texture=self.level_l.texture, size=self.level_l.texture.size, pos=(self.level_i.pos[0] * 1.6, self.level_i.pos[1] - self.level_i.size[1] * 0.03))
@@ -849,7 +875,7 @@ class CardImg(RelativeLayout):
 			self.colour.append(self.mcolour.lower())
 			self.colour_c = []
 			self.card = str(card["type"])
-			if card["id"] in card_annex:
+			if card["id"] in card_annex and not exists(f"{cache}/{card['img']}"):
 				self.img_file = str(card["img"][:-4])
 			else:
 				self.img_file = str(card["img"])
@@ -884,9 +910,9 @@ class CardImg(RelativeLayout):
 				self.jname = ""
 			self.update_colour()
 			self.level = int(card["level"])
+			self.update_level()
 			self.cost = int(card["cost"])
 			self.update_cost()
-			self.update_level()
 			self.power = int(card["power"])
 			self.soul = int(card["soul"])
 			self.update_power()
@@ -1000,13 +1026,13 @@ class CardImg(RelativeLayout):
 			if self.cid != "" and self.cid != "player":
 				try:
 					if "dc_w00_00.gif" in self.img_file:
-						self.img_file = self.img_file.replace(".gif","")
-					self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
-				except KeyError:
+						self.img_file = self.img_file.replace(".gif", "")
 					if exists(f"{cache}/{self.img_file}"):
 						self.front.source = f"{cache}/{self.img_file}"
 					else:
-						self.front.source = f"atlas://{img_in}/other/grey"
+						self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
+				except KeyError:
+					self.front.source = f"atlas://{img_in}/other/grey"
 			else:
 				self.front.source = self.img_blank
 	def update_colour(self):
@@ -1024,15 +1050,34 @@ class CardImg(RelativeLayout):
 	def update_cost(self):
 		if self.card != "Climax":
 			self.clean_c("cost")
-			self.cost_t = self.cost
+			self.cost_t = int(self.cost)
 			for item in self.cost_c:
 				if item[1] != 0:
 					self.cost_t += item[0]
 			with self.canvas:
-				self.cost_i.source = f"atlas://{img_in}/other/C{self.cost_t}"
+				self.cost_i.source = f"atlas://{img_in}/other/cost"
+				if self.cost_t > self.cost and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (0, 1, 0, 1)
+				elif self.cost_t < self.cost and ("Center" in self.pos_new or "Back" in self.pos_new):
+					color = (1, 0, 0, 1)
+				elif self.cost_t > self.cost:
+					color = (1, 0, 0, 1)
+				elif self.cost_t < self.cost:
+					color = (0, 1, 0, 1)
+				else:
+					color = (0, 0, 0, 1)
+				self.cost_l = CoreLabel(text=f"{self.cost_t}", color=color, halign='center', font_size=self.cost_i.size[1] * 0.7)
+				self.cost_l.refresh()
+				self.cost_r.texture = self.cost_l.texture
+				self.cost_r.size = self.cost_l.texture.size
+				self.cost_r.pos = (self.cost_i.pos[0] + (self.cost_i.size[0] - self.cost_r.size[0]) / 2, self.cost_i.pos[1] + self.cost_i.size[1] * 0.3)
 		else:
 			with self.canvas:
 				self.cost_i.source = self.img_blank
+				self.cost_l.text = ""
+				self.cost_l.refresh()
+				self.cost_r.texture = self.cost_l.texture
+				self.cost_r.size = self.cost_l.texture.size
 	def update_level(self):
 		if self.card != "Climax":
 			self.clean_c("level")
@@ -1056,17 +1101,18 @@ class CardImg(RelativeLayout):
 					color = (0, 1, 0, 1)
 				else:
 					color = (1, 1, 1, 1)
-				self.level_l = CoreLabel(text=f"{self.level_t}", color=color, halign='center',font_size=self.level_i.size[1] * 0.55)
+				self.level_l = CoreLabel(text=f"{self.level_t}", color=color, halign='center',font_size=self.level_i.size[1] * 0.5)
 				self.level_l.refresh()
 				self.level_r.texture = self.level_l.texture
 				self.level_r.size = self.level_l.texture.size
-				self.level_r.pos = (self.level_i.pos[0] + (self.level_i.size[0] - self.level_r.size[0]) / 2, self.level_i.pos[1] + self.level_i.size[1] * 0.08)
+				self.level_r.pos = (self.level_i.pos[0] + (self.level_i.size[0] - self.level_r.size[0]) / 2, self.level_i.pos[1] + self.level_i.size[1] * 0.15)
 		else:
-			self.level_i.source = self.img_blank
-			self.level_l.text = ""
-			self.level_l.refresh()
-			self.level_r.texture = self.level_l.texture
-			self.level_r.size = self.level_l.texture.size
+			with self.canvas:
+				self.level_i.source = self.img_blank
+				self.level_l.text = ""
+				self.level_l.refresh()
+				self.level_r.texture = self.level_l.texture
+				self.level_r.size = self.level_l.texture.size
 	def update_ability(self):
 		self.clean_c("text")
 		with self.canvas:
@@ -1198,7 +1244,7 @@ class CardEmpty:
 		self.icon = ""
 		self.power = 0
 		self.soul = 0
-		self.turn = [0,""]
+		self.turn = [0,"",""]
 		self.trait = ()
 		self.flavour = ""
 		self.jflavour = ""

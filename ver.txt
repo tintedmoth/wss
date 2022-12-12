@@ -1,3 +1,17 @@
+0.36.0
+	Added settings for popup and image download
+	Added card no and text filter option in deck building
+	Added app version checker
+	Added high quality image for demo and shiyoko deck
+	Added Jap Shining Force EXA cards
+	Added Jap Shining Resonance cards
+	Added Eng Batman Ninja Demo Deck
+	Added Eng Adventure Time Demo Deck
+	Change image of card cost
+	Change download sequence to single file
+	Fixed Eng cards flavour text
+	Fixed deck building popup filter
+	Fixed deck info popup title
 0.35.0
 	Changed directory of folders
 	Changed timming of trigger condition at beginning of phase
@@ -5,7 +19,6 @@
 	Added Jap Fate/kaleid liner Prisma Illya Prisma Phantasm cards
 	Added Jap Psycho-Pass cards
 	Added Jap Gigant Big-Shot Tsukasa cards
-	Fixed download bar not showing
 0.34.0
 	Added Jap Fate/kaleid liner Prisma Illya Zwei Herz! cards
 	Added Jap Katanagatari Extra Trial cards

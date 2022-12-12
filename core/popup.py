@@ -7,4 +7,3 @@ class Popup(Pop):
 		self.title_font = f"{font_in}/{font}"
 		self.title_align = "center"
 		self.auto_dismiss = False
-		self.size_hint = (None, None)

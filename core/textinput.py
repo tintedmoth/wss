@@ -1,5 +1,4 @@
 from kivy.uix.textinput import TextInput as Ti
-import re
 from core.datapath import *
 class TextInput(Ti):
 	cid = ""
@@ -8,7 +7,7 @@ class TextInput(Ti):
 		self.cid = cid
 		self.font_name = f"{font_in}/{font}"
 		self.multiline = False
-		self.padding = [12,6,6,6]
+		self.padding = [12,3,3,3]
 		self.bind(size=self._update_rect)
 	def _update_rect(self, inst, value):
 		self.height = inst.size[1]

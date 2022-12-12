@@ -23,6 +23,5 @@ class Joketext(Image):
 	def change_texture(self,text):
 		self.joke.text = text
 		self.joke.font_size = int(self.joke.size[1]/2)
-		print(self.joke.font_size)
 		self.joke.texture_update()
 		self.texture = self.joke.texture
