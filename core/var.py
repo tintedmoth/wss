@@ -347,6 +347,7 @@ def gdata_init():
 		"btn_release": True,
 		"skip": [],
 		"encore_ind": "",
+		"encore_effect":[],
 		"Res1_move": False,
 		"auto_effect": [],
 		"bodyguard": False,

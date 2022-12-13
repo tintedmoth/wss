@@ -39,6 +39,7 @@ from core.janken import Janken
 from core.joke import Joketext
 from core.label import Label
 from core.labelbtn import Labelbtn
+from core.markreplace import markreplace
 from core.mat import Mat
 from core.popup import Popup
 from core.recycle import RV
@@ -240,6 +241,7 @@ class GameMech(Widget):
 		self.sd["btn"]["encore_TraitN"] = Button(size_hint=(None, None), text="Trait or Name Encore", on_release=self.encore, cid="TraitN")
 		self.sd["btn"]["encore_Trait"] = Button(size_hint=(None, None), text="Trait Encore", on_release=self.encore, cid="Trait")
 		self.sd["btn"]["encore_Clock"] = Button(size_hint=(None, None), text="Clock Encore", on_release=self.encore, cid="Clock")
+		self.sd["btn"]["encore_SWaiting"] = Button(size_hint=(None, None), text="& Stage Encore", on_release=self.encore, cid="SWaiting")
 		self.sd["btn"]["label"] = Label(text="test", text_size=((self.sd["card"][0] + self.sd["padding"]) * 0.9 * starting_hand, None), font_size=self.sd["card"][1] / 5, size_hint=(1, None), markup=True)  
 		self.sd["btn"]["Mulligan_btn"] = Button(size_hint=(None, None), text="End Mulligan", on_release=self.mulligan_done)
 		self.sd["btn"]["M_all_btn"] = Button(size_hint=(None, None), text="Discard All", on_release=self.mulligan_all)
@@ -1638,7 +1640,7 @@ class GameMech(Widget):
 					pos = ("", "", "", "")
 					if ind == wait:  
 						encore = [0, "encore"]
-						if len(self.pd[wait[-1]]["Stock"]) >= 3:
+						if len(self.pd[wait[-1]]["Stock"]) >= 3 and "Stock3" not in encore:
 							encore.append("Stock3")
 					for item in card.text_c:
 						if item[0].startswith(auto_ability) and item[1] != 0 and item[1] > -9:
@@ -1765,6 +1767,17 @@ class GameMech(Widget):
 										ability[inx1].append("passed")
 							if ind == wait and ability and "encore" in ability:
 								if not self.gd["no_encore"][wait[-1]]:
+									if "StockWaiting" in ability:
+										wtar = ability[ability.index("StockWaiting") + 1].split("_")
+										swtext = ""
+										if len(self.pd[wait[-1]]["Stock"]) >= ability[0]:
+											swtext += "S"
+										if "Character" in wtar[1]:
+											if len([s for s in self.pd[wait[-1]]["Center"] + self.pd[wait[-1]]["Back"] if s != ""]) > int(wtar[0]):
+												swtext += "Waiting"
+										if "SWaiting" in swtext and swtext not in encore:
+											encore.append(swtext)
+											self.gd["encore_effect"] = list(ability)
 									if "Character" in ability:
 										if len([s for s in self.pd[wait[-1]]["Hand"] if self.cd[s].card == "Character"]) > 0 and "Character" not in encore:
 											encore.append("Character")
@@ -1791,7 +1804,7 @@ class GameMech(Widget):
 													encore[encore.index("Trait") + 1] += f"_{trait}"
 									if "Clock" in ability and "Clock" not in encore:
 										encore.append("Clock")
-									if "Stock" in ability and f"Stock{ability[0]}" not in encore:
+									if "Stock" in ability and len(self.pd[wait[-1]]["Stock"]) >= ability[0] and f"Stock{ability[0]}" not in encore:
 										encore.append(f"Stock{ability[0]}")
 							if ability and "encore" not in ability:
 								stack = [ind, ability, item[0], r, pos, self.gd["phase"], card.text_c.index(item), self.gd["pp"]]
@@ -3369,9 +3382,9 @@ class GameMech(Widget):
 				down = True
 				for item in se["check"][s]:
 					if "-d" in item:
-						if self.multi_info["dw"]["2"].state == 'down' and (exists(f"{data_ex}/{item}") or ("tws01-d" in item or "ts11e-d" in item)):
+						if self.multi_info["dw"]["2"].state == 'down' and (exists(f"{data_ex}/{item}") or ("tws01-d" in item or "as11e-d" in item)):
 							down = False
-						elif self.multi_info["dw"]["3"].state == 'down' and not exists(f"{data_ex}/{item}"):
+						elif self.multi_info["dw"]["3"].state == 'down' and not exists(f"{data_ex}/{item}") and "tws01-d" not in item and "as11e-d" not in item:
 							down = False
 						break
 				if down:
@@ -4317,7 +4330,7 @@ class GameMech(Widget):
 		else:
 			self.net["body"] = urlencode(dat)
 			self.cnet = UrlRequest(self.net["url"], req_body=self.net["body"], req_headers=headers, on_success=self.mcheck_data, timeout=10, ca_file=cfi.where(), on_failure=self.failure_message, on_error=self.error_message, verify=True)  
-	def mcancel_room(self, btn, *args):
+	def mcancel_room(self, *args):
 		self.mcreate_popup.dismiss()
 		self.net["time"] = -1
 		self.update_time()
@@ -5027,7 +5040,7 @@ class GameMech(Widget):
 		if self.decks["dbuild"]["l"]:
 			if not self.gd["filter_card"][0]:
 				self.gd["filter_card"][0] = True
-				self.gd["filter_card"][1] = [s for s in sorted(se["main"]["c"]) if any(end in s for end in ("EN", "-E", "-TE", "-PE","/WX", "/SX")) and "DC/W01" not in s and "LB/W02" not in s]
+				self.gd["filter_card"][1] = [s for s in sorted(se["main"]["c"]) if any(end in s for end in ("EN", "-E", "-TE", "-PE", "/WX", "/SX")) and "DC/W01" not in s and "LB/W02" not in s]
 				self.gd["filter_card"][2] = [s for s in sorted(se["main"]["c"]) if s not in self.gd["filter_card"][1]]
 			if self.decks["dbuild"]["l"] == "e":
 				self.gd["p_cards"] = list(sorted(self.gd["filter_card"][1]))
@@ -8411,7 +8424,7 @@ class GameMech(Widget):
 				self.sd["text"]["retry"].center_x = xscat / 4 * 3 - self.sd["padding"]
 				self.sd["text"]["retry"].y = self.sd["padding"] * 1.5
 			else:
-				self.sd["text"]["close"].center_x = xscat / 2.-self.sd["padding"]
+				self.sd["text"]["close"].center_x = xscat / 2. - self.sd["padding"]
 			if c == "choice":
 				self.sd["text"]["label"].y += self.sd["card"][1] / 3.
 		elif "waitingopp" in c:
@@ -9633,7 +9646,9 @@ class GameMech(Widget):
 						self.pay_condition()
 			elif not self.gd["text_popup"]:  
 				if self.selected_card():
-					if "Encore" in self.gd["phase"] and self.gd["pp"] >= 0 and "AUTO" not in self.gd["ability_trigger"]:
+					if "Encore" in self.gd["phase"] and self.gd["pp"] >= 0 and "SWaiting" in self.gd["target"]:
+						self.encore_done()
+					elif "Encore" in self.gd["phase"] and self.gd["pp"] >= 0 and "AUTO" not in self.gd["ability_trigger"]:
 						self.encore_start()
 					else:
 						self.ability_effect()
@@ -10234,14 +10249,15 @@ class GameMech(Widget):
 			self.gd['encore_ind'] = ind
 			self.sd["popup"]["popup"].title = "Confirm Encore ability"
 			self.gd["inx"] = 0
-			for item in ("Stock3", "Stock2", "Stock1", "Character", "TraitN", "Trait", "Clock", "Climax"):
+			for item in ("Stock3", "Stock2", "Stock1", "Character", "TraitN", "Trait", "Clock", "Climax","SWaiting"):
 				if item in self.gd["effect"]:
-					self.sd["btn"][f"encore_{item}"].size = (
-						self.sd["card"][0] * 5 + self.sd["padding"], self.sd["card"][1] / 1.5)
+					self.sd["btn"][f"encore_{item}"].size = (self.sd["card"][0] * 5 + self.sd["padding"], self.sd["card"][1] / 1.5)
 					self.sd["btn"][f"encore_{item}"].y = self.sd["padding"] * 3 + self.sd["card"][1] / 2 + (self.sd["padding"] * 1.5 + self.sd["card"][1] / 1.5) * self.gd["inx"]
 					if len(self.gd["stack"][self.gd["active"]]) > 1:
 						self.sd["btn"][f"encore_{item}"].y += self.sd["padding"] * 2 + self.sd["card"][1] / 2
 					self.sd["btn"][f"encore_{item}"].x = self.sd["padding"]
+					if "SWaiting" in item:
+						self.sd["btn"][f"encore_{item}"].text = markreplace[f'({self.gd["encore_effect"][0]})']+" "+self.sd["btn"][f"encore_{item}"].text[self.sd["btn"][f"encore_{item}"].text.index("&"):]
 					self.gd["inx"] += 1
 			confirm_text = f"Do you want to encore \"{self.cd[self.gd['encore_ind']].name_t}\"?\n \n "
 			self.gd["p_yscat"] += (self.sd["card"][1] / 1.5 + self.sd["padding"] * 1.5) * self.gd["inx"]
@@ -15336,7 +15352,7 @@ class GameMech(Widget):
 								if act and ab.req(a=text[0], x=len(self.pd[opp]["Stock"])) and "backup" in act and len(self.pd[opp]["Level"]) >= act[act.index("backup") + 1]:
 									if s not in self.gd["counter"]:
 										self.gd["counter"].append(s)
-					elif card.card == "Event" and ("[counter]" in card.text_c[0][0].lower() or (len(card.text_c[0])>1 and "[counter]" in card.text_c[0][1].lower())) and not self.gd["no_event"][self.gd["opp"]] and self.gd["counter_icon"][opp][1] and len(self.pd[opp]["Level"]) >= card.level and card.mcolour.lower() in self.pd[opp]["colour"] and len(self.pd[opp]["Stock"]) >= card.cost_t:
+					elif card.card == "Event" and ("[counter]" in card.text_c[0][0].lower() or (len(card.text_c[0]) > 1 and "[counter]" in card.text_c[0][1].lower())) and not self.gd["no_event"][self.gd["opp"]] and self.gd["counter_icon"][opp][1] and len(self.pd[opp]["Level"]) >= card.level and card.mcolour.lower() in self.pd[opp]["colour"] and len(self.pd[opp]["Stock"]) >= card.cost_t:
 						if self.check_event(s) and s not in self.gd["counter"]:
 							self.gd["counter"].append(s)
 			if self.net["game"]:
@@ -16208,6 +16224,15 @@ class GameMech(Widget):
 			self.gd["damage_refresh"] = 1
 			self.gd["damageref"] = True
 			Clock.schedule_once(self.damage, move_dt_btw)
+		elif "SWaiting" in self.gd["target"]:
+			wtar = self.gd["encore_effect"][self.gd["encore_effect"].index("StockWaiting")+1].split("_")
+			self.pay_stock(self.gd["encore_effect"][0], self.gd["encore_ind"][-1])
+			self.gd["payed"] = True
+			self.gd["chosen"] = []
+			self.gd["choose"] = False
+			self.gd["status"] = self.add_to_status(f'Select{wtar[0]}', wtar[1:])
+			self.select_card()
+			Clock.schedule_once(partial(self.popup_text, "Main"))
 		elif any("Stock" in encore for encore in self.gd["target"]):
 			for encore in self.gd["target"]:
 				if "Stock" in encore:
@@ -16229,11 +16254,19 @@ class GameMech(Widget):
 		if any("Stock" in trg for trg in self.gd["target"]) or "Clock" in self.gd["target"]:
 			if "Waiting" in self.cd[self.gd["encore_ind"]].pos_new:
 				self.encore_card(self.gd["encore_ind"])
-		elif len(self.gd["target"]) > 1 and ("Character" in self.gd["target"] or "Trait" in self.gd["target"] or "TraitN" in self.gd["target"] or "Climax" in self.gd["target"]):
+		elif len(self.gd["target"]) > 1 and any(tr in self.gd["target"] for tr in ("Character","Trait","TraitN","Climax")):
 			temp = self.gd["target"].pop(-1)
 			self.hand_waiting(chosen=[temp])
 			self.encore_card(self.gd["encore_ind"])
-			if self.net["game"] and (self.gd["active"] == "1" and not self.gd["rev"] or self.gd["active"] == "2" and self.gd["rev"]):
+			if self.net["game"] and ((self.gd["active"] == "1" and not self.gd["rev"]) or (self.gd["active"] == "2" and self.gd["rev"])):
+				self.net["act"][4].append(temp)
+		elif len(self.gd["target"]) > 1 and "SWaiting" in self.gd["target"]:
+			self.gd["encore_effect"] = []
+			temp = self.gd["target"].pop(-1)
+			self.gd["no_cont_check"] = True
+			self.send_to_waiting(temp)
+			self.encore_card(self.gd["encore_ind"])
+			if self.net["game"] and ((self.gd["active"] == "1" and not self.gd["rev"]) or (self.gd["active"] == "2" and self.gd["rev"])):
 				self.net["act"][4].append(temp)
 		self.popup_clr()
 		self.check_cont_ability()

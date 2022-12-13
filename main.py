@@ -13,10 +13,14 @@ smtp_handler.setLevel(logging.ERROR)
 logging.getLogger().addHandler(smtp_handler)
 environ["KIVY_NO_CONSOLELOG"] = "1"
 if platform == 'android':
-	from android.permission import Permission, request_permissions
+	from android.permissions import Permission, request_permissions
 	def permission_callback(permission, results):
 		if all([result for result in results]):
+			print("Got all permissions")  
+			pass
 		else:
+			print("Did not get all permissions")
+			pass
 	request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE], permission_callback)
 Config.set("graphics", "fullscreen", "auto")
 import kivy.core.window as window
