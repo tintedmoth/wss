@@ -12,23 +12,23 @@ smtp_handler = SMTPHandler(mailhost=(mailadd[0], 587), fromaddr=mailadd[1], toad
 smtp_handler.setLevel(logging.ERROR)
 logging.getLogger().addHandler(smtp_handler)
 environ["KIVY_NO_CONSOLELOG"] = "1"
-if platform == 'android':
-	from android.permissions import Permission, request_permissions
-	def permission_callback(permission, results):
-		if all([result for result in results]):
-			print("Got all permissions")  
-			pass
-		else:
-			print("Did not get all permissions")
-			pass
-	request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE], permission_callback)
-Config.set("graphics", "fullscreen", "auto")
-import kivy.core.window as window
-window.Window.clearcolor = (0, 0, 0, 1.)
-from core.gameapp import GameApp
-gameapp = GameApp()
 if __name__ in ("__android__", "__main__"):
 	try:
+		if platform == 'android':
+			from android.permissions import Permission, request_permissions
+			def permission_callback(permission, results):
+				if all([result for result in results]):
+					print("Got all permissions")  
+					pass
+				else:
+					print("Did not get all permissions")
+					pass
+			request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE], permission_callback)
+		Config.set("graphics", "fullscreen", "auto")
+		import kivy.core.window as window
+		window.Window.clearcolor = (0, 0, 0, 1.)
+		from core.gameapp import GameApp
+		gameapp = GameApp()
 		gameapp.run()
 	except Exception:
 		logging.exception(f"Got exception on main handler {mail[0]} {mail[1]} {datetime.now()}", exc_info=True)
