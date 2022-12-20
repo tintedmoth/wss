@@ -23,7 +23,7 @@ All logos, images, names are copyright of their perspective owners. The image us
 
 ## License
 
-    Copyright 2015 Enrico Salvatore Brancato
+    Copyright 2022 Enrico Salvatore Brancato
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
