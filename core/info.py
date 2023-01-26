@@ -327,9 +327,9 @@ class Info(Popup):
 		return mstr
 	def replaceImage(self):
 		qty = len(self.label["text"].anchors) + len(self.label["trigger"].anchors) + len(self.label["icon"].anchors)
-		if qty < len(self.img_anchors):
+		if qty > len(self.img_anchors):
 			for nx in range(len(self.img_anchors), qty):
-				self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size_hint=(None, None), size=(self.test1.texture.size[0] * 1.05, self.test1.texture.size[1] * 1.05), allow_stretch=True)
+				self.img_anchors[str(nx)] = Image(source=f"atlas://{img_in}/other/blank", size_hint=(None, None), size=(self.test["1"].texture.size[0] * 1.05, self.test["1"].texture.size[1] * 1.05), allow_stretch=True)
 				self.sct1.add_widget(self.img_anchors[str(nx)])
 		for itt in self.img_anchors:
 			self.img_anchors[itt].y = -self.card[1] * 20

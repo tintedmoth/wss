@@ -1,3 +1,9 @@
+0.37.0
+	Added Eng The Seven Deadly Sin cards
+	Added filter for cards with no traits
+	Fixed deck image selection in Deck Building
+	Fixed deck preview for deck with more than 50 cards
+	Fixed cards not showing in Deck Building when adding cards
 0.36.0
 	Added settings for popup and image download
 	Added card no and text filter option in deck building

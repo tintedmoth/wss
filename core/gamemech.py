@@ -1,3 +1,4 @@
+import http.client as httplib
 import logging
 import os
 import shelve
@@ -8,9 +9,29 @@ from math import ceil
 from random import shuffle, choice, sample
 from urllib.parse import urlencode
 from zipfile import ZipFile
-import requests
 import certifi as cfi
+from core.ai import AI
+from core.bar import Bar
+from core.button import Button
+from core.card import Card, CardImg, CardEmpty
+from core.cardnum import CardNum
+from core.colour import Colours
+from core.imgbutton import ImgButton
+from core.info import Info
+from core.janken import Janken
+from core.joke import Joketext
+from core.label import Label
+from core.labelbtn import Labelbtn
 from core.mail import mail
+from core.markreplace import markreplace
+from core.mat import Mat
+from core.popup import Popup
+from core.recycle import RV, RVText
+from core.spinner import Spinner
+from core.stackspacer import StackSpacer
+from core.textinput import TextInput
+from core.togglebutton import ToggleButton
+from core.var import *
 from kivy.animation import Animation
 from kivy.app import App
 from kivy.clock import Clock
@@ -27,31 +48,10 @@ from kivy.uix.switch import Switch
 from kivy.uix.widget import Widget
 from kivy.uix.widget import WidgetException
 from plyer import email
-from core.ai import AI
-from core.bar import Bar
-from core.button import Button
-from core.card import Card, CardImg, CardEmpty
-from core.cardnum import CardNum
-from core.colour import Colours
-from core.imgbutton import ImgButton
-from core.info import Info
-from core.janken import Janken
-from core.joke import Joketext
-from core.label import Label
-from core.labelbtn import Labelbtn
-from core.markreplace import markreplace
-from core.mat import Mat
-from core.popup import Popup
-from core.recycle import RV
-from core.spinner import Spinner
-from core.stackspacer import StackSpacer
-from core.textinput import TextInput
-from core.togglebutton import ToggleButton
-from core.var import *
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format="[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
 __author__ = "tintedmoth"
-__copyright__ = "Copyright © 2020 tintedmoth"
-__version__ = "0.36.0"
+__copyright__ = "Copyright © 2022 tintedmoth"
+__version__ = "0.37.0"
 def list_str(lst, sep=".", sh=False):
 	temp = ""
 	for inx in range(len(lst)):
@@ -132,8 +132,8 @@ class GameMech(Widget):
 		self.pd = pdata_init()
 		self.gd = gdata_init()
 		self.update_gdata_config()
-		self.emptycards = ("", "00", "sspace")
-		self.skip_cpop = list(self.emptycards)
+		self.emptycards = ("", "00", "sspace", "9", "09")
+		self.skip_cpop = list(self.emptycards) + ["1", "2"]
 		self.cardinfo = None
 		self.fav = None
 		self.fav1 = None
@@ -186,6 +186,10 @@ class GameMech(Widget):
 			self.add_widget(self.sd["label"][label])
 		self.sd["t_bar"] = Bar(size=(Window.width, self.sd["card"][1] / 2))
 		self.sd["b_bar"] = Bar(size=(Window.width, self.sd["card"][1] / 2))
+		self.sd["build_scv"] = ScrollView(do_scroll_x=False, do_scroll_y=True, size_hint=(1, None), size=(Window.width, Window.height - self.sd["b_bar"].size[1]))
+		self.sd["build_layout"] = RelativeLayout(size_hint_y=None, size=self.sd["build_scv"].size)
+		self.parent.add_widget(self.sd["build_scv"])
+		self.sd["build_scv"].add_widget(self.sd["build_layout"])
 		self.sd["colour1"] = Colours(self.sd["card"], "1", self.mat["1"]["per"])
 		self.sd["colour2"] = Colours(self.sd["card"], "2", self.mat["2"]["per"])
 		self.mat["1"]["mat"].add_widget(self.sd["colour1"])
@@ -197,6 +201,8 @@ class GameMech(Widget):
 		self.sd["t_bar"].y = Window.height - self.sd["t_bar"].size[1]
 		self.sd["b_bar"].x = -Window.width * 2
 		self.sd["t_bar"].x = -Window.width * 2
+		self.sd["build_scv"].y = self.sd["b_bar"].size[1]
+		self.sd["build_scv"].x = -Window.width * 2
 		self.mat["1"]["mat"].x = -Window.width * 2
 		self.mat["1"]["mat"].y = -Window.height * 2
 		self.mat["2"]["mat"].y = -Window.height * 2
@@ -313,6 +319,7 @@ class GameMech(Widget):
 		self.fav1.add_widget(self.sd["btn"]["ftextl"])
 		self.fav1.add_widget(self.sd["btn"]["ftext"])
 		self.sd["btn"]["ftext"].bind(text=self.popup_filter_add)
+		self.sd["btn"]["ftextl"].bind(text=self.popup_filter_add)
 		self.sd["btn"]["filter_add"].add_widget(self.fav1)
 		for n in range(3):
 			for t in ("d", "f", "s"):
@@ -355,12 +362,12 @@ class GameMech(Widget):
 		self.sd["other"]["about"].bind(on_ref_press=self.ref_press)
 		self.sd["other"]["close"] = Button(size_hint=(None, None), text="Close", on_release=self.other_dismiss)
 		self.sd["other"]["copy"] = Button(size_hint=(None, None), text="Copyright", on_release=self.copy_open)
+		self.sd["other"]["copy_rv"] = RVText()
+		self.sd["other"]["copy_rv"].box.padding = self.sd["padding"]
+		self.sd["other"]["copy_rv"].box.spacing = self.sd["padding"] / 2
 		self.sd["other"]["copy_box"] = BoxLayout(orientation="vertical")
-		self.sd["other"]["copy_scv"] = ScrollView(do_scroll_x=False, size_hint=(1, 1), effect_cls="ScrollEffect")
 		self.sd["other"]["copy_btn"] = Button(size_hint=(1, 0.05), text="Close", on_release=self.copy_dismiss)
-		self.sd["other"]["copy_lb"] = Label(text="", valign="middle", halign="center", text_size=(Window.width * 0.9, None), size_hint=(1, None))
-		self.sd["other"]["copy_box"].add_widget(self.sd["other"]["copy_scv"])
-		self.sd["other"]["copy_scv"].add_widget(self.sd["other"]["copy_lb"])
+		self.sd["other"]["copy_box"].add_widget(self.sd["other"]["copy_rv"])
 		self.sd["other"]["copy_box"].add_widget(self.sd["other"]["copy_btn"])
 		self.sd["other"]["sct"].add_widget(self.sd["other"]["scv"])
 		self.sd["other"]["scv"].add_widget(self.sd["other"]["about"])
@@ -394,9 +401,11 @@ class GameMech(Widget):
 			self.clear_loaded_game()
 	def load_pos(self):
 		for card in list(self.cdsh.keys()):
-			if card != "1" and card != "2":
+			if card != "1" and card != "2" and not card.endswith("3"):
 				self.cd[card].colour_c = list(self.cdsh[card]["colour_c"])
-				if self.cdsh[card]["back"]:
+				if self.cdsh[card]["back"] and "back_info" in self.cdsh[card] and not self.cdsh[card]["back_info"]:
+					self.cd[card].show_back(False)
+				elif self.cdsh[card]["back"]:
 					self.cd[card].show_back()
 				else:
 					self.cd[card].show_front()
@@ -465,16 +474,24 @@ class GameMech(Widget):
 	def copy_dismiss(self, *args):
 		self.decks["sets"].dismiss()
 	def copy_open(self, *args):
+		self.decks["sets"].title = "Copyright"
 		self.decks["sets"].size = (Window.width, Window.height)
 		self.decks["sets"].content = self.sd["other"]["copy_box"]
 		self.sd["other"]["copy_btn"].size = (Window.width, self.sd["card"][1] / 2)
-		self.sd["other"]["copy_lb"].text = ""
+		size = (self.decks["sets"].size[0] * 0.90, None)
+		text_size = (self.decks["sets"].size[0] * 0.85, None)
+		font_size = self.sd["card"][1] / 6
+		self.sd["other"]["copy_rv"].data = []
 		for text in se["copyright"]:
-			self.sd["other"]["copy_lb"].text += f"{text}\n"
-		self.sd["other"]["copy_lb"].texture_update()
-		self.sd["other"]["copy_lb"].height = self.sd["other"]["copy_lb"].texture.size[1]
-		self.sd["other"]["copy_scv"].scroll_y = 1
-		self.decks["sets"].title = "Copyright"
+			self.sd["other"]["copy_rv"].data.append({"text": text, "text_size": text_size, "size": size, "font_size": font_size})
+		Clock.schedule_once(self.copy_open_delay_y0, ability_dt)
+	def copy_open_delay_y0(self, *args):
+		self.sd["other"]["copy_rv"].scroll_y = 0
+		Clock.schedule_once(self.copy_open_delay_y1, ability_dt)
+	def copy_open_delay_y1(self, *args):
+		self.sd["other"]["copy_rv"].scroll_y = 1
+		Clock.schedule_once(self.copy_open_delay, ability_dt)
+	def copy_open_delay(self, *args):
 		self.decks["sets"].open()
 	def down_open(self, *args):
 		self.sd["popup"]["popup"].dismiss()
@@ -624,6 +641,7 @@ class GameMech(Widget):
 				ss[cc] = {}
 				ss[cc]["colour_c"] = self.cd[cc].colour_c
 				ss[cc]["back"] = self.cd[cc].back
+				ss[cc]["back_info"] = self.cd[cc].back_info
 				ss[cc]["movable"] = self.cd[cc].movable
 				ss[cc]["status"] = self.cd[cc].status
 				ss[cc]["pos_old"] = self.cd[cc].pos_old
@@ -1121,14 +1139,20 @@ class GameMech(Widget):
 				self.gd["pay"].remove("Marker")
 				Clock.schedule_once(self.pay_condition, move_dt_btw)
 				return False
-			if "Flip" in self.gd["pay"]:
-				ind = self.gd["pay"].index("Flip")
+			if "Flip" in self.gd["pay"] or "MFlip" in self.gd["pay"]:
+				if "Flip" in self.gd["pay"]:
+					ind = self.gd["pay"].index("Flip")
+				elif "MFlip" in self.gd["pay"]:
+					ind = self.gd["pay"].index("MFlip")
 				if self.gd["pay"][ind + 1] == 0:
 					if self.gd["pay"][ind + 2] == "down" and not card.back:
 						card.show_back()
 					elif self.gd["pay"][ind + 2] == "up" and card.back:
 						card.show_front()
-					self.gd["pay"].remove("Flip")
+					if "Flip" in self.gd["pay"]:
+						self.gd["pay"].remove("Flip")
+					elif "MFlip" in self.gd["pay"]:
+						self.gd["pay"].remove("MFlip")
 					Clock.schedule_once(self.pay_condition, move_dt_btw)
 					return False
 			if "ClockL" in self.gd["pay"]:
@@ -1590,7 +1614,7 @@ class GameMech(Widget):
 				else:
 					cx = ("", "9", "", "", "", "")
 				if self.gd["pp"] < 0 or self.gd["phase"] in ("Attack", "Declaration"):
-					cards_s = list(stage + self.pd[player]["Memory"])
+					cards_s = list(stage + [s for s in self.pd[player]["Memory"] if not self.cd[s].back])
 				else:
 					cards_s = list(stage)
 				alarm = []
@@ -1614,7 +1638,8 @@ class GameMech(Widget):
 					for indy in self.pd[player]["Hand"]:
 						h.append((self.cd[indy].card, self.cd[indy].name_t, self.cd[indy].trait_t, self.cd[indy].colour, self.cd[indy].trigger))
 					for indmy in self.pd[player]["Memory"]:
-						my.append((self.cd[indmy].card, self.cd[indmy].name_t, self.cd[indmy].trait_t, self.cd[indmy].back, self.cd[indmy].back_info))
+						if not self.cd[indmy].back:
+							my.append((self.cd[indmy].card, self.cd[indmy].name_t, self.cd[indmy].trait_t, self.cd[indmy].back, self.cd[indmy].back_info))
 					for indwr in self.pd[player]["Waiting"]:
 						wr.append((self.cd[indwr].card, self.cd[indwr].name_t, self.cd[indwr].trait_t))
 				cards = cards_s + [player] + alarm
@@ -1658,6 +1683,13 @@ class GameMech(Widget):
 								z = (item[item.index("turn") + 1], self.gd['turn'], "ability", "")
 							else:
 								z = (card.turn[0], self.gd['turn'], card.turn[1], card.turn[2])
+							opp = ""
+							if "Center" in card.pos_new:
+								if ind[-1] == "1":
+									op = "2"
+								elif ind[-1] == "2":
+									op = "1"
+								opp = self.pd[op]["Center"][self.m[int(card.pos_new[-1])]]
 							if self.gd["phase"] in ("Battle", "Counter", "Trigger", "Damage", "Declaration"):
 								datk = self.gd["attacking"][0]
 								deff = ""
@@ -1695,7 +1727,7 @@ class GameMech(Widget):
 								pos = (card.pos_old, card.pos_new, self.cd[wait].pos_new, "Waiting")
 							else:
 								pos = (card.pos_old, card.pos_new, self.cd[r].pos_old, self.cd[r].pos_new)
-							ability = ab.auto(a=item[0], p=self.gd["phase"], r=(ind, r, self.cd[r].card, self.cd[r].colour), text=(self.cd[ind].text_c, self.cd[r].text_c), v=v, cx=cx, ty=ty, suop=suop, lr=(self.cd[r].level_t, self.cd[r].level_t), pos=pos, n=self.gd["active"], sx=sxx, inds=inds, act=act, baind=baind, nr=nr, dis=diss, csop=csop, atk=self.gd["attacking"][1], nmop=nmop, trop=trop, lvup=lvup, refr=refr, sav=savs, rst=rst, lvc=(lvc, self.cd[lvc].card), z=z, cnc=cnc, dmg=dmg, pp=self.gd["pp"], tr=(self.cd[ind].trait_t, self.cd[r].trait_t), lvop=lvop, brt=brt, std=std, passed=passed)
+							ability = ab.auto(a=item[0], p=self.gd["phase"], r=(ind, r, self.cd[r].card, self.cd[r].colour), text=(self.cd[ind].text_c, self.cd[r].text_c), v=v, cx=cx, ty=ty, suop=suop, lr=(self.cd[r].level_t, self.cd[r].level_t), pos=pos, n=self.gd["active"], sx=sxx, inds=inds, act=act, baind=baind, nr=nr, dis=diss, csop=csop, atk=self.gd["attacking"][1], nmop=nmop, trop=trop, lvup=lvup, refr=refr, sav=savs, rst=rst, lvc=(lvc, self.cd[lvc].card), z=z, cnc=cnc, dmg=dmg, pp=self.gd["pp"], tr=(self.cd[ind].trait_t, self.cd[r].trait_t), lvop=lvop, brt=brt, std=std, passed=passed, opp=opp)
 							if player == "2":
 								if ind in self.pd[ind[-1]]["marker"]:
 									mm = len(self.pd[ind[-1]]["marker"][ind])
@@ -1979,10 +2011,10 @@ class GameMech(Widget):
 			self.sd["popup"]["popup"].dismiss()
 			self.popup_clr()
 		for nx in self.gd["sn"]:
-			for ax in self.gd["sn"][nx]:
-				for nnx in range(len(self.gd["sn"][nx][ax])):
-					self.cd[self.gd["sn"][nx][ax][nnx][0]].update_text()
-					self.cpop[self.gd["sn"][nx][ax][nnx][1]].update_text()
+			for snx in self.gd["sn"][nx]:
+				for nnx in range(len(self.gd["sn"][nx][snx])):
+					self.cd[self.gd["sn"][nx][snx][nnx][0]].update_text()
+					self.cpop[self.gd["sn"][nx][snx][nnx][1]].update_text()
 		for item in self.gd["so"]:
 			self.cpop[item].update_text()
 		self.gd["so"] = []
@@ -2033,12 +2065,11 @@ class GameMech(Widget):
 				temp = self.gd["reserve"][p].pop(0)
 				if temp not in self.gd["stack"][p]:
 					self.gd["stack"][p].append(temp)
-		stack = list(self.gd["stack"][p])
-		for auto in stack:
+		for auto in list(self.gd["stack"][p]):
 			if "pay" in auto[1] and "oppmay" in auto[1]:
 				if p == "1":
 					o = "2"
-				elif "p" == "2":
+				elif p == "2":
 					o = "1"
 				auto1 = list(auto)
 				auto1[1].remove("oppmay")
@@ -2054,7 +2085,7 @@ class GameMech(Widget):
 				self.auto_reserve(p, auto, False)
 				continue
 			stage = list(self.pd[p]["Center"] + self.pd[p]["Back"])
-			stock = len(self.pd[p]["Stock"])
+			autostock = len(self.pd[p]["Stock"])
 			if "do" in auto[1]:
 				do = auto[1][auto[1].index("do") + 1]
 			else:
@@ -2075,11 +2106,11 @@ class GameMech(Widget):
 				elif "Waiting" not in self.cd[auto[0]].pos_new and "Waiting" in auto[4][1]:
 					aa = 0
 				else:
-					if "Stock1" in auto[1] and stock < 1:
+					if "Stock1" in auto[1] and autostock < 1:
 						aa = 0
-					if "Stock2" in auto[1] and stock < 2:
+					if "Stock2" in auto[1] and autostock < 2:
 						aa = 0
-					if "Stock3" in auto[1] and stock < 3:
+					if "Stock3" in auto[1] and autostock < 3:
 						aa = 0
 					if ("Character" in auto[1] or "Climax" in auto[1] or "Trait" in auto[1] or "TraitN" in auto[1]) and len(self.pd[p]["Hand"]) < 1:
 						aa = 0
@@ -2276,7 +2307,7 @@ class GameMech(Widget):
 					aa = 0
 				elif "lower" not in auto[1] and markers < auto[1][auto[1].index("markers") + 1]:
 					aa = 0
-			elif "Opposite" in auto[1]:
+			elif "opposite" in auto[1]:
 				aa = 2
 				if "Center" not in self.cd[auto[0]].pos_new:
 					aa = 0
@@ -2289,16 +2320,16 @@ class GameMech(Widget):
 					if opp == "":
 						aa = 0
 					elif "OPlevel" in auto[1]:
-						if "OP==" in auto[1] and self.cd[opp].level_t != auto[1][auto[1].index("olevel") + 1]:
+						if "OP==" in auto[1] and self.cd[opp].level_t != auto[1][auto[1].index("OPlevel") + 1]:
 							aa = 0
-						elif "OPlower" in auto[1] and self.cd[opp].level_t > auto[1][auto[1].index("olevel") + 1]:
+						elif "OPlower" in auto[1] and self.cd[opp].level_t > auto[1][auto[1].index("OPlevel") + 1]:
 							aa = 0
-						elif "OPlower" not in auto[1] and self.cd[opp].level_t < auto[1][auto[1].index("olevel") + 1]:
+						elif "OPlower" not in auto[1] and self.cd[opp].level_t < auto[1][auto[1].index("OPlevel") + 1]:
 							aa = 0
 					elif "OPtraits" in auto[1]:
-						if "OPlower" in auto[1] and len([t for t in self.cd[opp].trait_t if t != ""]) > auto[1][auto[1].index("#traits") + 1]:
+						if "OPlower" in auto[1] and len([t for t in self.cd[opp].trait_t if t != ""]) > auto[1][auto[1].index("OPtraits") + 1]:
 							aa = 0
-						elif "OPlower" not in auto[1] and len([t for t in self.cd[opp].trait_t if t != ""]) < auto[1][auto[1].index("#traits") + 1]:
+						elif "OPlower" not in auto[1] and len([t for t in self.cd[opp].trait_t if t != ""]) < auto[1][auto[1].index("OPtraits") + 1]:
 							aa = 0
 			elif "stage" in auto[1]:
 				aa = 2
@@ -2317,6 +2348,21 @@ class GameMech(Widget):
 						aa = 2
 				elif len(self.pd[auto[0][-1]]["Level"]) >= auto[1][1]:
 					aa = 2
+			if "Stage" in auto[1] and "Open" in auto[1]:
+				o = p
+				if "Opp" in auto[1]:
+					if p == "1":
+						o = "2"
+					elif p == "2":
+						o = "1"
+				if "Center" in auto[1]:
+					stage1 = [s for s in self.pd[o]["Center"] if s == ""]
+				elif "Back" in auto[1]:
+					stage1 = [s for s in self.pd[p]["Back"] if s == ""]
+				else:
+					stage1 = [s for s in self.pd[o]["Center"] + self.pd[p]["Back"] if s == ""]
+				if len(stage1) < 1:
+					a = 0
 			if not aa and "dont" in auto[1]:
 				do = auto[1][auto[1].index("dont") + 1]
 				aa = 2
@@ -2361,15 +2407,19 @@ class GameMech(Widget):
 			stage = list(self.pd[p]["Center"] + self.pd[p]["Back"])
 			if "Stock" in lst[1] and stock < lst[1][lst[1].index("Stock") + 1]:
 				return False
-			if "Flip" in lst[1]:
-				qty = lst[1][lst[1].index("Flip") + 1]
-				st = lst[1][lst[1].index("Flip") + 2]
+			if "Flip" in lst[1] or "MFlip" in lst[1]:
+				if "Flip" in lst[1]:
+					qty = lst[1][lst[1].index("Flip") + 1]
+					st = lst[1][lst[1].index("Flip") + 2]
+				elif "MFlip" in lst[1]:
+					qty = lst[1][lst[1].index("MFlip") + 1]
+					st = lst[1][lst[1].index("MFlip") + 2]
 				if qty == 0:
 					if st == "down" and self.cd[ind].back:
 						return False
 					elif st == "up" and not self.cd[ind].back:
 						return False
-					if ind not in self.pd[p]["Memory"]:
+					if "MFlip" in lst[1] and ind not in self.pd[p]["Memory"]:
 						return False
 			if "Discard" in lst[1]:
 				qty = lst[1][lst[1].index("Discard") + 1]
@@ -2856,6 +2906,23 @@ class GameMech(Widget):
 						if "olevel" in eff:
 							if ">p" in eff[eff.index("olevel") + 1] and self.cd[idm].level > len(self.pd[idm[-1]]["Level"]):
 								rev = False
+						elif "opcost" in eff or "oplevel" in eff:
+							if ind[-1] == "1":
+								op = "2"
+							elif ind[-1] == "2":
+								op = "1"
+							opp = ""
+							if "Center" in self.cd[ind].pos_new:
+								opp = self.pd[op]["Center"][self.m[int(self.cd[ind].pos_new[-1])]]
+							if opp:
+								if "opcost" in eff:
+									if "oplower" in eff and self.cd[opp].cost_t < eff[eff.index("opcost") + 1]:
+										rev = False
+								elif "oplevel" in eff:
+									if ">p" in eff[eff.index("oplevel") + 1] and self.cd[opp].level_t > len(self.pd[opp[-1]]["Level"]):
+										rev = False
+									if "oplower" in eff and self.cd[opp].level_t < eff[eff.index("oplevel") + 1]:
+										rev = False
 						else:
 							rev = False
 			if rev:
@@ -2984,7 +3051,7 @@ class GameMech(Widget):
 			self.gd[r] = ""
 		self.clear_ability()
 		for ind in self.cd:
-			if ind in self.emptycards or ind == "1" or ind == "2":
+			if ind in self.emptycards or ind == "1" or ind == "2" or ind.endswith("3"):
 				continue
 			self.cd[ind].setPos(field=self.mat[ind[-1]]["field"]["Library"], t="Library")
 			self.cd[ind].update_text()
@@ -3248,7 +3315,7 @@ class GameMech(Widget):
 		self.decks["st"]["lang_spn"] = Spinner(text="Both", values=("Both", "Jap", "Eng"), cid="lang")
 		self.decks["st"]["lang_spn"].bind(text=self.deck_set_slc)
 		self.decks["st"]["lang_box"] = BoxLayout(orientation="horizontal", size_hint=(1, None))
-		self.decks["st"]["format_spn"] = Spinner(text="-", values=("Standard", "Side", "Neo-Standard", "Title-Specific"), cid="format")
+		self.decks["st"]["format_spn"] = Spinner(text="-", values=("Standard", "Side", "Neo-Standard"), cid="format")  
 		self.decks["st"]["format_spn"].bind(text=self.deck_set_slc)
 		self.decks["st"]["format_btn"] = Button(text="", on_press=self.deck_set_slc, cid="title", disabled=True, halign='center', valign='middle', max_lines=1)
 		self.decks["st"]["format_box"] = BoxLayout(orientation="vertical", size_hint=(1, None))
@@ -3291,16 +3358,13 @@ class GameMech(Widget):
 			if f"{nx}1bb" in self.decks["dbtn"]:
 				continue
 			self.decks["dbtn"][f"{nx}1bb"] = BoxLayout(orientation="horizontal", pos=pos, size=size, size_hint=(None, None))
-			self.decks["dbtn"][f"{nx}1+"] = Button(text="+", size_hint=(0.38, 1), cid=f"{nx}1+")
-			self.decks["dbtn"][f"{nx}1-"] = Button(text="-", size_hint=(0.38, 1), cid=f"{nx}1-")
+			self.decks["dbtn"][f"{nx}1+"] = Button(text="+", size_hint=(0.38, 1), cid=f"{nx}1+", on_release=self.add_card)
+			self.decks["dbtn"][f"{nx}1-"] = Button(text="-", size_hint=(0.38, 1), cid=f"{nx}1-", on_release=self.remove_card)
 			self.decks["dbtn"][f"{nx}1t"] = Label(text="0", halign='center', size_hint=(0.24, 1), valign="middle")
 			self.decks["dbtn"][f"{nx}1bb"].add_widget(self.decks["dbtn"][f"{nx}1-"])
 			self.decks["dbtn"][f"{nx}1bb"].add_widget(self.decks["dbtn"][f"{nx}1t"])
 			self.decks["dbtn"][f"{nx}1bb"].add_widget(self.decks["dbtn"][f"{nx}1+"])
-			self.decks["dbtn"][f"{nx}1b+"] = Button(text="", size_hint=(None, None), opacity=0, cid=f"{nx}1+", on_release=self.add_card, pos=pos, size=size1)
-			self.decks["dbtn"][f"{nx}1b-"] = Button(text="", size_hint=(None, None), opacity=0, cid=f"{nx}1-", on_release=self.remove_card, pos=pos, size=size1)
-			self.parent.add_widget(self.decks["dbtn"][f"{nx}1b+"])
-			self.parent.add_widget(self.decks["dbtn"][f"{nx}1b-"])
+			self.sd["build_layout"].add_widget(self.decks["dbtn"][f"{nx}1bb"])
 		self.sd["dpop_press"] = []
 		self.popup_deck(t="start")
 	def deck_set_slc(self, inst, value=""):
@@ -3735,12 +3799,18 @@ class GameMech(Widget):
 		self.multi_info["dw"]["h"].add_widget(self.multi_info["dw"]["3"])
 		self.multi_info["dw"]["v"].add_widget(self.multi_info["dw"]["h"])
 		self.multi_info["sctm"].add_widget(self.multi_info["dw"]["v"])
+		self.cpop["9"] = CardImg("9", self.sd["card"], "9", self.mat["1"]["per"])
+		self.cpop["9"].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
+		self.cpop["09"] = CardImg("09", self.sd["card"], "09", self.mat["1"]["per"])
+		self.cpop["09"].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
 		for x in range(1, 3):
 			self.cpop[f"{x}"] = CardImg(f"{x}", self.sd["card"], f"{x}", self.mat[f"{x}"]["per"])
 			self.cpop[f"{x}"].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
-		for x in range(1, 51):
+		for x in range(1, 101):
 			self.cpop[f"{x}0"] = CardImg(f"{x}0", self.sd["card"], "1", self.mat["1"]["per"])
 			self.cpop[f"{x}0"].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
+			if x > 50:
+				continue
 			self.cpop[f"{x}1"] = CardImg(f"{x}1", self.sd["card"], "1", self.mat["1"]["per"])
 			self.cpop[f"{x}1"].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
 			self.cpop[f"{x}2"] = CardImg(f"{x}2", self.sd["card"], "2", self.mat["1"]["per"])
@@ -3804,14 +3874,17 @@ class GameMech(Widget):
 	def popup_multi_info(self, field="", owner="", deck="", cards=[], t="", shuffle="", *args):
 		self.multi_info["download"].y = -Window.height * 2
 		self.multi_info["dw"]["v"].y = -Window.height * 2
+		c = 1
 		if deck != "":
 			self.multi_info["popup"].title = sd[deck[1:]]["name"]
 			self.multi_info["owner"] = "deck"
 			self.multi_info["cards"] = []
 			self.multi_info["deck_list"] = ["", ]
-			c = 1
 			for mcards in sorted(sd[deck[1:]]["deck"].keys()):
 				for card in range(sd[deck[1:]]["deck"][mcards]):
+					if c > 98:
+						self.cpop[f"{c - 1}0"].import_data("add")
+						continue
 					self.multi_info["cards"].append(f"{c}0")
 					self.cpop[f"{c}0"].import_data(sc[mcards])
 					self.multi_info["deck_list"].append(mcards)
@@ -3861,7 +3934,9 @@ class GameMech(Widget):
 					if "." in img:
 						img = img[:-4]
 					self.multi_info["deck"].source = f"atlas://{img_in}/annex/{img}"
-				elif "ws01v" in img:
+				elif "ws01v" in img or ("demo" in img and not exists(f"{cache}/{img}")):
+					if "." in img:
+						img = img[:-4]
 					self.multi_info["deck"].source = f"atlas://{img_in}/other/{img}"
 				else:
 					if exists(f"{cache}/{img}"):
@@ -3900,7 +3975,10 @@ class GameMech(Widget):
 						else:
 							self.cpop[ind].show_front()
 					else:
-						self.cpop[ind].show_front()
+						if c > 98 and ind == "980":
+							pass
+						else:
+							self.cpop[ind].show_front()
 				self.multi_info["stack"].add_widget(self.cpop[ind])
 		if r > 4:
 			yscv = height * (r - 0.5)
@@ -3914,7 +3992,7 @@ class GameMech(Widget):
 		if ypop > Window.height:
 			ypop = Window.height * 0.9
 			yscatm = ypop - self.multi_info["popup"].title_size - self.multi_info["popup"].separator_height
-			yscv = yscatm - self.sd["card"][1] * 0.75
+			yscv = yscatm - self.sd["card"][1] * 1.6
 		if len(self.multi_info["popup"].title) > 60:
 			self.multi_info["scv"].size = (width * ncards + self.sd["padding"] * 4, yscv - self.sd["card"][1] / 3)
 		else:
@@ -4119,7 +4197,7 @@ class GameMech(Widget):
 		for key in self.downloads.keys():
 			current += self.downloads[key][1]
 		self.mcancel_create_bar.value = current
-		self.mcancel_create_text.text = f"{round(self.mcancel_create_bar.value_normalized * 100, 1)}%"
+		self.mcancel_create_text.text = f"{round(self.mcancel_create_bar.value_normalized * 100, 2):.2f}%"
 	def multiplay_cjpopup(self, *args):
 		if self.net["status"] == "join":
 			self.mcreate_popup.title = "Joining Room"
@@ -4142,7 +4220,7 @@ class GameMech(Widget):
 		elif self.net["status"] == "down":
 			self.gd["cancel_down"] = False
 			self.mcreate_popup.title = "Download progress"
-			self.mcancel_create_text.text = "0.0%"
+			self.mcancel_create_text.text = "0.00%"
 			self.mcancel_create_bar.value = 0
 			if self.mcancel_create_bar.x < 0:
 				self.mcancel_create_bar.x += Window.width * 2
@@ -4163,15 +4241,19 @@ class GameMech(Widget):
 			Clock.schedule_once(self.update_time, 1)
 		else:
 			self.mcancel_create_time.text = " "
-	def check_internet(self, url='http://www.google.com/', timeout=5, ver=False):
-		online = True
+	def check_internet(self, url="", timeout=3, ver=False):
+		if not url:
+			url = self.net["version"].replace("https://", "")
+		online = False
+		conn = httplib.HTTPConnection(url, timeout=timeout)
 		try:
-			req = requests.head(url, timeout=timeout)
-			req.raise_for_status()
-		except requests.HTTPError as e:
-			online = False
-		except requests.ConnectionError:
-			online = False
+			conn.request("HEAD", "/")
+			r1 = conn.getresponse()
+			if 200 <= r1.status < 300:
+				online = True
+		except Exception:
+			pass
+		conn.close()
 		if not ver and not online:
 			Clock.schedule_once(partial(self.popup_text, "no_internet"))
 		return online
@@ -4330,6 +4412,9 @@ class GameMech(Widget):
 		else:
 			self.net["body"] = urlencode(dat)
 			self.cnet = UrlRequest(self.net["url"], req_body=self.net["body"], req_headers=headers, on_success=self.mcheck_data, timeout=10, ca_file=cfi.where(), on_failure=self.failure_message, on_error=self.error_message, verify=True)  
+			if "version" in self.net["status"]:
+				self.cnet.wait()
+				self.main_scrn.disabled = False
 	def mcancel_room(self, *args):
 		self.mcreate_popup.dismiss()
 		self.net["time"] = -1
@@ -4827,6 +4912,7 @@ class GameMech(Widget):
 		self.decks["1"] = ["S11E000", "mat", False, False]
 		self.decks["2"] = ["S11E000", "mat", False, False]
 		if self.check_internet(ver=True):
+			self.main_scrn.disabled = True
 			self.mconnect("version")
 	def main_menu(self, *args):
 		self.sd["single"] = Button(text="Start Game", on_release=self.popup_network_slc, cid="single")
@@ -4909,6 +4995,7 @@ class GameMech(Widget):
 		self.main_scrn.pos = (-Window.width, -Window.height)
 		self.main_scrn.disabled = False
 		self.sd["t_bar"].x = -Window.width * 2
+		self.sd["build_scv"].x = 0
 		self.sd["b_bar"].x = 0
 		self.sd["menu"]["btn"].x = -Window.width * 2
 		self.mat["1"]["mat"].x = 0
@@ -4922,7 +5009,7 @@ class GameMech(Widget):
 		for item in ("name", "format", "image", "lang"):
 			self.decks["sctm"].add_widget(self.decks["st"][f"{item}_box"])
 		self.decks["dbuild"] = {"l": "", "qty": {}, "names": {}, "neo": {}, "ns": [], "c": True, "n": "", "t": "", "img": "", "jap": "", "name": "", "date": "", "deck": {}, "pos": {}}
-		self.decks["dbuild"]["qty"]["inds"] = list(self.pd["2"]["Library"])
+		self.decks["dbuild"]["qty"]["inds"] = list(self.pd["2"]["Library"]) + [f"{s}3" for s in range(1, 51)]
 		if self.decks["selected"]:
 			self.decks["dbuilding"] = self.decks["selected"][1:]
 			for key in sd[self.decks["selected"][1:]]:
@@ -4977,8 +5064,6 @@ class GameMech(Widget):
 					self.decks["dbuild"]["img"] = "empty"
 					self.decks["dbuild"]["c"] = False
 					break
-		for nx in range(1, 51):
-			self.mat["1"]["mat"].add_widget(self.decks["dbtn"][f"{nx}1bb"])
 		self.decks["name_btn"].disabled = False
 		self.decks["done_btn"].disabled = True
 		if not self.decks["dbuild"]["n"]:
@@ -5006,6 +5091,10 @@ class GameMech(Widget):
 			d += self.decks["dbuild"]["deck"][card]
 			if t == "Climax":
 				c += self.decks["dbuild"]["deck"][card]
+		if d > 99:
+			self.decks["add_btn"].disabled = True
+		else:
+			self.decks["add_btn"].disabled = False
 		self.decks["50"].text = f"{str(d).zfill(2)}/50"
 		self.decks["8"].text = f"{c}/8"
 		if c > 8:
@@ -5018,7 +5107,8 @@ class GameMech(Widget):
 		if self.decks["dbuild"]["n"]:
 			self.decks["st"]["format_btn"].text = self.decks["dbuild"]["t"]
 			if "Title" in self.decks["dbuild"]["n"]:
-				self.decks["st"]["format_spn"].text = "Title-Specific"
+				self.decks["st"]["format_spn"].text = "Neo-Standard"
+				self.decks["dbuild"]["n"] = "Neo"
 			elif "Neo" in self.decks["dbuild"]["n"]:
 				self.decks["st"]["format_spn"].text = "Neo-Standard"
 			else:
@@ -5061,6 +5151,9 @@ class GameMech(Widget):
 			for trt in sc[ind]["trait"]:
 				if trt and trt not in trait:
 					trait.append(trt)
+			if len(sc[ind]["trait"]) == 0 and sc[ind]["type"] == "Character":
+				if "No Trait" not in trait:
+					trait.insert(1, "No Trait")
 		self.sd["btn"]["ftrait"].values = trait
 		self.gd["p_ld"] = list(sorted(self.cpop.keys()))
 		for cc in self.skip_cpop:
@@ -5070,7 +5163,7 @@ class GameMech(Widget):
 			if len(self.gd["p_ld"]) % popup_max_cards == 0:
 				break
 			self.gd["p_ld"].pop()
-		Clock.schedule_once(self.deck_building_layout, ability_dt)
+		Clock.schedule_once(self.deck_building_layout)
 	def moving_touch_down(self, *args):
 		if not self.hscv[2] and self.gd["p_c"] == "Add" and len(self.gd["p_fcards"]) > len(self.sd["popup"]["stack"].children):
 			dc = self.sd["card"][1] + self.sd["padding"]
@@ -5129,16 +5222,23 @@ class GameMech(Widget):
 				self.hscv[2] = 0
 	def deck_building_layout(self, *args):
 		self.sd["popup"]["stack"].clear_widgets()
-		for ind in self.cd:
-			if ind in self.emptycards or ind == "1" or ind == "2":
+		for ind in reversed(self.cd):
+			if ind in self.skip_cpop:
 				continue
+			try:
+				self.mat[ind[-1]]["mat"].remove_widget(self.cd[ind])
+			except (WidgetException, KeyError) as e:
+				pass
+			try:
+				self.sd["build_layout"].add_widget(self.cd[ind])
+			except WidgetException:
+				pass
 			self.cd[ind].stand(a=False)
-			self.cd[ind].pos = (0, 0)
+			self.cd[ind].pos = (-Window.width * 2, 0)
 			if ind.endswith("1"):
-				self.decks["dbtn"][f"{ind}bb"].pos = (0, 0)
-				self.decks["dbtn"][f"{ind}b-"].pos = (-Window.width, 0)
-				self.decks["dbtn"][f"{ind}b+"].pos = (-Window.width, 0)
+				self.decks["dbtn"][f"{ind}bb"].pos = (-Window.width * 2, 0)
 		self.hand_btn_show(False)
+		ypos = self.sd["padding"] * 1.5
 		d_width = self.sd["card"][1] + self.sd["padding"] * 1.3
 		d_height = self.sd["card"][0] / 2 + self.sd["card"][1] + self.sd["padding"] * 1.1
 		d_0 = []
@@ -5158,12 +5258,17 @@ class GameMech(Widget):
 			elif sc[ind]["level"] == 0:
 				d_0.append(ind)
 		d_r = 0
+		self.sd["build_layout"].size = (Window.width, Window.height - self.sd["b_bar"].size[1])
 		for it in (d_0, d_1, d_2, d_3, d_cx):
 			d_r += int(ceil(len(it) / dbuild_limit))
+		self.sd["build_scv"].do_scroll_y = False
+		self.sd["build_scv"].do_scroll_y = False
 		if d_r > 0:
+			self.sd["build_layout"].size = (Window.width, d_height * d_r + ypos * 2)
+			if d_r > 7:
+				self.sd["build_scv"].do_scroll_y = True
 			d_r -= 1
 		inx = 1
-		ypos = self.mat["1"]["mat"].size[1] + self.sd["b_bar"].size[1]  
 		for item in (d_0, d_1, d_2, d_3, d_cx):
 			xpos = 0
 			c = 0
@@ -5185,10 +5290,6 @@ class GameMech(Widget):
 				self.decks["dbtn"][f"{inx}1bb"].x = xpos
 				self.decks["dbtn"][f"{inx}1bb"].y = ypos + d_height * d_r + self.sd["padding"] / 3
 				ybar = self.decks["dbtn"][f"{inx}1bb"].y + self.decks["dbtn"][f"{inx}1bb"].size[1] + self.sd["padding"] * 0.25
-				self.decks["dbtn"][f"{inx}1b-"].x = xpos
-				self.decks["dbtn"][f"{inx}1b-"].y = self.sd["b_bar"].size[1] + d_height * d_r + self.sd["padding"] / 3
-				self.decks["dbtn"][f"{inx}1b+"].x = xpos + self.decks["dbtn"][f"{inx}1bb"].size[0] - self.decks["dbtn"][f"{inx}1b+"].size[0]
-				self.decks["dbtn"][f"{inx}1b+"].y = self.sd["b_bar"].size[1] + d_height * d_r + self.sd["padding"] / 3
 				self.cd[f"{inx}1"].y = ybar
 				self.decks["dbuild"]["pos"][f"{inx}1"] = (xpos, ybar, self.mat["1"]["mat"].size[1])
 				self.update_qty_card(f"{inx}1")
@@ -5226,8 +5327,6 @@ class GameMech(Widget):
 			self.decks["dbtn"][f"{ind}t"].text = str(self.decks["dbuild"]["deck"][card])
 			if self.decks["dbuild"]["deck"][card] <= 0:
 				self.decks["dbtn"][f"{ind}bb"].x = -Window.width * 2
-				self.decks["dbtn"][f"{ind}b-"].x = -Window.width * 2
-				self.decks["dbtn"][f"{ind}b+"].x = -Window.width * 2
 				del self.decks["dbuild"]["deck"][card]
 				del self.decks["dbuild"]["neo"][card]
 				Clock.schedule_once(self.deck_building_layout, ability_dt)
@@ -5244,20 +5343,21 @@ class GameMech(Widget):
 		else:
 			Clock.schedule_once(self.wait_update, move_dt_btw)
 	def add_card(self, btn):
-		ind = btn.cid[:-1]
-		card = self.cd[ind].cid
-		name = self.cd[ind].name
-		limit = self.decks["dbuild"]["qty"][name]
-		if self.decks["dbuild"]["names"][name] < limit:
-			if self.decks["dbuild"]["deck"][card] < 5:
-				if len(self.decks["dbuild"]["qty"]["inds"]) > 0:
-					temp = self.decks["dbuild"]["qty"]["inds"].pop()
-					self.decks["dbuild"]["qty"][card].append(temp)
-			self.decks["dbuild"]["names"][name] += 1
-			self.decks["dbuild"]["deck"][card] += 1
-			self.decks["dbtn"][f"{ind}t"].text = str(self.decks["dbuild"]["deck"][card])
-			self.update_qty_card(ind)
-			self.update_deck_label()
+		if not self.decks["add_btn"].disabled:
+			ind = btn.cid[:-1]
+			card = self.cd[ind].cid
+			name = self.cd[ind].name
+			limit = self.decks["dbuild"]["qty"][name]
+			if self.decks["dbuild"]["names"][name] < limit:
+				if self.decks["dbuild"]["deck"][card] < 5:
+					if len(self.decks["dbuild"]["qty"]["inds"]) > 0:
+						temp = self.decks["dbuild"]["qty"]["inds"].pop()
+						self.decks["dbuild"]["qty"][card].append(temp)
+				self.decks["dbuild"]["names"][name] += 1
+				self.decks["dbuild"]["deck"][card] += 1
+				self.decks["dbtn"][f"{ind}t"].text = str(self.decks["dbuild"]["deck"][card])
+				self.update_qty_card(ind)
+				self.update_deck_label()
 	def update_qty_card(self, ind):
 		inx = self.cd[ind].cid
 		sep = (self.sd["card"][1] - self.sd["card"][0]) / 2
@@ -5267,7 +5367,6 @@ class GameMech(Widget):
 			self.field_btn[f"Hand{ind}"].size = (self.sd["card"][1], self.sd["card"][0])
 			if self.decks["dbuild"]["deck"][inx] == 1:
 				self.cd[ind].y = self.decks["dbuild"]["pos"][ind][1] + sep
-				self.field_btn[f"Hand{ind}"].pos = (self.cd[ind].pos[0], self.cd[ind].pos[1] - self.decks["dbuild"]["pos"][ind][2])
 			else:
 				if self.decks["dbuild"]["deck"][inx] == 2:
 					self.cd[ind].y = self.decks["dbuild"]["pos"][ind][1] + sep / 3 * 2
@@ -5281,7 +5380,6 @@ class GameMech(Widget):
 					self.cd[inq].x = self.cd[ind].x + sep
 					self.cd[inq].climax(a=False)
 					self.cd[inq].show_back()
-				self.field_btn[f"Hand{ind}"].pos = (self.cd[ind].pos[0], self.cd[ind].pos[1] - self.decks["dbuild"]["pos"][ind][2])
 			self.cd[ind].x += sep
 			self.cd[ind].y -= sep
 		else:
@@ -5300,31 +5398,38 @@ class GameMech(Widget):
 					self.cd[inq].x = self.cd[ind].x + sep / 3 * 2 * (nx + 1)
 					self.cd[inq].y = self.cd[ind].y
 					self.cd[inq].show_back()
-			self.field_btn[f"Hand{ind}"].pos = (self.cd[ind].pos[0], self.cd[ind].pos[1] - self.decks["dbuild"]["pos"][ind][2])
 		if self.decks["dbuild"]["deck"][inx] > 1:
 			for nx in reversed(range(len(self.decks["dbuild"]["qty"][inx]))):
 				inq = self.decks["dbuild"]["qty"][inx][nx]
-				self.mat["2"]["mat"].remove_widget(self.cd[inq])
-				self.mat["2"]["mat"].add_widget(self.cd[inq])
+				self.sd["build_layout"].remove_widget(self.cd[inq])
+				self.sd["build_layout"].add_widget(self.cd[inq])
+		self.sd["build_layout"].remove_widget(self.cd[ind])
+		self.sd["build_layout"].add_widget(self.cd[ind])
 		for ind in self.decks["dbuild"]["qty"]["inds"]:
 			self.cd[ind].stand(a=False)
-			self.cd[ind].pos = (0, 0)
+			self.cd[ind].pos = (-Window.width * 2, 0)
 	def clear_building(self, *args):
 		self.mat["1"]["mat"].pos = (-Window.width * 2, Window.height / 2 - self.sd["padding"] - self.sd["card"][1] / 6 - self.mat["1"]["mat"].height)
 		self.mat["2"]["mat"].pos = (-Window.width * 2, Window.height / 2 + self.sd["padding"] + self.sd["card"][1] / 6)
 		self.mat["2"]["mat"].reverse()
 		self.sd["b_bar"].x = -Window.width * 2
+		self.sd["build_scv"].x = -Window.width * 2
 		for ind in self.cd:
 			if ind in self.emptycards or ind == "1" or ind == "2":
 				continue
 			self.cd[ind].stand(a=False)
 			self.cd[ind].pos = (0, 0)
+			if not ind.endswith("0") and not ind.endswith("3"):
+				self.sd["build_layout"].remove_widget(self.cd[ind])
+				try:
+					self.mat[ind[-1]]["mat"].add_widget(self.cd[ind])
+				except WidgetException:
+					pass
+			elif ind.endswith("3"):
+				self.cd[ind].pos = (-Window.width * 2, 0)
 		self.hand_btn_show(False)
 		for inx in range(1, 51):
-			self.mat["1"]["mat"].remove_widget(self.decks["dbtn"][f"{inx}1bb"])
 			self.decks["dbtn"][f"{inx}1bb"].x = -Window.width * 2
-			self.decks["dbtn"][f"{inx}1b-"].x = -Window.width * 2
-			self.decks["dbtn"][f"{inx}1b+"].x = -Window.width * 2
 		for item in ("name", "format", "image", "lang"):
 			self.decks["sctm"].remove_widget(self.decks["st"][f"{item}_box"])
 		self.decks["sctm"].remove_widget(self.decks["save"])
@@ -5380,43 +5485,47 @@ class GameMech(Widget):
 			self.sd["cpop_press"] = []
 			self.decks["add_chosen"] = []
 			self.sd["popup"]["popup"].dismiss()
+			self.gd["popup_pop"] = False
 		elif btn.cid == "add":
 			self.popup_text("Loading")
 			Clock.schedule_once(self.add_building_popup)
 		elif btn.cid == "adding":
+			self.gd["popup_pop"] = False
 			self.popup_text("Loading")
+			self.decks["done_btn"].disabled = True
 			self.sd["popup"]["popup"].dismiss()
 			self.sd["cpop_press"] = []
 			if self.sd["cpop_pressing"] is not None:
 				self.sd["cpop_pressing"].cancel()
 				self.sd["cpop_pressing"] = None
-			for ind in sorted(self.decks["add_chosen"]):
-				name = sc[ind]["name"]
-				if name in self.decks["dbuild"]["names"]:
-					limit = self.decks["dbuild"]["qty"][name]
-					if self.decks["dbuild"]["names"][name] < limit:
-						if ind not in self.decks["dbuild"]["deck"]:
-							self.decks["dbuild"]["deck"][ind] = 1
-							self.decks["dbuild"]["qty"][ind] = []
-						else:
-							if self.decks["dbuild"]["deck"][ind] < 5:
-								temp = self.decks["dbuild"]["qty"]["inds"].pop()
-								self.decks["dbuild"]["qty"][ind].append(temp)
-							self.decks["dbuild"]["deck"][ind] += 1
-						self.decks["dbuild"]["names"][name] += 1
-				else:
-					self.decks["dbuild"]["deck"][ind] = 1
-					self.decks["dbuild"]["names"][name] = 1
-					self.decks["dbuild"]["qty"][name] = 4
-					for item in sc[ind]["text"]:
-						eff = ab.cont(item)
-						if "limit" in eff:
-							self.decks["dbuild"]["qty"][name] = eff[0]
-							break
-					self.decks["dbuild"]["qty"][ind] = []
-				self.check_card_neo(ind)
-			self.decks["add_chosen"] = []
-			self.deck_building_layout()
+			if int(self.decks["50"].text.split("/")[0]) < 100 and len(self.decks["dbuild"]["deck"]) < 50:
+				for ind in sorted(self.decks["add_chosen"]):
+					name = sc[ind]["name"]
+					if name in self.decks["dbuild"]["names"]:
+						limit = self.decks["dbuild"]["qty"][name]
+						if self.decks["dbuild"]["names"][name] < limit:
+							if ind not in self.decks["dbuild"]["deck"]:
+								self.decks["dbuild"]["deck"][ind] = 1
+								self.decks["dbuild"]["qty"][ind] = []
+							else:
+								if self.decks["dbuild"]["deck"][ind] < 5:
+									temp = self.decks["dbuild"]["qty"]["inds"].pop()
+									self.decks["dbuild"]["qty"][ind].append(temp)
+								self.decks["dbuild"]["deck"][ind] += 1
+							self.decks["dbuild"]["names"][name] += 1
+					else:
+						self.decks["dbuild"]["deck"][ind] = 1
+						self.decks["dbuild"]["names"][name] = 1
+						self.decks["dbuild"]["qty"][name] = 4
+						for item in sc[ind]["text"]:
+							eff = ab.cont(item)
+							if "limit" in eff:
+								self.decks["dbuild"]["qty"][name] = eff[0]
+								break
+						self.decks["dbuild"]["qty"][ind] = []
+					self.check_card_neo(ind)
+				self.decks["add_chosen"] = []
+				self.deck_building_layout()
 	def add_building_popup(self, *args):
 		self.sd["popup"]["popup"].title = "Add cards to deck"
 		self.gd["confirm_var"] = {"o": "1", "c": "Add", "m": 1}
@@ -5430,11 +5539,13 @@ class GameMech(Widget):
 			self.gd["p_ftype"] = text
 		elif any(text == s for s in self.sd["btn"]["ftrait"].values):
 			self.gd["p_ftrait"] = text
+		elif any(text == s for s in self.sd["btn"]["ftextl"].values):
+			self.gd["p_ftext"] = self.sd["btn"]["ftext"].text
 		elif text != "":
 			self.gd["p_ftext"] = text
 		else:
 			self.gd["p_ftext"] = ""
-		if self.gd["p_c"] == "Add":
+		if "Add" in self.gd["p_c"]:
 			self.popup_filter()
 	def filter_deck_add(self):
 		self.gd["p_fcards"] = self.gd["p_cards"]
@@ -5454,7 +5565,10 @@ class GameMech(Widget):
 		if self.gd["p_ftype"] != "Type":
 			self.gd["p_fcards"] = [s for s in self.gd["p_fcards"] if sc[s]["type"] == self.gd["p_ftype"]]
 		if self.gd["p_ftrait"] != "Trait":
-			self.gd["p_fcards"] = [s for s in self.gd["p_fcards"] if self.gd["p_ftrait"] in sc[s]["trait"]]
+			if self.gd["p_ftrait"] == "No Trait":
+				self.gd["p_fcards"] = [s for s in self.gd["p_fcards"] if sc[s]["type"] == "Character" and len(sc[s]["trait"]) == 0]
+			else:
+				self.gd["p_fcards"] = [s for s in self.gd["p_fcards"] if self.gd["p_ftrait"] in sc[s]["trait"]]
 		if self.gd["p_ftext"] != "":
 			if self.sd["btn"]["ftextl"].text == "Name":
 				self.gd["p_fcards"] = [s for s in self.gd["p_fcards"] if self.gd["p_ftext"].lower() in sc[s]["name"].lower()]
@@ -5470,15 +5584,21 @@ class GameMech(Widget):
 		self.cd["sspace"] = CardEmpty()
 		self.cd["1"].show_front()
 		self.cd["2"].show_front()
-		for player in list(self.pd.keys()):
+		for player in list(self.pd.keys()) + ["3"]:
 			for inx in range(1, 51):
 				ind = f"{inx}{player}"
-				if ind not in self.pd[player]["Library"]:
-					self.pd[player]["Library"].append(ind)
-				self.cd[ind] = Card(code=ind, card=self.sd["card"], owner=player, per=self.mat[player]["per"])
+				if player not in self.pd:
+					per = self.mat["1"]["per"]
+				else:
+					per = self.mat[player]["per"]
+				self.cd[ind] = Card(code=ind, card=self.sd["card"], owner=player, per=per)
 				self.cd[ind].setPos(xpos=-Window.width, ypos=-Window.height, a=False, t="Library")
+				self.cd[ind].btn.bind(on_press=self.card_btn_press, on_release=self.card_btn_release)
 				self.cd[ind].show_back()
-				self.mat[player]["mat"].add_widget(self.cd[ind])
+				if player in self.pd:
+					self.mat[player]["mat"].add_widget(self.cd[ind])
+					if ind not in self.pd[player]["Library"]:
+						self.pd[player]["Library"].append(ind)
 	def deck_fill(self, *args):
 		for player in list(self.pd.keys()):
 			self.gd["inx"] = 1
@@ -5489,6 +5609,10 @@ class GameMech(Widget):
 					ind = f"{self.gd['inx']}{player}"
 					if card in cont_waiting:
 						self.check_cont_waiting.append(ind)
+					try:
+						self.mat[player]["mat"].add_widget(self.cd[ind])
+					except WidgetException:
+						pass
 					self.cd[ind].import_data(sc[card])
 					self.cd[ind].setPos(field=self.mat[player]["field"]["Library"], a=False, t="Library")
 					self.cd[ind].setPos(field=self.mat[player]["field"]["Library"], t="Library")
@@ -6281,6 +6405,7 @@ class GameMech(Widget):
 			self.gd["p_owner"] = player
 			self.mulligan_done()
 		else:
+			self.cardinfo.dismiss()
 			self.sd["popup"]["popup"].title = self.gd["phase"]
 			self.gd["uptomay"] = True
 			self.gd["confirm_var"] = {"o": player, "c": "Mulligan", "m": starting_hand}
@@ -6811,14 +6936,14 @@ class GameMech(Widget):
 				self.pd[ind[-1]]["Climax"].append(ind)
 				self.cd[ind].setPos(field=self.mat[ind[-1]]["field"]["Climax"], t="Climax")
 			elif "Level" in field:
-				if pos == "up":
+				if "up" in pos:
 					self.pd[ind[-1]]["Level"].append(ind)
 				elif pos is not None:
 					self.pd[ind[-1]]["Level"].insert(pos, ind)
 				else:
 					self.pd[ind[-1]]["Level"].append(ind)
 				self.level_size(ind[-1])
-				if pos == "up":
+				if pos == "lvlup":
 					self.check_auto_ability(lvup=ind[-1], stacks=False)
 					self.gd["no_cont_check"] = True
 				else:
@@ -7055,9 +7180,9 @@ class GameMech(Widget):
 		self.pd[self.gd["active"]]["done"]["Stand Up"] = True
 		self.gd["phase"] = "Draw"
 		if self.gd["turn"] == 1:
-			Clock.schedule_once(self.beginning_phase, phase_dt)
-		else:
 			Clock.schedule_once(self.beginning_phase)
+		else:
+			Clock.schedule_once(self.beginning_phase,phase_dt)
 	def draw_phase(self, *args):
 		self.gd["draw"] = 1
 		Clock.schedule_once(self.draw, move_dt_btw)
@@ -7134,7 +7259,7 @@ class GameMech(Widget):
 			trait = self.gd['search_type'].split('_')[1:-2]
 			lc = [self.gd['search_type'].split('_')[-2], self.gd['search_type'].split('_')[-1]]
 			search = "level "
-			if lc[0] == "<=p":
+			if "<=p" in lc[0]:
 				search += f"{len(self.pd[ind[-1]]['Level'])} or lower"
 			if "<=" in lc[1]:
 				search += f" and cost {lc[1][-1]} or lower"
@@ -7210,7 +7335,7 @@ class GameMech(Widget):
 			search = f"character with {self.gd['search_type'].split('_')[1].upper()} in its trigger icon"
 		elif "TriggerCX" in self.gd["search_type"]:
 			search = f"climax with a {self.gd['search_type'].split('_')[1]} trigger icon"
-		elif "NCost" in self.gd["search_type"]:
+		elif "CNCost" in self.gd["search_type"]:
 			nc = self.gd['search_type'].split('_')
 			if "<=" in nc[2]:
 				search += f"cost {nc[2][-1]} or lower"
@@ -7239,11 +7364,12 @@ class GameMech(Widget):
 			if "Character" in self.gd["search_type"] or "Event" in self.gd["search_type"] or "Climx" in self.gd["search_type"]:
 				word = ""
 			if len(self.gd['search_type'].split('_')) > 1:
-				for rr in range(len(self.gd['search_type'].split('_'))):
+				ss = self.gd['search_type'].split('_')
+				for rr in range(len(ss)):
 					if rr == 0:
-						search += f"{rr}"
+						search += f"{ss[rr]}"
 					else:
-						search += f" or {rr}{word}"
+						search += f" or {ss[rr]}{word}"
 			else:
 				search = f'{self.gd["search_type"].lower()}{word}'
 				if not search:
@@ -7727,6 +7853,9 @@ class GameMech(Widget):
 				elif "extra" in self.gd["effect"]:
 					self.gd["extra"].append(ind)
 				if "nogain" in self.gd["effect"]:
+					player = ind[-1]
+					if player == "2" or (player == "1" and imd[-1] == "2"):
+						idm.append(ind)
 					continue
 				if "Zwei" in self.gd["effect"]:
 					self.gd["target"].append(ind)
@@ -7882,10 +8011,10 @@ class GameMech(Widget):
 		elif "ID=" in self.gd["search_type"]:
 			if any(name == ind for name in self.gd["search_type"].split("_")[1:]):
 				return True
-		elif "TraitLC" in self.gd["search_type"]:
-			if "Character" in self.cd[ind].card and "<=p" in self.gd["search_type"] and self.cd[ind].level <= len(self.pd[ind[-1]]["Level"]) and self.cd[ind].cost <= int(self.gd["search_type"][-1]) and any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]):
+		elif "TraitLC" in self.gd["search_type"] and "Character" in self.cd[ind].card:
+			if "<=p" in self.gd["search_type"] and self.cd[ind].level <= len(self.pd[ind[-1]]["Level"]) and self.cd[ind].cost <= int(self.gd["search_type"][-1]) and any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]):
 				return True
-		elif "TraitL" in self.gd["search_type"]:
+		elif "TraitL" in self.gd["search_type"] and "Character" in self.cd[ind].card:
 			if "_<=p" in self.gd["search_type"] and any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]) and self.cd[ind].level <= len(self.pd[ind[-1]]["Level"]):
 				return True
 			elif "_<=" in self.gd["search_type"] and "p" not in self.gd["search_type"][-1] and self.gd["search_type"] and any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]) and self.cd[ind].level <= int(self.gd["search_type"][-1]):
@@ -7894,14 +8023,14 @@ class GameMech(Widget):
 				return True
 			elif "_=" in self.gd["search_type"] and "p" not in self.gd["search_type"][-1] and self.gd["search_type"] and any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]) and self.cd[ind].level == int(self.gd["search_type"][-1]):
 				return True
-		elif "TTName" in self.gd["search_type"]:
+		elif "TTName" in self.gd["search_type"] and "Character" in self.cd[ind].card:
 			if self.gd["search_type"].split("_")[1] in self.cd[ind].trait_t or self.gd["search_type"].split("_")[2] in self.cd[ind].trait_t or self.gd["search_type"].split("_")[-1] in self.cd[ind].name_t:
 				return True
-		elif "TraitN" in self.gd["search_type"]:
-			if "Character" in self.cd[ind].card and (any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]) or self.gd["search_type"].split("_")[-1] in self.cd[ind].name_t):
+		elif "TraitN" in self.gd["search_type"] and "Character" in self.cd[ind].card:
+			if (any(tr in self.cd[ind].trait_t for tr in self.gd["search_type"].split("_")[1:-1]) or self.gd["search_type"].split("_")[-1] in self.cd[ind].name_t):
 				return True
-		elif "BTrait" in self.gd["search_type"]:
-			if self.cd[ind].card == "Character" and self.gd["btrait"][3]:
+		elif "BTrait" in self.gd["search_type"] and "Character" in self.cd[ind].card:
+			if self.gd["btrait"][3]:
 				b = 0
 				t = []
 				for tr in self.cd[ind].trait_t:
@@ -7944,8 +8073,8 @@ class GameMech(Widget):
 								self.gd["btrait"][3].remove(t1[0])
 								self.gd["btrait"][5].append((ind1, t1[0]))
 								return True
-		elif "Trait" in self.gd["search_type"]:
-			if self.gd["search_type"].split("_")[1:] == [""] and len(self.cd[ind].trait_t) <= 0 and "Character" in self.cd[ind].card:
+		elif "Trait" in self.gd["search_type"] and "Character" in self.cd[ind].card:
+			if self.gd["search_type"].split("_")[1:] == [""] and len(self.cd[ind].trait_t) <= 0:
 				return True
 			elif self.gd["search_type"].split("_")[1:] != [""] and any(trait in self.cd[ind].trait_t for trait in self.gd["search_type"].split("_")[1:]):
 				return True
@@ -7975,7 +8104,7 @@ class GameMech(Widget):
 					return True
 			elif any(any(txt.lower() in text.lower() for txt in self.gd["search_type"].split("_")[1:]) for text in self.cd[ind].text_o):
 				return True
-		elif "NCost" in self.gd["search_type"]:
+		elif "CNCost" in self.gd["search_type"]:
 			if "Character" in self.cd[ind].card and "<=" in self.gd["search_type"] and self.cd[ind].cost <= int(self.gd["search_type"][-1]) and self.gd["search_type"].split("_")[1] in self.cd[ind].name_t:
 				return True
 		elif "Cost" in self.gd["search_type"]:
@@ -8048,7 +8177,9 @@ class GameMech(Widget):
 		elif self.gd["moving"]:
 			pass
 		else:
-			if self.gd["btn_id"][:-1] in self.fields:
+			if "Trigger" in self.gd["btn_id"]:
+				self.cardinfo.import_data(self.cd[self.pd[self.gd["active"]]["Res"][0]], annex_img)
+			elif self.gd["btn_id"][:-1] in self.fields:
 				if self.gd["btn_id"][:-1] in self.gd["stage"]:
 					cc = self.pd[str(self.gd["btn_id"][-1])][self.gd["btn_id"][:-2]][int(self.gd["btn_id"][-2])]
 					if cc:
@@ -8559,6 +8690,8 @@ class GameMech(Widget):
 				self.decks["imgs"].append(cc)
 			self.gd["p_l"] = self.gd["p_ld"][:len(self.decks["imgs"])]
 			self.decks["img_pop"] = True
+			self.gd["p_l"].insert(0, "09")
+			self.gd["p_l"].insert(0, "9")
 		self.gd["p_width"] = self.sd["card"][0] + self.sd["padding"]  
 		self.gd["p_height"] = self.sd["card"][1] + self.sd["padding"]  
 		self.popup_filter()
@@ -8604,9 +8737,7 @@ class GameMech(Widget):
 					p_l = list(self.pd[self.gd["p_owner"]]["Clock"])
 				else:
 					p_l = list(self.pd[self.gd["p_owner"]]["Hand"])
-			if "Character" in self.gd["search_type"] or "Climax" in self.gd["search_type"] or "Event" in self.gd["search_type"]:
-				self.gd["p_l"] = [s for s in p_l if self.cd[s].card in self.gd["search_type"]]
-			elif "ColourCx" in self.gd["search_type"]:
+			if "ColourCx" in self.gd["search_type"]:
 				self.gd["p_l"] = [s for s in p_l if "Climax" in self.cd[s].card and self.cd[s].mcolour.lower() in self.gd["search_type"]]
 			elif "CColourT" in self.gd["search_type"]:
 				self.gd["p_l"] = [s for s in p_l if "Character" in self.cd[s].card and (self.cd[s].mcolour.lower() in self.gd["search_type"].split("_")[1].lower() or self.gd["search_type"].split("_")[2] in self.cd[s].trait_t)]
@@ -8645,7 +8776,7 @@ class GameMech(Widget):
 				if self.gd["search_type"].split("_")[1:] == [""]:
 					self.gd["p_l"] = [s for s in p_l if len(self.cd[s].trait_t) <= 0 and "Character" in self.cd[s].card]
 				else:
-					self.gd["p_l"] = [s for s in p_l if any(trait in self.cd[s].trait_t for trait in self.gd["search_type"].split("_")[1:])]
+					self.gd["p_l"] = [s for s in p_l if "Character" in self.cd[s].card and any(trait in self.cd[s].trait_t for trait in self.gd["search_type"].split("_")[1:])]
 			elif "NameSet" in self.gd["search_type"]:
 				names = self.gd["search_type"].split("_")[1:]
 				sets = names[int(len(names) / 2):]
@@ -8701,7 +8832,7 @@ class GameMech(Widget):
 						self.gd["p_l"] = [s for s in p_l if self.cd[s].level_t <= int(self.gd["search_type"][-1])]
 				elif ">=" in self.gd["search_type"]:
 					self.gd["p_l"] = [s for s in p_l if self.cd[s].level_t >= int(self.gd["search_type"][-1])]
-			elif "NCost" in self.gd["search_type"]:
+			elif "CNCost" in self.gd["search_type"]:
 				nc = self.gd["search_type"].split("_")
 				if "<=" in nc[2]:
 					self.gd["p_l"] = [s for s in p_l if "Character" in self.cd[s].card and self.cd[s].cost_t <= int(nc[2][-1]) and nc[1] in self.cd[s].name_t]
@@ -8722,8 +8853,13 @@ class GameMech(Widget):
 						self.gd["p_l"] = [s for s in p_l if self.cd[s].level_t <= int(self.gd["search_type"][-1])]
 				elif ">=" in self.gd["search_type"]:
 					self.gd["p_l"] = [s for s in p_l if self.cd[s].level_t >= int(self.gd["search_type"][-1])]
+			elif "Character" in self.gd["search_type"] or "Climax" in self.gd["search_type"] or "Event" in self.gd["search_type"]:
+				self.gd["p_l"] = [s for s in p_l if self.cd[s].card in self.gd["search_type"]]
 			else:
 				self.gd["p_l"] = p_l
+			for s in list(self.gd["p_l"]):
+				if "Memory" in self.cd[s].pos_new and self.cd[s].back:
+					self.gd["p_l"].remove(s)
 			self.sd["btn"]["show_all_btn"].text = "Show All"
 			if len(self.gd["p_l"]) <= 0:
 				self.gd["notarget"] = True
@@ -8848,7 +8984,7 @@ class GameMech(Widget):
 			self.sd["btn"]["label"].halign = "center"
 			self.sd["btn"]["label"].text = "There are no target to choose from."
 			pos = (self.sd["padding"] * 0, self.sd["padding"] * 6.5 + self.sd["card"][1] / 2 + self.sd["padding"] * 1)
-		elif "Look" in self.gd["p_c"] and "top" in self.gd["effect"] and ("bottom" in self.gd["effect"] or "Waiting" in self.gd["effect"]):
+		elif "Look" in self.gd["p_c"] and "top" in self.gd["effect"] and ("bottom" in self.gd["effect"] or "waiting" in self.gd["effect"]):
 			if "opp" in self.gd["effect"]:
 				self.sd["btn"]["label"].text = "Choose where to put the top card of your opponent's deck."
 			else:
@@ -8960,7 +9096,7 @@ class GameMech(Widget):
 		else:
 			self.sd["btn"]["label"].x = -Window.width
 		if "Image" in self.gd["p_c"]:
-			self.gd["p_ypop"] = self.gd["p_title"] + self.gd["p_height"] + self.gd["p_yscv"]
+			self.gd["p_ypop"] = self.gd["p_title"] + self.gd["p_yscv"]
 		else:
 			self.gd["p_ypop"] = self.gd["p_yscat"]
 		if self.gd["p_ypop"] > Window.height or ("Add" in self.gd["p_c"] and self.gd["p_rows"] > 6):
@@ -8999,9 +9135,12 @@ class GameMech(Widget):
 				nss = 0
 			self.sd["popup"]["sspace"].size = (self.sd["card"][0] * ns + self.sd["padding"] * nss, self.sd["card"][1])
 		c = 0
+		c9 = 0
 		self.sim = 0
 		for inx in range(len(self.gd["p_l"])):
 			ind = self.gd["p_l"][inx]
+			if ind.endswith("9"):
+				c9 += 1
 			if "sspace" in ind:
 				try:
 					self.sd["popup"]["stack"].add_widget(self.sd["popup"][ind])
@@ -9014,6 +9153,8 @@ class GameMech(Widget):
 			else:
 				if c:
 					inx -= 1
+				if c9:
+					inx -= c9
 				self.sim += 1
 				if "Numbers" not in self.gd["p_c"]:
 					if "Add" in self.gd["p_c"]:
@@ -9023,7 +9164,13 @@ class GameMech(Widget):
 						else:
 							self.cpop[ind].selected_c(False)
 					elif "Image" in self.gd["p_c"]:
-						self.cpop[ind].import_data(sc[self.decks["imgs"][inx]])
+						if ind.endswith("9"):
+							if ind == "09":
+								self.cpop[ind].import_data("back")
+							else:
+								self.cpop[ind].import_data("empty")
+						else:
+							self.cpop[ind].import_data(sc[self.decks["imgs"][inx]])
 						self.cpop[ind].selected_c(False)
 					else:
 						if "Stage" in self.gd["effect"] and ind in self.gd["target"]:
@@ -9061,7 +9208,7 @@ class GameMech(Widget):
 						self.cpop[ind].show_back()
 				else:
 					self.sd["popup"]["stack"].add_widget(self.cpop[ind])
-				if "Add" not in self.gd["p_c"] and not ind.startswith("n") and not ind.startswith("t") and self.cpop[ind].level != self.cd[ind].level_t:
+				if "Image" not in self.gd["p_c"] and "Add" not in self.gd["p_c"] and not ind.startswith("n") and not ind.startswith("t") and self.cpop[ind].level != self.cd[ind].level_t:
 					self.cpop[ind].level_c = self.cd[ind].level_c
 					self.cpop[ind].update_level()
 		if "Image" not in self.gd["p_c"]:
@@ -9116,7 +9263,7 @@ class GameMech(Widget):
 				self.sd["btn"]["field_btn"].size = (self.sd["card"][0] * 2.5, self.sd["card"][1] / 2.)
 				self.sd["btn"]["field_btn"].y = self.sd["padding"] * 1.5
 				self.sd["btn"]["field_btn"].center_x = self.gd["p_xscat"] / 4. - self.sd["card"][0] / 2 + self.sd["padding"]
-				if "top" in self.gd["effect"] and ("bottom" in self.gd["effect"] or "Waiting" in self.gd["effect"]):  
+				if "top" in self.gd["effect"] and ("bottom" in self.gd["effect"] or "waiting" in self.gd["effect"]):  
 					self.sd["btn"][f"{self.gd['p_c']}_btn"].y = -Window.height
 					self.sd["btn"]["field_btn"].center_x = self.gd["p_xscat"] / 2. - self.sd["card"][0] / 2 + self.sd["padding"]
 					self.sd["btn"]["top_btn"].size = (self.sd["card"][0] * 2.5, self.sd["card"][1] / 2.)
@@ -9125,7 +9272,7 @@ class GameMech(Widget):
 					self.sd["btn"]["top_btn"].text = "Top deck"
 					if "bottom" in self.gd["effect"]:
 						self.sd["btn"]["bottom_btn"].text = "Bottom deck"
-					elif "Waiting" in self.gd["effect"]:
+					elif "waiting" in self.gd["effect"]:
 						self.sd["btn"]["bottom_btn"].text = "Waiting room"
 					self.sd["btn"]["bottom_btn"].size = self.sd["btn"]["top_btn"].size
 					self.sd["btn"]["bottom_btn"].center_x = self.gd["p_xscat"] / 4. * 3 - self.sd["card"][0] / 2 + self.sd["padding"]
@@ -9247,7 +9394,8 @@ class GameMech(Widget):
 		self.sd["cpop_slc"] = ""
 	def card_btn_press(self, btn):
 		if self.multi_info["t"]:
-			self.cardinfo.import_data(self.cpop[btn.cid], annex_img)
+			if self.cpop[btn.cid].img_file != "add":
+				self.cardinfo.import_data(self.cpop[btn.cid], annex_img)
 		elif self.decks["dbuilding"]:
 			if self.decks["img_pop"]:
 				self.decks["img_pop"] = False
@@ -9265,6 +9413,9 @@ class GameMech(Widget):
 					self.dpop[f"id{self.decks['dbuilding']}"].source = str(self.decks["st"]["image_btn"].source)
 				self.popup_clr()
 				self.sd["popup"]["popup"].dismiss()
+			elif not self.gd["popup_pop"]:
+				if not self.cd[btn.cid].back:
+					self.cardinfo.import_data(self.cd[btn.cid], annex_img)
 			else:
 				ind = self.cpop[btn.cid].cid
 				self.sd["cpop_slc"] = ind
@@ -9373,6 +9524,8 @@ class GameMech(Widget):
 								self.sd["btn"][f"{phase}_btn"].text = "Continue Effect"
 							elif "swap" in self.gd["effect"] or "swap" in self.gd["effect"]:
 								self.sd["btn"][f"{phase}_btn"].text = f"Select card"
+							elif "flip" in  self.gd["effect"]:
+								self.sd["btn"][f"{phase}_btn"].text = f"Flip card"
 							elif "csalvage" in self.gd["effect"] or "wdecker" in self.gd["effect"]:
 								self.sd["btn"][f"{phase}_btn"].text = f"Return {word}"
 							elif "cdiscard" in self.gd["effect"]:
@@ -9398,9 +9551,9 @@ class GameMech(Widget):
 						elif "Look" in self.gd["p_c"]:
 							if "hand" in self.gd["p_c"]:
 								if "stacked" in self.gd["p_c"]:
-									self.sd["btn"]["Look_btn"].text = "Take selected stack"
+									self.sd["btn"]["Look_btn"].text = "Choose stack"
 								else:
-									self.sd["btn"]["Look_btn"].text = f"Take selected {word}"
+									self.sd["btn"]["Look_btn"].text = f"Choose {word}"
 							elif "clock" in self.gd["p_c"]:
 								self.sd["btn"]["Look_btn"].text = "Put to Clock"
 							elif "stack" in self.gd["p_c"] and "stacked" not in self.gd["p_c"]:
@@ -9646,7 +9799,7 @@ class GameMech(Widget):
 						self.pay_condition()
 			elif not self.gd["text_popup"]:  
 				if self.selected_card():
-					if "Encore" in self.gd["phase"] and self.gd["pp"] >= 0 and "SWaiting" in self.gd["target"]:
+					if "encore" in self.gd["effect"] and self.gd["pp"] >= 0 and "SWaiting" in self.gd["target"]:
 						self.encore_done()
 					elif "Encore" in self.gd["phase"] and self.gd["pp"] >= 0 and "AUTO" not in self.gd["ability_trigger"]:
 						self.encore_start()
@@ -9823,22 +9976,24 @@ class GameMech(Widget):
 		if "Osite" in status:
 			if "Center" in self.cd[inm].pos_new:
 				if inm[-1] == "1":
-					p = "2"
+					op = "2"
 				elif inm[-1] == "2":
-					p = "1"
-				fields = [self.pd[p]["Center"][self.m[int(self.cd[inm].pos_new[-1])]]]
+					op = "1"
+				opp = self.pd[op]["Center"][self.m[int(self.cd[inm].pos_new[-1])]]
+				if opp !="":
+					fields.append(opp)
 		elif "Battle" in status:
 			atk = self.gd["attacking"][0]
 			deff = "0"
 			if atk:
 				if atk[-1] == "1":
-					opp = "2"
+					op = "2"
 				elif atk[-1] == "2":
-					opp = "1"
+					op = "1"
 				if "C" in self.gd["attacking"][4]:
-					deff = self.pd[opp]["Center"][self.gd["attacking"][3]]
+					deff = self.pd[op]["Center"][self.gd["attacking"][3]]
 				elif "B" in self.gd["attacking"][4]:
-					deff = self.pd[opp]["Back"][self.gd["attacking"][3]]
+					deff = self.pd[op]["Back"][self.gd["attacking"][3]]
 				battle = [atk, deff]
 				if "Both" in status:
 					fields = list(battle)
@@ -10249,7 +10404,7 @@ class GameMech(Widget):
 			self.gd['encore_ind'] = ind
 			self.sd["popup"]["popup"].title = "Confirm Encore ability"
 			self.gd["inx"] = 0
-			for item in ("Stock3", "Stock2", "Stock1", "Character", "TraitN", "Trait", "Clock", "Climax","SWaiting"):
+			for item in ("Stock3", "Stock2", "Stock1", "Character", "TraitN", "Trait", "Clock", "Climax", "SWaiting"):
 				if item in self.gd["effect"]:
 					self.sd["btn"][f"encore_{item}"].size = (self.sd["card"][0] * 5 + self.sd["padding"], self.sd["card"][1] / 1.5)
 					self.sd["btn"][f"encore_{item}"].y = self.sd["padding"] * 3 + self.sd["card"][1] / 2 + (self.sd["padding"] * 1.5 + self.sd["card"][1] / 1.5) * self.gd["inx"]
@@ -10257,7 +10412,7 @@ class GameMech(Widget):
 						self.sd["btn"][f"encore_{item}"].y += self.sd["padding"] * 2 + self.sd["card"][1] / 2
 					self.sd["btn"][f"encore_{item}"].x = self.sd["padding"]
 					if "SWaiting" in item:
-						self.sd["btn"][f"encore_{item}"].text = markreplace[f'({self.gd["encore_effect"][0]})']+" "+self.sd["btn"][f"encore_{item}"].text[self.sd["btn"][f"encore_{item}"].text.index("&"):]
+						self.sd["btn"][f"encore_{item}"].text = markreplace["markreplace"][f'({self.gd["encore_effect"][0]})'] + " " + self.sd["btn"][f"encore_{item}"].text[self.sd["btn"][f"encore_{item}"].text.index("&"):]
 					self.gd["inx"] += 1
 			confirm_text = f"Do you want to encore \"{self.cd[self.gd['encore_ind']].name_t}\"?\n \n "
 			self.gd["p_yscat"] += (self.sd["card"][1] / 1.5 + self.sd["padding"] * 1.5) * self.gd["inx"]
@@ -10542,7 +10697,9 @@ class GameMech(Widget):
 			if "reorder" in self.gd["effect"] and "waiting" not in self.gd["effect"] and "bdeck" not in self.gd["effect"]:
 				qty = self.gd["effect"][0]
 				c += "_reorder"
-			if "top" in self.gd["effect"] and isinstance(self.gd["effect"][self.gd["effect"].index("top") + 1], int):
+			if "top" in self.gd["effect"] and "waiting" in self.gd["effect"]:
+				qty = self.gd["effect"][0]
+			elif "top" in self.gd["effect"] and isinstance(self.gd["effect"][self.gd["effect"].index("top") + 1], int):
 				qty = self.gd["effect"][self.gd["effect"].index("top") + 1]
 			elif "bottom" in self.gd["effect"] and "top" not in self.gd["effect"] and isinstance(self.gd["effect"][self.gd["effect"].index("bottom") + 1], int):
 				qty = self.gd["effect"][self.gd["effect"].index("bottom") + 1]
@@ -10825,6 +10982,7 @@ class GameMech(Widget):
 					self.look_top_done()
 	def look_top_done(self, dt=0):
 		self.check_cont_ability()
+		self.update_field_label()
 		if "looktop" in self.gd["ability_effect"]:
 			self.gd["ability_effect"].remove("looktop")
 		self.popup_clr()
@@ -10928,8 +11086,8 @@ class GameMech(Widget):
 				Clock.schedule_once(self.stack_ability)
 			elif card.card == "Event":
 				self.gd["ability_trigger"] = f"Event_{card.ind}"
-				if card.text_c[0][0].statswith(cont_ability):
-					self.gd["effect"] = ab.event(card.text_c[0][1])
+				if card.text_c[0][0].startswith(cont_ability) and len(card.text_c)>1:
+					self.gd["effect"] = ab.event(card.text_c[1][0])
 				else:
 					self.gd["effect"] = ab.event(card.text_c[0][0])
 				self.gd["ability"] = card.text_c[0][0]
@@ -11171,6 +11329,8 @@ class GameMech(Widget):
 			self.gd["ability_effect"].append("reverser")
 		elif "heal" in self.gd["effect"]:
 			self.gd["ability_effect"].append("heal")
+		elif "flipper" in self.gd["effect"]:
+			self.gd["ability_effect"].append("flipper")
 		elif "marker" in self.gd["effect"] or "markers" in self.gd["effect"]:
 			self.gd["p_c"] = ""
 			self.gd["ability_effect"].append("marker")
@@ -11346,6 +11506,34 @@ class GameMech(Widget):
 					if "dont" in self.gd["effect"]:
 						self.gd["ability_effect"].append("dont")
 					self.ability_effect()
+		elif "flipper" in self.gd["ability_effect"]:
+			self.gd["ability_doing"] = "flipper"
+			idm = self.gd["ability_trigger"].split("_")[1]
+			if self.gd["effect"][0] == 0:
+				self.gd["target"].append(idm)
+				self.gd["effect"][0] = 1
+			elif self.gd["effect"][0] > 0:
+				if "ID=" in self.gd["effect"][2]:
+					temp = self.gd["effect"][2].split("_")[1:]
+					for t in temp:
+						self.gd["target"].append(t)
+			for r in range(self.gd["effect"][0]):
+				ind = self.gd["target"].pop(0)
+				if self.net["game"] and idm[-1] == "1" and "oppturn" not in self.gd["effect"]:  
+					self.net["act"][4].append(ind)
+				if ind in self.emptycards:
+					continue
+				if "down" in self.gd["effect"] and not self.cd[ind].back:
+					if ind[-1] != idm[-1]:
+						self.cd[ind].show_back(False)
+					else:
+						self.cd[ind].show_back()
+				elif "up" in self.gd["effect"] and self.cd[ind].back:
+					self.cd[ind].show_front()
+			self.gd["ability_effect"].remove("flipper")
+			if "do" in self.gd["ability_effect"]:
+				self.gd["ability_effect"].remove("do")
+			self.ability_effect()
 		elif "stand" in self.gd["ability_effect"]:
 			self.gd["ability_doing"] = "stand"
 			ind = self.gd["ability_trigger"].split("_")[1]
@@ -11880,6 +12068,7 @@ class GameMech(Widget):
 					self.sd["btn"]["draw_upto"].text = "Add Marker"
 				else:
 					self.sd["btn"]["draw_upto"].text = "Draw card"
+				self.sd["btn"]["draw_upto"].disabled = False
 				if "heal" in self.gd["effect"] and len(self.pd[ind[-1]]["Clock"]) <= 0:
 					self.gd["draw_upto"] = 0
 					self.gd["draw"] = 0
@@ -12985,7 +13174,7 @@ class GameMech(Widget):
 			p = ind[-1]
 		if "OMemory" in eff:
 			estage = [s for s in self.pd[p]["Memory"] if s != ""]
-		elif "OLevel" in eff:
+		elif "OLVL" in eff:
 			estage = [s for s in self.pd[p]["Level"] if s != ""]
 		elif "OWaiting" in eff:
 			estage = [s for s in self.pd[p]["Waiting"] if s != ""]
@@ -13080,6 +13269,8 @@ class GameMech(Widget):
 			names = eff[eff.index("NameSet") + 1].split("_")
 			nc = []
 			for n in cs:
+				if cd[n].back:
+					continue
 				if n != "":
 					for nx in range(int(len(names) / 2)):
 						if names[nx] in cd[n].name_t:
@@ -13178,6 +13369,9 @@ class GameMech(Widget):
 			nc = [n for n in cs if cd[n].status == "Stand"]
 		else:
 			nc = cs
+		for n in list(nc):
+			if "Memory" in cd[n].pos_new and not cd[n].back:
+				nc.remove(n)
 		return nc
 	def cont_remove(self, power, ind, player):
 		pp = False
@@ -13290,43 +13484,48 @@ class GameMech(Widget):
 		if not pp:
 			if "Battle" in power:
 				deff = ""
+				pp = True
 				if self.gd["attacking"][0] != "":
 					if self.gd["attacking"][0][-1] == "1":
-						opp = "2"
+						op = "2"
 					elif self.gd["attacking"][0][-1] == "2":
-						opp = "1"
+						op = "1"
 					if "C" in self.gd["attacking"][4]:
-						deff = self.pd[opp]["Center"][self.gd["attacking"][3]]
+						deff = self.pd[op]["Center"][self.gd["attacking"][3]]
 					elif "B" in self.gd["attacking"][4]:
-						deff = self.pd[opp]["Back"][self.gd["attacking"][3]]
-					if deff != "" and ind == self.gd["attacking"][0]:
-						if "xolevel" in power or "xlevel" in power:
-							pp = True
-						elif "olevelvsself" in power:
-							if "olower" not in power and self.cd[deff].level_t <= card.level_t:
+						deff = self.pd[op]["Back"][self.gd["attacking"][3]]
+					if "oplevel" in power:
+						opp = ""
+						if "Center" in self.cd[ind].pos_new:
+							opp = self.pd[op]["Center"][self.m[int(self.cd[ind].pos_new[-1])]]
+						if opp:
+							pp = False
+							if "oplower" in power and self.cd[opp].level > power[power.index("oplevel") + 1]:
 								pp = True
-							elif "olower" in power and self.cd[deff].level_t >= card.level_t:
+							elif "oplower" not in power and self.cd[opp].level < power[power.index("oplevel") + 1]:
 								pp = True
-						elif "olevel" in power and self.cd[deff].level_t < power[power.index("olevel") + 1]:
-							pp = True
-						elif "otrait" in power and all(otr not in self.cd[deff].trait_t for otr in power[power.index("otrait") + 1].split("_")):
-							pp = True
-					elif deff != "" and deff == ind:
-						if "xolevel" in power or "xlevel" in power:
-							pp = True
-						elif "olevelsvself" in power:
-							if "olower" not in power and self.cd[self.gd["attacking"][0]].level_t <= card.level_t:
+					elif deff != "":
+						pp = False
+						if ind == self.gd["attacking"][0]:
+							if "olevelvsself" in power:
+								if "olower" not in power and self.cd[deff].level_t <= card.level_t:
+									pp = True
+								elif "olower" in power and self.cd[deff].level_t >= card.level_t:
+									pp = True
+							elif "olevel" in power and self.cd[deff].level_t < power[power.index("olevel") + 1]:
 								pp = True
-							elif "olower" in power and self.cd[self.gd["attacking"][0]].level_t >= card.level_t:
+							elif "otrait" in power and all(otr not in self.cd[deff].trait_t for otr in power[power.index("otrait") + 1].split("_")):
 								pp = True
-						elif "olevel" in power and self.cd[self.gd["attacking"][0]].level_t < power[power.index("olevel") + 1]:
-							pp = True
-						elif "otrait" in power and all(otr not in self.cd[self.gd["attacking"][0]].trait_t for otr in power[power.index("otrait") + 1].split("_")):
-							pp = True
-					else:
-						pp = True
-				else:
-					pp = True
+						elif deff == ind:
+							if "olevelsvself" in power:
+								if "olower" not in power and self.cd[self.gd["attacking"][0]].level_t <= card.level_t:
+									pp = True
+								elif "olower" in power and self.cd[self.gd["attacking"][0]].level_t >= card.level_t:
+									pp = True
+							elif "olevel" in power and self.cd[self.gd["attacking"][0]].level_t < power[power.index("olevel") + 1]:
+								pp = True
+							elif "otrait" in power and all(otr not in self.cd[self.gd["attacking"][0]].trait_t for otr in power[power.index("otrait") + 1].split("_")):
+								pp = True
 			elif "Assist" in power:
 				if "Center" in card.pos_new:
 					if "1" in card.pos_new:
@@ -13394,9 +13593,9 @@ class GameMech(Widget):
 					if "Stage" in power and "Center" not in self.cd[otd].pos_new:
 						pp = True
 					if "OPtraits" in power:
-						if "OPlower" not in power and len([t for t in self.cd[opp].trait_t if t != ""]) < power[power.index("#traits") + 1]:
+						if "OPlower" not in power and len([t for t in self.cd[opp].trait_t if t != ""]) < power[power.index("OPtraits") + 1]:
 							pp = True
-						elif "OPlower" in power and len([t for t in self.cd[opp].trait_t if t != ""]) > power[power.index("#traits") + 1]:
+						elif "OPlower" in power and len([t for t in self.cd[opp].trait_t if t != ""]) > power[power.index("OPtraits") + 1]:
 							pp = True
 					elif "OPlevel" in power:
 						if "OPlower" not in power and self.cd[opp].level_t < power[power.index("OPlevel") + 1]:
@@ -13414,12 +13613,12 @@ class GameMech(Widget):
 					pp = True
 			elif "Clocks" in power:
 				if "opp" in power and ind[-1] == "1":
-					opp = "2"
+					op = "2"
 				elif "opp" in power and ind[-1] == "2":
-					opp = "1"
+					op = "1"
 				else:
-					opp = ind[-1]
-				if len(self.pd[opp]["Clock"]) < int(power[power.index("Clocks") + 1]):
+					op = ind[-1]
+				if len(self.pd[op]["Clock"]) < int(power[power.index("Clocks") + 1]):
 					pp = True
 			elif "LevelP" in power:
 				if otd not in stage:
@@ -13428,14 +13627,8 @@ class GameMech(Widget):
 					if self.cd[ind].level_t <= len(self.pd[ind[-1]]["Level"]):
 						pp = True
 			elif "X" in power:
-				if "xolevel" in power:
-					if ind[-1] == "1":
-						op = "2"
-					else:
-						op = "1"
-					opp = self.pd[op]["Center"][self.m[int(card.pos_new[-1])]]
-					if opp == "" or (opp != "" and opp not in power[2]):
-						pp = True
+				if "xoplevel" in power:
+					pp = True
 				elif "xhighlevel" in power:
 					pp = True
 		return pp
@@ -13634,7 +13827,7 @@ class GameMech(Widget):
 						self.cont_cc(ind, peff)
 			elif "X" in peff:
 				tip = 0
-				if "xolevel" in peff:
+				if "xoplevel" in peff:
 					if ind[-1] == "1":
 						op = "2"
 					else:
@@ -13653,41 +13846,54 @@ class GameMech(Widget):
 				deff = ""
 				if self.gd["attacking"][0] != "":
 					if self.gd["attacking"][0][-1] == "1":
-						opp = "2"
+						op = "2"
 					elif self.gd["attacking"][0][-1] == "2":
-						opp = "1"
+						op = "1"
 					if "C" in self.gd["attacking"][4]:
-						deff = self.pd[opp]["Center"][self.gd["attacking"][3]]
+						deff = self.pd[op]["Center"][self.gd["attacking"][3]]
 					elif "B" in self.gd["attacking"][4]:
-						deff = self.pd[opp]["Back"][self.gd["attacking"][3]]
-					if deff != "" and ind == self.gd["attacking"][0]:
-						if "xolevel" in peff:
-							peff[1] = peff[1] * self.cd[deff].level_t
-						if "olevelvsself" in peff:
-							if "olower" not in peff and self.cd[deff].level_t < card.level_t:
+						deff = self.pd[op]["Back"][self.gd["attacking"][3]]
+					if "xoplevel" in peff:
+						opp = self.pd[op]["Center"][self.m[int(self.cd[ind].pos_new[-1])]]
+						peff[1] = peff[1] * self.cd[opp].level_t
+					if "oplevel" in peff:
+						opp = ""
+						if "Center" in self.cd[ind].pos_new:
+							opp = self.pd[op]["Center"][self.m[int(self.cd[ind].pos_new[-1])]]
+						if opp:
+							if "oplower" in peff and self.cd[opp].level <= peff[peff.index("oplevel") + 1]:
 								pp = True
-							elif "olower" in peff and self.cd[deff].level_t < card.level_t:
+							elif "oplower" not in peff and self.cd[opp].level >= peff[peff.index("oplevel") + 1]:
 								pp = True
-						elif "olevel" in peff and self.cd[deff].level >= peff[peff.index("olevel") + 1]:
-							pp = True
-						elif "otrait" in peff and any(otr in self.cd[deff].trait_t for otr in peff[peff.index("otrait") + 1].split("_")):
-							pp = True
-						elif "olevel" not in peff and "otrait" not in peff:
-							pp = True
-					elif deff != "" and deff == ind:
-						if "xolevel" in peff:
-							peff[1] = peff[1] * self.cd[self.gd["attacking"][0]].level_t
-						if "olevelvsself" in peff:
-							if "olower" not in peff and self.cd[self.gd["attacking"][0]].level_t < card.level_t:
+					elif deff != "":
+						if ind == self.gd["attacking"][0]:
+							if "xolevel" in peff:
+								peff[1] = peff[1] * self.cd[deff].level_t
+							if "olevelvsself" in peff:
+								if "olower" not in peff and self.cd[deff].level_t < card.level_t:
+									pp = True
+								elif "olower" in peff and self.cd[deff].level_t < card.level_t:
+									pp = True
+							elif "olevel" in peff and self.cd[deff].level >= peff[peff.index("olevel") + 1]:
 								pp = True
-							elif "olower" in peff and self.cd[self.gd["attacking"][0]].level_t < card.level_t:
+							elif "otrait" in peff and any(otr in self.cd[deff].trait_t for otr in peff[peff.index("otrait") + 1].split("_")):
 								pp = True
-						elif "olevel" in peff and self.cd[self.gd["attacking"][0]].level >= peff[peff.index("olevel") + 1]:
-							pp = True
-						elif "otrait" in peff and any(otr in self.cd[self.gd["attacking"][0]].trait_t for otr in peff[peff.index("otrait") + 1].split("_")):
-							pp = True
-						elif "olevel" not in peff and "otrait" not in peff:
-							pp = True
+							elif "olevel" not in peff and "otrait" not in peff:
+								pp = True
+						elif deff == ind:
+							if "xolevel" in peff:
+								peff[1] = peff[1] * self.cd[self.gd["attacking"][0]].level_t
+							if "olevelvsself" in peff:
+								if "olower" not in peff and self.cd[self.gd["attacking"][0]].level_t < card.level_t:
+									pp = True
+								elif "olower" in peff and self.cd[self.gd["attacking"][0]].level_t < card.level_t:
+									pp = True
+							elif "olevel" in peff and self.cd[self.gd["attacking"][0]].level >= peff[peff.index("olevel") + 1]:
+								pp = True
+							elif "otrait" in peff and any(otr in self.cd[self.gd["attacking"][0]].trait_t for otr in peff[peff.index("otrait") + 1].split("_")):
+								pp = True
+							elif "olevel" not in peff and "otrait" not in peff:
+								pp = True
 			elif "Opposite" in peff:
 				if ind[-1] == "1":
 					op = "2"
@@ -13817,9 +14023,9 @@ class GameMech(Widget):
 				elif "name" in peff:
 					cc = self.cd[opp].name_c
 				if "OPtraits" in peff:
-					if "OPlower" not in peff and len([t for t in self.cd[opp].trait_t if t != ""]) < peff[peff.index("#traits") + 1]:
+					if "OPlower" not in peff and len([t for t in self.cd[opp].trait_t if t != ""]) < peff[peff.index("OPtraits") + 1]:
 						return
-					elif "OPlower" in peff and len([t for t in self.cd[opp].trait_t if t != ""]) > peff[peff.index("#traits") + 1]:
+					elif "OPlower" in peff and len([t for t in self.cd[opp].trait_t if t != ""]) > peff[peff.index("OPtraits") + 1]:
 						return
 				if peff[1:] not in cc:
 					cc.append(peff[1:])
@@ -13916,9 +14122,12 @@ class GameMech(Widget):
 	def effs_sep(self, effs):
 		fc = {}
 		for ff in [c for c in effs if c in self.cc]:
-			if ff[0] not in fc:
-				fc[ff[0]] = []
-			fc[ff[0]] = effs[:effs.index(ff) + 1]
+			fd = f"{ff[0]}"
+			if fd in fc:
+				fd += str(effs.index(ff))
+			if fd not in fc:
+				fc[fd] = []
+			fc[fd] = effs[:effs.index(ff) + 1]
 			effs = effs[effs.index(ff) + 1:]
 		return fc
 	def check_cont_ability(self, dt=0, act=True, *args):
@@ -14021,6 +14230,8 @@ class GameMech(Widget):
 			for field in ("Clock", "Memory", "Climax"):
 				for ind in self.pd[player][field]:
 					if ind in self.emptycards:
+						continue
+					if self.cd[ind].back:
 						continue
 					card = self.cd[ind]
 					if card.card == "Climax" and field != "Climax":
@@ -15023,25 +15234,55 @@ class GameMech(Widget):
 				for text in card.text_c:
 					effect = ab.cont(text[0])
 					if "no_reverse" in effect:
-						if "cost" in effect and card_opp.cost_t <= effect[effect.index("cost") + 1]:
-							reverse[0] = False
-						elif "event" in effect:
+						if "event" in effect:
 							reverse[0] = False
 						elif "olevel" in effect:
 							if ">p" in effect[effect.index("olevel") + 1] and card_opp.level > len(self.pd[card_opp.owner]["Level"]):
 								reverse[0] = False
+						elif "oplevel" in effect or "opcost" in effect:
+							if self.gd["attacking"][0][-1] == "1":
+								op = "2"
+							else:
+								op = "1"
+							opp = ""
+							if "Center" in card.pos_new:
+								opp = self.pd[op]["Center"][self.m[int(card.pos_new[-1])]]
+							if opp:
+								if "oplevel" in effect:
+									if ">p" in effect[effect.index("oplevel") + 1] and self.cd[opp].level_t > len(self.pd[opp[-1]]["Level"]):
+										reverse[0] = False
+									elif "oplower" in effect and self.cd[opp].level_t <= effect[effect.index("oplevel") + 1]:
+										reverse[0] = False
+								elif "opcost" in effect:
+									if "oplower" in effect and self.cd[opp].cost_t <= effect[effect.index("opcost") + 1]:
+										reverse[0] = False
 						else:
 							reverse[0] = False
 				for text in card_opp.text_c:
 					effect = ab.cont(text[0])
 					if "no_reverse" in effect:
-						if "cost" in effect and card.cost_t <= effect[effect.index("cost") + 1]:
-							reverse[1] = False
-						elif "event" in effect:
+						if "event" in effect:
 							reverse[1] = False
 						elif "olevel" in effect:
 							if ">p" in effect[effect.index("olevel") + 1] and card.level > len(self.pd[card.owner]["Level"]):
 								reverse[1] = False
+						elif "oplevel" in effect or "opcost" in effect:
+							if opp_ind[-1] == "1":
+								op = "2"
+							else:
+								op = "1"
+							opp = ""
+							if "Center" in card_opp.pos_new:
+								opp = self.pd[op]["Center"][self.m[int(card_opp.pos_new[-1])]]
+							if opp:
+								if "oplevel" in effect:
+									if ">p" in effect[effect.index("oplevel") + 1] and self.cd[opp].level_t > len(self.pd[opp[-1]]["Level"]):
+										reverse[1] = False
+									elif "oplower" in effect and self.cd[opp].level_t <= effect[effect.index("oplevel") + 1]:
+										reverse[1] = False
+								elif "opcost" in effect:
+									if "oplower" in effect and self.cd[opp].cost_t <= effect[effect.index("opcost") + 1]:
+										reverse[1] = False
 						else:
 							reverse[1] = False
 				if card.power_t > card_opp.power_t:
@@ -15097,11 +15338,11 @@ class GameMech(Widget):
 							elif "OMore" in effect:
 								if not self.omore(effect, ind):
 									aa = False
-							elif "olevel" in effect:
+							elif "oplevel" in effect:
 								op = self.pd[self.gd["opp"]]["Center"][self.m[self.pd[ind[-1]["Center"].index(ind)]]]
-								if "lower" not in effect and self.cd[ind].level_t >= self.cd[op].level_t:
+								if "oplower" not in effect and self.cd[ind].level_t >= self.cd[op].level_t:
 									aa = False
-								elif "lower" in effect and self.cd[ind].level_t <= self.cd[op].level_t:
+								elif "oplower" in effect and self.cd[ind].level_t <= self.cd[op].level_t:
 									aa = False
 							elif "Stage" in effect:
 								if "Back" in effect:
@@ -15117,22 +15358,22 @@ class GameMech(Widget):
 								self.gd["attack_t"]["f"][int(self.cd[ind].pos_new[-1])] = False
 								self.gd["attack_t"]["d"][int(self.cd[ind].pos_new[-1])] = False
 						else:
-							if "olevel" in effect or "ogive" in effect:
+							if "oplevel" in effect or "opgive" in effect:
 								if ind[-1] == "1":
 									op = "2"
 								else:
 									op = "1"
 								opp = self.pd[op]["Center"][self.m[int(self.cd[ind].pos_new[-1])]]
 								if opp != "":
-									if "olevel" in effect:
-										if "lower" not in effect and self.cd[opp].level_t <= self.cd[ind].level_t:
+									if "oplevel" in effect:
+										if "oplower" not in effect and self.cd[opp].level_t <= self.cd[ind].level_t:
 											aa = False
-									elif "ogive" in effect:
+									elif "opgive" in effect:
 										if "no_front" in effect:
 											self.gd["attack_t"]["f"][self.m[int(self.cd[ind].pos_new[-1])]] = False
 										if "no_side" in effect:
 											self.gd["attack_t"]["s"][self.m[int(self.cd[ind].pos_new[-1])]] = False
-								if "ogive" in effect:
+								if "opgive" in effect:
 									aa = False
 							if aa and "no_side" in effect:
 								self.gd["attack_t"]["s"][int(self.cd[ind].pos_new[-1])] = False
@@ -15145,6 +15386,7 @@ class GameMech(Widget):
 			self.gd["pp"] = 9
 			self.gd["popup_attack"] -= 1
 			self.clear_ability()
+			self.gd["phase"] = "Attack"
 			self.check_cont_ability()
 			self.check_auto_ability(atk=self.gd["attacking"][0])
 		else:
@@ -15173,7 +15415,7 @@ class GameMech(Widget):
 			elif self.gd["com"] and self.gd["active"] == "2":
 				Clock.schedule_once(self.opp_attack, move_dt_btw)
 			else:
-				Clock.schedule_once(self.attack_phase, phase_dt / 2)
+				Clock.schedule_once(self.attack_phase)
 		else:
 			self.hand_btn_show(False)
 			self.hide_attack_btn()
@@ -15352,7 +15594,7 @@ class GameMech(Widget):
 								if act and ab.req(a=text[0], x=len(self.pd[opp]["Stock"])) and "backup" in act and len(self.pd[opp]["Level"]) >= act[act.index("backup") + 1]:
 									if s not in self.gd["counter"]:
 										self.gd["counter"].append(s)
-					elif card.card == "Event" and ("[counter]" in card.text_c[0][0].lower() or (len(card.text_c[0]) > 1 and "[counter]" in card.text_c[0][1].lower())) and not self.gd["no_event"][self.gd["opp"]] and self.gd["counter_icon"][opp][1] and len(self.pd[opp]["Level"]) >= card.level and card.mcolour.lower() in self.pd[opp]["colour"] and len(self.pd[opp]["Stock"]) >= card.cost_t:
+					elif card.card == "Event" and ("[counter]" in card.text_c[0][0].lower() or (len(card.text_c) > 1 and "[counter]" in card.text_c[1][0].lower())) and not self.gd["no_event"][self.gd["opp"]] and self.gd["counter_icon"][opp][1] and len(self.pd[opp]["Level"]) >= card.level and card.mcolour.lower() in self.pd[opp]["colour"] and len(self.pd[opp]["Stock"]) >= card.cost_t:
 						if self.check_event(s) and s not in self.gd["counter"]:
 							self.gd["counter"].append(s)
 			if self.net["game"]:
@@ -15789,7 +16031,7 @@ class GameMech(Widget):
 			card = ""
 			if self.gd["chosen"]:
 				card = self.gd["chosen"].pop(0)
-				self.send_to("Level", card, pos="up")
+				self.send_to("Level", card, pos="lvlup")
 			if len(self.pd[card[-1]]["Clock"]) > 0:
 				for n in range(len(self.pd[card[-1]]["Clock"][:6])):
 					ind = self.pd[card[-1]]["Clock"].pop(0)
@@ -16225,7 +16467,7 @@ class GameMech(Widget):
 			self.gd["damageref"] = True
 			Clock.schedule_once(self.damage, move_dt_btw)
 		elif "SWaiting" in self.gd["target"]:
-			wtar = self.gd["encore_effect"][self.gd["encore_effect"].index("StockWaiting")+1].split("_")
+			wtar = self.gd["encore_effect"][self.gd["encore_effect"].index("StockWaiting") + 1].split("_")
 			self.pay_stock(self.gd["encore_effect"][0], self.gd["encore_ind"][-1])
 			self.gd["payed"] = True
 			self.gd["chosen"] = []
@@ -16254,7 +16496,7 @@ class GameMech(Widget):
 		if any("Stock" in trg for trg in self.gd["target"]) or "Clock" in self.gd["target"]:
 			if "Waiting" in self.cd[self.gd["encore_ind"]].pos_new:
 				self.encore_card(self.gd["encore_ind"])
-		elif len(self.gd["target"]) > 1 and any(tr in self.gd["target"] for tr in ("Character","Trait","TraitN","Climax")):
+		elif len(self.gd["target"]) > 1 and any(tr in self.gd["target"] for tr in ("Character", "Trait", "TraitN", "Climax")):
 			temp = self.gd["target"].pop(-1)
 			self.hand_waiting(chosen=[temp])
 			self.encore_card(self.gd["encore_ind"])
@@ -16544,7 +16786,6 @@ class GameMech(Widget):
 					self.gd["target"].append(self.gd["move"])
 				self.gd["move"] = ""
 			idm = []
-			player = ""
 			discard = []
 			st = ""
 			lif = []
@@ -16589,10 +16830,18 @@ class GameMech(Widget):
 							lpos = self.pd[ind[-1]][swap].index(ind)
 							self.send_to(lvpos, ind)
 							self.send_to(indpos, lv, lpos)
+				elif "flip" in self.gd["effect"]:
+					if "down" in self.gd["effect"] and not self.cd[ind].back:
+						if ind[-1] != imd[-1]:
+							self.cd[ind].show_back(False)
+						else:
+							self.cd[ind].show_back()
+					elif "up" in self.gd["effect"] and self.cd[ind].back:
+						self.cd[ind].show_front()
 				elif "Level" in self.gd["effect"]:
 					if "if" in self.gd["effect"]:
 						lif.append(ind)
-					self.send_to("Level", ind, pos="up")
+					self.send_to("Level", ind)
 				elif "Clock" in self.gd["effect"]:
 					self.send_to("Clock", ind)
 				elif "Stock" in self.gd["effect"]:
@@ -16606,8 +16855,7 @@ class GameMech(Widget):
 				else:
 					lif.append(ind)
 					discard.append(ind)
-				player = ind[-1]
-				if player == "2":
+				if ind[-1] == "2":
 					idm.append(ind)
 			if discard:
 				self.hand_waiting(chosen=discard)

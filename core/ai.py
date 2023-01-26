@@ -647,13 +647,12 @@ class AI:
 			if len(playble.remove(ind)) >= center:
 				pass
 	def climax(self, pdata, cdata):
-		hand = pdata[self.player]["Hand"]
 		center = len([s for s in pdata[self.player]["Center"] if s != ""])
-		climax = [s for s in hand if cdata[s].card == "Climax" and cdata[s].mcolour in pdata[self.player]["colour"]]
-		if len(climax) > 1 and center > 1:
-			climax = choice(climax)
-		elif len(climax) > 0 and center >= 2:
-			climax = choice(climax)
+		climaxs = [s for s in pdata[self.player]["Hand"] if cdata[s].card == "Climax" and cdata[s].mcolour.lower() in pdata[self.player]["colour"]]
+		if len(climaxs) > 1 and center > 1:
+			climax = choice(climaxs)
+		elif len(climaxs) > 0 and center >= 2:
+			climax = choice(climaxs)
 		else:
 			climax = "pass"
 		return climax

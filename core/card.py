@@ -152,6 +152,8 @@ class Card(RelativeLayout):
 		with self.canvas.before:
 			self.rotation = Rotate(angle=self.angle, origin=self.center)
 		with self.canvas:
+			self.btn = Button(size=self.size, pos=self.pos, cid=self.ind, opacity=0, size_hint=(None, None), height=card[1])
+			self.add_widget(self.btn)
 			soul_size = (img_s[0] * s_size * self.per, img_s[1] * s_size * self.per)
 			ability_size = (img_a[0] * a_size * self.per, img_a[1] * a_size * self.per)
 			marker_size = (self.size[0] * m_size, self.size[1] * m_size)
@@ -335,7 +337,7 @@ class Card(RelativeLayout):
 			self.rotation.angle = angle
 	def show_back(self,i=True):
 		self.back = True
-		self.back_info =i
+		self.back_info = i
 		with self.canvas:
 			self.cover.source = self.img_back
 	def show_front(self):
@@ -825,49 +827,57 @@ class CardImg(RelativeLayout):
 		with self.canvas:
 			self.btn = Button(size=self.size, pos=self.pos, cid=self.ind, opacity=0, size_hint=(None, None), height=card[1])
 			self.add_widget(self.btn)
-			soul_size = (img_s[0] * s_size * self.per, img_s[1] * s_size * self.per)
-			ability_size = (img_a[0] * a_size * self.per, img_a[1] * a_size * self.per)
-			pos_soul = (soul_pos[0] * self.size[0], soul_pos[1] * self.size[1])
-			pos_level = (level_pos[0] * self.size[0], self.size[1] - img_l[1] * l_c_size * self.per - level_pos[1])
-			pos_cost = (pos_level[0], pos_level[1] - img_c[1] * l_c_size * self.per)
-			pos_icon = (icon_pos[0] * self.size[0], pos_cost[1] - img_i[1] * i_size * self.per)
-			pos_power = (power_bar[0] * self.size[0], power_bar[1] * self.size[1])
-			pos_colour = (colour_pos[0] * self.size[0], colour_pos[1] * self.size[1])
-			power_b = (img_p[0] * p_size * self.per, img_p[1] * p_size * self.per)
 			self.slc = Rectangle(source=self.img_blank, pos=(self.pos[0] - self.size[1] / 20, self.pos[1] - self.size[1] / 20), size=(self.size[0] + self.size[1] / 10, self.size[1] * 1.1))
 			self.front = Rectangle(source=self.img_blank, pos=self.pos, size=self.size)
-			self.cost_i = Rectangle(source=self.img_blank, pos=pos_cost, size=(img_c[0] * l_c_size * self.per, img_c[1] * l_c_size * self.per))
-			self.level_i = Rectangle(source=self.img_blank, pos=pos_level, size=(img_l[0] * l_c_size * self.per, img_l[1] * l_c_size * self.per))
-			self.icon_i = Rectangle(source=self.img_blank, pos=pos_icon, size=(img_i[0] * i_size * self.per,img_i[1] * i_size * self.per))
-			self.colour_i = Rectangle(source=self.img_blank, size=(power_b[1], power_b[1]), pos=(self.size[0] - power_b[1] - pos_colour[0], pos_colour[1]))
-			for x in range(self.max_ability):
-				self.ability_i[str(x)] = Rectangle(source=self.img_blank, size=ability_size, pos=(self.size[0] - ability_pos[0] * self.size[0] - ability_size[0], ability_pos[1] * self.size[1] + self.colour_i.pos[1] + self.colour_i.size[1] + x * (ability_size[1] + ability_pos[1] * self.size[1] / 2.)))
-			self.power_b = Rectangle(source=self.img_blank, size=power_b, pos=pos_power)
-			for x in range(self.max_soul):
-				self.soul_i[str(x)] = Rectangle(source=self.img_blank, size=soul_size, pos=(self.power_b.pos[0] + x * soul_size[0], pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
-			self.soul_l = CoreLabel(text="", text_size=(soul_size[0] * 1.5, self.power_b.size[1]), color=(1, 1, 1, 1), outline_width=1.9, halign='center', valign='middle', font_size=self.power_b.size[1] * 0.8)
-			self.soul_l.refresh()
-			self.soul_r = Rectangle(texture=self.soul_l.texture, size=self.soul_l.texture.size, pos=(self.power_b.pos[0] + pos_soul[0] / 4 + soul_size[0], pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
-			self.cost_l = CoreLabel(text="0", color=(0, 0, 0, 1), halign='center', font_size=self.cost_i.size[1] * 0.7)
-			self.cost_l.refresh()
-			self.cost_r = Rectangle(texture=self.cost_l.texture, size=self.cost_l.texture.size, pos=(self.cost_i.pos[0] * 1.6, self.cost_i.pos[1] - self.cost_i.size[1] * 0.3))
-			self.level_l = CoreLabel(text="0", color=(1, 1, 1, 1), halign='center', font_size=self.level_i.size[1] * 0.55)
-			self.level_l.refresh()
-			self.level_r = Rectangle(texture=self.level_l.texture, size=self.level_l.texture.size, pos=(self.level_i.pos[0] * 1.6, self.level_i.pos[1] - self.level_i.size[1] * 0.03))
-			self.power_l = CoreLabel(text="", text_size=self.power_b.size, color=(1, 1, 1, 1), halign='center', font_size=self.power_b.size[1] * 0.8, valign='middle')
-			self.power_l.refresh()
-			self.power_r = Rectangle(texture=self.power_l.texture, size=self.power_l.texture.size, pos=(power_text[0] * self.size[0], power_text[1] * self.size[1]))
-			for n in range(self.max_trigger):
-				self.trigger_i[str(n)] = Rectangle(source=self.img_blank, pos=(self.size[0] - trigger_pos[0] * self.size[0] - (img_t[0] * t_size * self.per) * (n + 1), self.size[1] - img_t[1] * t_size * self.per - trigger_pos[1] * self.size[1]), size=(img_t[0] * t_size * self.per, img_t[1] * t_size * self.per))
-			self.trigger_i["0"].source = self.img_none
+			if not self.ind.endswith("9"):
+				soul_size = (img_s[0] * s_size * self.per, img_s[1] * s_size * self.per)
+				ability_size = (img_a[0] * a_size * self.per, img_a[1] * a_size * self.per)
+				pos_soul = (soul_pos[0] * self.size[0], soul_pos[1] * self.size[1])
+				pos_level = (level_pos[0] * self.size[0], self.size[1] - img_l[1] * l_c_size * self.per - level_pos[1])
+				pos_cost = (pos_level[0], pos_level[1] - img_c[1] * l_c_size * self.per)
+				pos_icon = (icon_pos[0] * self.size[0], pos_cost[1] - img_i[1] * i_size * self.per)
+				pos_power = (power_bar[0] * self.size[0], power_bar[1] * self.size[1])
+				pos_colour = (colour_pos[0] * self.size[0], colour_pos[1] * self.size[1])
+				power_b = (img_p[0] * p_size * self.per, img_p[1] * p_size * self.per)
+				self.cost_i = Rectangle(source=self.img_blank, pos=pos_cost, size=(img_c[0] * l_c_size * self.per, img_c[1] * l_c_size * self.per))
+				self.level_i = Rectangle(source=self.img_blank, pos=pos_level, size=(img_l[0] * l_c_size * self.per, img_l[1] * l_c_size * self.per))
+				self.icon_i = Rectangle(source=self.img_blank, pos=pos_icon, size=(img_i[0] * i_size * self.per,img_i[1] * i_size * self.per))
+				self.colour_i = Rectangle(source=self.img_blank, size=(power_b[1], power_b[1]), pos=(self.size[0] - power_b[1] - pos_colour[0], pos_colour[1]))
+				for x in range(self.max_ability):
+					self.ability_i[str(x)] = Rectangle(source=self.img_blank, size=ability_size, pos=(self.size[0] - ability_pos[0] * self.size[0] - ability_size[0], ability_pos[1] * self.size[1] + self.colour_i.pos[1] + self.colour_i.size[1] + x * (ability_size[1] + ability_pos[1] * self.size[1] / 2.)))
+				self.power_b = Rectangle(source=self.img_blank, size=power_b, pos=pos_power)
+				for x in range(self.max_soul):
+					self.soul_i[str(x)] = Rectangle(source=self.img_blank, size=soul_size, pos=(self.power_b.pos[0] + x * soul_size[0], pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
+				self.soul_l = CoreLabel(text="", text_size=(soul_size[0] * 1.5, self.power_b.size[1]), color=(1, 1, 1, 1), outline_width=1.9, halign='center', valign='middle', font_size=self.power_b.size[1] * 0.8)
+				self.soul_l.refresh()
+				self.soul_r = Rectangle(texture=self.soul_l.texture, size=self.soul_l.texture.size, pos=(self.power_b.pos[0] + pos_soul[0] / 4 + soul_size[0], pos_soul[1] + self.power_b.pos[1] + self.power_b.size[1]))
+				self.cost_l = CoreLabel(text="0", color=(0, 0, 0, 1), halign='center', font_size=self.cost_i.size[1] * 0.7)
+				self.cost_l.refresh()
+				self.cost_r = Rectangle(texture=self.cost_l.texture, size=self.cost_l.texture.size, pos=(self.cost_i.pos[0] * 1.6, self.cost_i.pos[1] - self.cost_i.size[1] * 0.3))
+				self.level_l = CoreLabel(text="0", color=(1, 1, 1, 1), halign='center', font_size=self.level_i.size[1] * 0.55)
+				self.level_l.refresh()
+				self.level_r = Rectangle(texture=self.level_l.texture, size=self.level_l.texture.size, pos=(self.level_i.pos[0] * 1.6, self.level_i.pos[1] - self.level_i.size[1] * 0.03))
+				self.power_l = CoreLabel(text="", text_size=self.power_b.size, color=(1, 1, 1, 1), halign='center', font_size=self.power_b.size[1] * 0.8, valign='middle')
+				self.power_l.refresh()
+				self.power_r = Rectangle(texture=self.power_l.texture, size=self.power_l.texture.size, pos=(power_text[0] * self.size[0], power_text[1] * self.size[1]))
+				for n in range(self.max_trigger):
+					self.trigger_i[str(n)] = Rectangle(source=self.img_blank, pos=(self.size[0] - trigger_pos[0] * self.size[0] - (img_t[0] * t_size * self.per) * (n + 1), self.size[1] - img_t[1] * t_size * self.per - trigger_pos[1] * self.size[1]), size=(img_t[0] * t_size * self.per, img_t[1] * t_size * self.per))
+				self.trigger_i["0"].source = self.img_none
 			self.cover = Rectangle(source=self.img_blank, pos=self.pos, size=self.size)
 			self.text_l = CoreLabel(text="", text_size=self.size, color=(1, 1, 1, 1), outline_width=2, halign='center', valign='middle', font_size=self.size[0] * .6)
 			self.text_l.refresh()
 			self.text_r = Rectangle(texture=self.text_l.texture, size=self.size, pos=(0, 0))
 		if data:
 			self.import_data(data)
-	def import_data(self, card):
-		if card != "" and card != "player":
+	def import_data(self, card=""):
+		if self.ind.endswith("9"):
+			self.img_file = card
+			self.front.source = f"atlas://{img_in}/other/{card}"
+			self.show_front()
+		elif self.ind.endswith("0") and card == "add":
+			self.img_file = card
+			self.update_image()
+		elif card != "" and card != "player":
 			self.cid = str(card["id"])
 			self.name = str(card["name"])
 			self.update_name()
@@ -1023,7 +1033,10 @@ class CardImg(RelativeLayout):
 				self.icon_i.source = self.img_blank
 	def update_image(self):
 		with self.canvas:
-			if self.cid != "" and self.cid != "player":
+			if self.img_file == "add":
+				self.show_back()
+				self.cover.source = f"atlas://{img_in}/other/{self.img_file}"
+			elif self.cid != "" and self.cid != "player":
 				try:
 					if "dc_w00_00.gif" in self.img_file:
 						self.img_file = self.img_file.replace(".gif", "")
@@ -1031,7 +1044,7 @@ class CardImg(RelativeLayout):
 						self.front.source = f"{cache}/{self.img_file}"
 					else:
 						self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
-				except KeyError:
+				except (KeyError, PermissionError) as e:
 					self.front.source = f"atlas://{img_in}/other/grey"
 			else:
 				self.front.source = self.img_blank

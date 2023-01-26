@@ -384,6 +384,7 @@ def network_init():
 	return {
 		"url": "https://www.totuccio.com/ws/ws.php",
 		"data": "https://www.totuccio.com/ws/data/",
+		"version": "https://www.totuccio.com/ws/ver.php",
 		"var": "",
 		"var1": "",
 		"room": 0,
