@@ -27,7 +27,7 @@ markreplace = {
          "[COUNTER]": "ICOUNTER","Reversed":"IREVERSE","Reverse":"IREVERSE","[SOUL]":"ISOUL","Standby": "ISTANDBY",
           "[AUTO]": "AUTO", "[ACT]": "ACT", "[CONT]": "CONT", "[DOOR]": "IDOOR", "[STANDBY]": "ISTANDBY","Stand":"ISTAND",
           "[DRAW]": "IDRAW", "[STOCK]": "ISTOCK", "[TREASURE]": "ITREASURE", "[GATE]": "IGATE", "[BOUNCE]": "IBOUNCE",
-          "[SHOT]": "ISHOT", "[CHOICE]": "ICHOICE","[Counter]":"ICOUNTER","[ALARM]":"IALARM"," CX COMBO": "ICXCOMBO"," CXCOMBO": "ICXCOMBO","[CXCOMBO]": "ICXCOMBO","【ＣＸコンボ】":"IJCXCOMBO",
+          "[SHOT]": "ISHOT", "[CHOICE]": "ICHOICE","[Counter]":"ICOUNTER","[ALARM]":"IALARM","[CLOCK]":"IALARM","[Clock]":"IALARM"," CX COMBO": "ICXCOMBO"," CXCOMBO": "ICXCOMBO","[CXCOMBO]": "ICXCOMBO","【ＣＸコンボ】":"IJCXCOMBO",
           "【永】": "IJCONT", "【起】": "IJACT", "【自】": "IJAUTO", "【リターン】": "IBOUNCE", "【ショット】": "ISHOT", "【チョイス】": "ICHOICE",
           "【トレジャー】": "ITREASURE", "【プール】": "ISTOCK", "【カムバック】": "IDOOR", "【ドロー】": "IDRAW","【ソウル】":"ISOUL",
           "【ゲート】": "IGATE","【カウンター】": "ICOUNTER","【リバース】": "IREVERSE","【レスト】": "IREST","【スタンド】":"ISTAND","【スタンバイ】": "ISTANDBY"

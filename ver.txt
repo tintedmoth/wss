@@ -1,3 +1,6 @@
+0.38.0
+	Hide ACT button while a card in being moved by a player
+	Added Eng The Seven Deadly Sins: Revival of The Commandments cards
 0.37.0
 	Added Eng The Seven Deadly Sin cards
 	Added filter for cards with no traits
