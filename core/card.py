@@ -552,6 +552,9 @@ class Card(RelativeLayout):
 						if text[0].startswith(auto_ability):
 							if text[0].lower().startswith(auto_ability.lower() + " encore ["):
 								tt = False
+						elif text[0].startswith(cont_ability):
+							if "this cannot" in text[0].lower():
+								tt = False
 					if tt:
 						if text[0].startswith(cont_ability):
 							ability.append(self.img_cont)

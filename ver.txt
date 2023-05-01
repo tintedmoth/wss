@@ -1,3 +1,12 @@
+0.39.0
+	Fixed app version checker
+	Added Jap Crayon Shin-chan cards
+	Added confimation when dismateling deck
+	Added deck import for encoredecks website (pc only)
+	Added deck import for decklog eng website (pc only)
+	Added deck import for decklog jap website (pc only)
+	Updated cards text with errata
+	Updated damage trigger of abilities and shot trigger
 0.38.0
 	Hide ACT button while a card in being moved by a player
 	Added Eng The Seven Deadly Sins: Revival of The Commandments cards

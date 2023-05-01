@@ -233,7 +233,7 @@ class Info(Popup):
 						ability.append(card.text_c[item][0])
 						self.pinfo_c["text_c"] += f"\n[color=ffff00]{text}[/color]"
 					elif card.text_c[item][0] in ability:
-						if (card.text_c[item][0].startswith("[AUTO]") and not card.text_c[item][0].lower().startswith("[auto] encore [")) or card.text_c[item][0].startswith("[CONT]"):
+						if (card.text_c[item][0].startswith("[AUTO]") and not card.text_c[item][0].lower().startswith("[auto] encore [")) or (card.text_c[item][0].startswith("[CONT]") and "this cannot" not in card.text_c[item][0].lower()):
 							self.pinfo_c["text_c"] += f"\n[color=ffff00]{text}[/color]"
 				else:
 					self.pinfo_c["text_o"] += f"\n[color=ffffff]{text}[/color]"
