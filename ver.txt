@@ -1,3 +1,8 @@
+0.40.0
+	Added Eng Saekano: How to Raise a Boring Girlfriend cards
+	Added Eng Saekano: How to Raise a Boring Girlfriend ♭ cards
+	Added bundle download of cards by Title
+	Fixed app version checker redirecting to Google Play
 0.39.0
 	Fixed app version checker
 	Added Jap Crayon Shin-chan cards

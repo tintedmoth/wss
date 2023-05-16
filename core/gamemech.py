@@ -51,8 +51,19 @@ from core.var import *
 logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format="[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
 __author__ = "tintedmoth"
 __copyright__ = "Copyright © 2022 tintedmoth"
-__version__ = "0.39.0"
-if platform != 'android':
+__version__ = "0.40.0"
+app_package_name = 'com.totuccio.wss'
+if platform == "android":
+	from jnius import autoclass
+	Context = autoclass('android.content.Context')
+	PackageManager = autoclass('android.content.pm.PackageManager')
+	PythonActivity = autoclass('org.kivy.android.PythonActivity').mActivity
+	Intent = autoclass('android.content.Intent')
+	Uri = autoclass('android.net.Uri')
+	package_name = PythonActivity.getPackageName()
+	package_manager = PythonActivity.getPackageManager()
+	installer_info = package_manager.getInstallerPackageName(package_name)
+if platform != "android":
 	from requests_html import HTMLSession
 def list_str(lst, sep=".", sh=False):
 	temp = ""
@@ -128,6 +139,7 @@ class GameMech(Widget):
 		self.field_label = {}
 		self.decks = {}
 		self.temp = []
+		self.title_pack = {}
 		self.power_zero = []
 		self.cont_recheck = {}
 		self.mat = {"1": {"mat": None, "field": {}, "id": "mat", "per": 1}, "2": {"mat": None, "field": {}, "id": "mat", "per": 1}}
@@ -142,9 +154,8 @@ class GameMech(Widget):
 		self.fav = None
 		self.fav1 = None
 		self.hscv = [[], [], 0]
-		if platform == 'android':
+		if platform == "android":
 			self.webview = ""
-			self.interface = ""
 		with self.canvas:
 			self.rect = Rectangle(source=f"atlas://{img_in}/other/blank", pos=(-Window.width * 2, -Window.height * 2))
 			self.rect1 = Rectangle(source=f"atlas://{img_in}/annex/dc_w00_00", pos=(-Window.width * 2, -Window.height * 2))
@@ -506,7 +517,7 @@ class GameMech(Widget):
 		self.down_popup()
 	def down_popup(self, *args):
 		self.multi_info["popup"].title = "Download"
-		yscv = self.sd["card"][1] * 4 + self.sd["padding"] * 1.5
+		yscv = self.sd["card"][1] * 5 + self.sd["padding"] * 1.5
 		yscatm = yscv + self.sd["card"][1] * 1.6 + self.sd["card"][1] * 1.5
 		ypop = yscatm + self.multi_info["popup"].title_size + self.multi_info["popup"].separator_height
 		if ypop > Window.height:
@@ -915,7 +926,7 @@ class GameMech(Widget):
 		self.sd["popup"]["popup"].dismiss()
 		if btn is not None and a == "":
 			a = btn.a
-		if not net and self.gd["per_poped"][3] < 0 and btn is not None:
+		if not net and "choice" in self.gd["per_poped"] and btn is not None:
 			self.gd["per_poped"][3] = int(btn.cid[-1])
 		if not "unli" in self.gd["per_poped"]:
 			self.gd["per_poped"][1].remove(self.gd["per_poped"][1][self.gd["per_poped"][3]])
@@ -1711,12 +1722,12 @@ class GameMech(Widget):
 										deff = self.pd[op]["Center"][self.gd["attacking"][3]]
 									elif "B" in self.gd["attacking"][4]:
 										deff = self.pd[op]["Back"][self.gd["attacking"][3]]
-									baind = (datk, deff)
-									suop = (self.cd[datk].status, self.cd[deff].status)
-									lvop = (self.cd[datk].level_t, self.cd[deff].level_t)
-									csop = (self.cd[datk].cost_t, self.cd[deff].cost_t)
-									nmop = (self.cd[datk].name_t, self.cd[deff].name_t)
-									trop = (self.cd[datk].trait_t, self.cd[deff].trait_t)
+								baind = (datk, deff)
+								suop = (self.cd[datk].status, self.cd[deff].status)
+								lvop = (self.cd[datk].level_t, self.cd[deff].level_t)
+								csop = (self.cd[datk].cost_t, self.cd[deff].cost_t)
+								nmop = (self.cd[datk].name_t, self.cd[deff].name_t)
+								trop = (self.cd[datk].trait_t, self.cd[deff].trait_t)
 							if self.gd["phase"] == "Trigger":
 								ty = (self.cd[r].card, self.cd[r].trigger, self.gd["attacking"][0], self.cd[r].name_t, self.cd[r].mcolour, self.cd[r].level_t)
 							elif atk:
@@ -2179,12 +2190,12 @@ class GameMech(Widget):
 					stage1 = list(self.pd[p]["Center"])
 				else:
 					stage1 = list(self.pd[p]["Center"] + self.pd[p]["Back"])
-				status = [self.cd[s].status for s in stage]
+				status = [self.cd[s].status for s in stage1]
 				if "other" in auto[1]:
 					if auto[0] in stage1:
 						status[stage1.index(auto[0])] = ""
 				if "Rest" in auto[1]:
-					if auto[1] == 0 and "Rest" in status:
+					if auto[1][0] == 0 and "Rest" in status:
 						aa = 0
 			elif ("pay" in auto[1] and "this" in auto[1][auto[1].index("do") + 1]) or "this" in auto[1]:
 				if "alarmed" in auto[1]:
@@ -3485,6 +3496,16 @@ class GameMech(Widget):
 					self.net["var"] = [str(val), 0]
 					self.net["var1"] = f"down_{val}"
 					self.mconnect("down")
+				elif val in sn["Title"]:
+					self.net["var"] = ["all", 0]
+					self.temp = []
+					for var in self.title_pack[val][1]:
+						temp = str(var)
+						temp1 = [str(var), 0]
+						self.net["var"].append(temp)
+						self.temp.append(temp1)
+					self.net["var1"] = f"down_{val}"
+					self.mconnect("down")
 				else:
 					self.decks["dbuild"]["n"] = str(self.decks["set_temp"])
 					self.decks["dbuild"]["t"] = val
@@ -3503,21 +3524,53 @@ class GameMech(Widget):
 		text = (self.sd["card"][0] * 5.4, self.sd['card'][1] / 1.25)
 		if "down" in t:
 			self.decks["sets"].title = f"Choose a package to download"
-			if "B" in t[-1] or "E" in t[-1] or "T" in t[-1]:
-				sets = [s for s in se["check"].keys() if s.startswith(t[-1].lower())]
+			title = False
+			if "Bo" in t[-2:] or "Ex" in t[-2:] or "Tr" in t[-2:]:
+				sets = [s for s in se["check"].keys() if s.startswith(t[-2].lower())]
+			elif "Ti" in t[-2:]:
+				sets = [s for s in sn["Title"]]
+				title = True
 			else:
 				sets = [s for s in se["check"].keys() if all(not s.startswith(ss) for ss in ("b", "e", "t"))]
 			for s in sets:
 				down = True
-				for item in se["check"][s]:
-					if "-d" in item:
-						if self.multi_info["dw"]["2"].state == 'down' and (exists(f"{data_ex}/{item}") or ("tws01-d" in item or "as11e-d" in item)):
-							down = False
-						elif self.multi_info["dw"]["3"].state == 'down' and not exists(f"{data_ex}/{item}") and "tws01-d" not in item and "as11e-d" not in item:
-							down = False
-						break
+				if title:
+					if s not in self.title_pack:
+						self.title_pack[s] = [[],[]]
+						self.title_pack[s][0] = list(set([_.split("/")[1].split("-")[0].lower() for _ in sc if any(ns in _ for ns in sn["Title"][s])]))
+					dd = [False]
+					if s in self.title_pack and self.title_pack[s][1]:
+						packs = self.title_pack[s][1]
+					else:
+						packs = se["check"]
+					for pack in packs:
+						if any(ts in pack for ts in self.title_pack[s][0]):
+							if pack not in self.title_pack[s][1]:
+								self.title_pack[s][1].append(pack)
+							for item in se["check"][pack]:
+								if "-d" in item:
+									if self.multi_info["dw"]["2"].state == 'down' and (exists(f"{data_ex}/{item}") or ("tws01-d" in item or "as11e-d" in item)):
+										dd.append(False)
+									elif self.multi_info["dw"]["3"].state == 'down' and not exists(f"{data_ex}/{item}") and "tws01-d" not in item and "as11e-d" not in item:
+										dd.append(False)
+									else:
+										dd.append(True)
+									break
+					if all(not d for d in dd):
+						down = False
+				else:
+					for item in se["check"][s]:
+						if "-d" in item:
+							if self.multi_info["dw"]["2"].state == 'down' and (exists(f"{data_ex}/{item}") or ("tws01-d" in item or "as11e-d" in item)):
+								down = False
+							elif self.multi_info["dw"]["3"].state == 'down' and not exists(f"{data_ex}/{item}") and "tws01-d" not in item and "as11e-d" not in item:
+								down = False
+							break
 				if down:
-					data.append({"text": se["check"][s]["e"], "size": size, "size_hint": (1, None), "text_size": text, "id": s, "disabled": False})
+					if title:
+						data.append({"text": s, "size": size, "size_hint": (1, None), "text_size": text, "id": s, "disabled": False})
+					else:
+						data.append({"text": se["check"][s]["e"], "size": size, "size_hint": (1, None), "text_size": text, "id": s, "disabled": False})
 			for var in sorted(data, key=lambda x: x["text"]):
 				self.decks["rv"].data.append(var)
 		else:
@@ -3535,7 +3588,7 @@ class GameMech(Widget):
 		ypop = yscv + ybtn + self.decks["sets"].title_size + self.decks["sets"].separator_height + self.sd["card"][1] * 0.75
 		if ypop > Window.height:
 			self.decks["rv"].do_scroll_y = True
-			ypop = Window.height * 0.9
+			ypop = Window.height * 0.95
 			yscv = ypop - self.sd["card"][1] * 0.75 - self.decks["sets"].title_size - self.decks["sets"].separator_height - (self.sd["card"][1] / 1.25 + self.sd["padding"] * 0)
 		self.decks["sets"].content = self.decks["rv_rel"]
 		self.decks["sets"].size = (self.sd["card"][0] * 6 + self.sd["padding"] * 2, ypop)
@@ -3710,7 +3763,7 @@ class GameMech(Widget):
 					self.decks["save"].center_x = xscat / 4 - self.sd["padding"] / 2
 					self.decks["close"].center_x = xscat / 4 * 3 - self.sd["card"][0] / 2
 					self.decks["save"].text = "Discard"
-					if platform != 'android':
+					if platform != "android":
 						self.decks["import"].y = self.sd["card"][1] / 2 + self.sd["padding"] * 4
 						self.decks["import"].center_x = xscat / 2 - self.sd["card"][0] / 4
 						ypos += self.sd["card"][1] / 2 + self.sd["padding"] * 3
@@ -3887,8 +3940,8 @@ class GameMech(Widget):
 		self.multi_info["sspace"] = StackSpacer(o=self.sd["card"])
 		self.multi_info["download"] = BoxLayout(orientation='vertical', size_hint=(1, None), spacing=self.sd["padding"])
 		self.multi_info["sctm"].add_widget(self.multi_info["download"])
-		for ind in ("Booster Pack", "Extra Booster", "Trial Deck", "Other"):
-			rr = Button(text=ind, on_release=self.down_popup_btn, cid=ind[0])
+		for ind in ("Booster Pack", "Extra Booster", "Trial Deck", "Other", "Titles"):
+			rr = Button(text=ind, on_release=self.down_popup_btn, cid=ind[:2])
 			self.multi_info["download"].add_widget(rr)
 		self.multi_info["dw"] = {}
 		self.multi_info["dw"]["h"] = BoxLayout(orientation='horizontal', size_hint=(None, 1))
@@ -5187,13 +5240,7 @@ class GameMech(Widget):
 			self.deck_building_cards()
 	def check_card_neo(self, ind):
 		if self.decks["dbuild"]["n"] and any(dset in ind for dset in self.decks["dbuild"]["ns"]):
-			if "KS/" in ind or "Sks/" in ind:
-				if ind in ("KS/W49-T20", "KS/W49-T10", "KS/W49-066", "KS/W49-071", "KS/W49-056", "KS/W49-082", "KS/W49-075", "KS/W49-053", "KS/W49-057"):
-					self.decks["dbuild"]["neo"][ind] = True
-				else:
-					self.decks["dbuild"]["neo"][ind] = False
-			else:
-				self.decks["dbuild"]["neo"][ind] = True
+			self.decks["dbuild"]["neo"][ind] = True
 		else:
 			self.decks["dbuild"]["neo"][ind] = False
 	def update_deck_label(self):
@@ -5233,11 +5280,19 @@ class GameMech(Widget):
 				self.decks["st"]["format_btn"].disabled = True
 			elif self.decks["dbuild"]["n"] == "Side":
 				self.decks["dbuild"]["ns"] = sn["Side"][self.decks["dbuild"]["t"]]
-			else:
+			elif "Neo" in self.decks["dbuild"]["n"]:
+				self.decks["dbuild"]["ns"] = sn["Title"][self.decks["dbuild"]["t"]]
+				self.decks["dbuild"]["ns"].extend(sn["Exception"]["Neo"]["All"])
 				try:
-					self.decks["dbuild"]["ns"] = sn["Title"][self.decks["dbuild"]["t"]] + sn["Exception"][self.decks["dbuild"]["n"]][self.decks["dbuild"]["t"]]
+					self.decks["dbuild"]["ns"].extend(sn["Exception"]["Neo"][self.decks["dbuild"]["t"]])
 				except KeyError:
-					self.decks["dbuild"]["ns"] = sn["Title"][self.decks["dbuild"]["t"]]
+					pass
+			else:
+				self.decks["dbuild"]["ns"] = sn["Title"][self.decks["dbuild"]["t"]]
+				try:
+					self.decks["dbuild"]["ns"].extend(sn["Exception"][self.decks["dbuild"]["n"]][self.decks["dbuild"]["t"]])
+				except KeyError:
+					pass
 		else:
 			self.decks["dbuild"]["n"] = "Standard"
 			self.decks["dbuild"]["ns"] = ["-"]
@@ -5424,7 +5479,7 @@ class GameMech(Widget):
 		url = ""
 		if d:
 			url = f'https://{_}{d}'
-		if platform != 'android':
+		if platform != "android":
 			if url:
 				session = HTMLSession()
 				r = session.get(url)
@@ -7116,10 +7171,10 @@ class GameMech(Widget):
 	def play_to_stage(self, ind, st, *args):
 		card = self.cd[ind]
 		old = str(self.cd[ind].pos_new)
-		if card.card != "Climax" and "Hand" in old and len(self.pd[self.gd["active"]]["Stock"]) >= card.cost_t:
+		if ind not in self.gd["standby"] and card.card != "Climax" and "Hand" in old and len(self.pd[self.gd["active"]]["Stock"]) >= card.cost_t:
 			self.pay_stock(card.cost_t, card.owner)
-			self.gd["payed"] = True
 			self.gd["stock_payed"] = True
+		self.gd["payed"] = True
 		self.check_pos(ind)
 		if "Center" in st or "Back" in st:
 			if self.pd[ind[-1]][st[:-1]][int(st[-1])] != "":
@@ -7207,9 +7262,7 @@ class GameMech(Widget):
 				self.pd[ind[-1]]["Climax"].append(ind)
 				self.cd[ind].setPos(field=self.mat[ind[-1]]["field"]["Climax"], t="Climax")
 			elif "Level" in field:
-				if "up" in pos:
-					self.pd[ind[-1]]["Level"].append(ind)
-				elif pos is not None:
+				if pos is not None and "up" not in pos:
 					self.pd[ind[-1]]["Level"].insert(pos, ind)
 				else:
 					self.pd[ind[-1]]["Level"].append(ind)
@@ -8543,7 +8596,12 @@ class GameMech(Widget):
 			Clock.schedule_once(self.start_game, move_dt * 2)
 		elif "update" in self.sd["text"]["c"]:
 			if "debug" not in self.gd or ("debug" in self.gd and not self.gd["debug"]):
-				webbrowser.open('https://github.com/tintedmoth/wss/releases')
+				if installer_info == "com.android.vending":
+					url = 'market://details?id=' + app_package_name
+					intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+					PythonActivity.mActivity.startActivity(intent)
+				else:
+					webbrowser.open('https://github.com/tintedmoth/wss/releases')
 		elif "no_internet" in self.sd["text"]["c"] or "no_error" in self.sd["text"]["c"]:
 			if self.net["status"] == "down":
 				if self.downloads_key:
@@ -9841,7 +9899,10 @@ class GameMech(Widget):
 							elif "csalvage" in self.gd["effect"] or "wdecker" in self.gd["effect"]:
 								self.sd["btn"][f"{phase}_btn"].text = f"Return {word}"
 							elif "cdiscard" in self.gd["effect"]:
-								self.sd["btn"][f"{phase}_btn"].text = "Put into Waiting"
+								if "Level" in self.gd["effect"]:
+									self.sd["btn"][f"{phase}_btn"].text = "Put into Level"
+								else:
+									self.sd["btn"][f"{phase}_btn"].text = "Put into Waiting"
 							elif "cxdiscard" in self.gd["effect"]:
 								self.sd["btn"][f"{phase}_btn"].text = "Select climax"
 							elif "msalvage" in self.gd["effect"]:
@@ -12203,7 +12264,7 @@ class GameMech(Widget):
 				else:
 					self.ability_event()
 			elif "choice" in self.gd["effect"]:
-				self.gd["per_poped"] = [ind, self.gd["effect"][2].split("_"), self.gd["effect"][2], -1, self.gd["effect"][1]]
+				self.gd["per_poped"] = [ind, self.gd["effect"][2].split("_"), self.gd["effect"][2], -1,"choice",self.gd["effect"][1]]
 				self.ability_effect()
 			elif "twice" in self.gd["effect"]:
 				a = ab.event(self.gd["ability"])
@@ -17236,7 +17297,7 @@ class GameMech(Widget):
 			else:
 				player = imd[-1]
 			disc = self.popup_title_search(imd, uptomay, word)
-			if "marker" in self.gd["effect"][1] and isinstance(self.gd["effect"][0], str) and "discard" in self.gd["effect"][0]:
+			if "marker" in self.gd["effect"] and isinstance(self.gd["effect"][0], str) and "discard" in self.gd["effect"][0]:
 				c = "Marker_Discard"
 			elif "Stage" in self.gd["effect"] and isinstance(self.gd["effect"][0], str) and "discard" in self.gd["effect"][0]:
 				c = "Discard_stage"

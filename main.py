@@ -14,7 +14,7 @@ logging.getLogger().addHandler(smtp_handler)
 environ["KIVY_NO_CONSOLELOG"] = "1"
 if platform == 'android':
 	from android.permissions import Permission, request_permissions
-	request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE])
+	request_permissions([Permission.INTERNET, Permission.ACCESS_WIFI_STATE, Permission.ACCESS_NETWORK_STATE,Permission.WRITE_EXTERNAL_STORAGE])
 Config.set("graphics", "fullscreen", "auto")
 import kivy.core.window as window
 window.Window.clearcolor = (0, 0, 0, 1.)
