@@ -1,4 +1,3 @@
-from kivy.logger import Logger
 from kivy.uix.settings import SettingsWithSpinner
 class ESettingsPanel(SettingsWithSpinner):
     """

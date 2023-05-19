@@ -365,7 +365,7 @@ def gdata_init():
 		"notargetfield": False,
 		"brainstorm": 0,
 		"stack_return": False,
-		"brainstorm_c": [0, []],
+		"brainstorm_c": [0, [],[]],
 		"resonance": [False, [], 0],
 		"random_reveal": [],
 		"confirm": False,
@@ -410,30 +410,78 @@ def network_init():
 		"varlvl": [],
 		"act": ["", "", 0, [], [], 0, -1]
 	}
-def add_db(item):
-	with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
-		temp = json_unzip(jload(rjson))
-		for key in list(temp.keys()):
-			for item2 in temp[key]:
-				if key == "c":
-					if item2 not in se["main"][key]:
-						se["main"][key].append(item2)
-				elif key == "t":
-					if item2 not in sd:
-						sd[item2] = dict(temp[key][item2])
-				elif key == "s":
-					if item2 not in se["main"][key]["Title"]:
-						se["main"][key]["Title"].append(item2)
-					if "w" not in se["main"]:
-						se["main"]["w"] = []
-					if item2 != "":
-						se["main"]["w"].append(item2)
-				elif key == "p":
-					if item2 not in sp:
-						sp[item2] = dict(temp[key][item2])
-				elif key == "m":
-					if item2 not in se["main"][key]:
-						se["main"][key].append(item2)
+def add_db(item,db=False):
+	if db:
+		with open(f"{data_in}/{item}", "r", encoding="utf-8") as temp:
+			rjson = json_unzip(jload(temp))
+		for item in rjson:
+			if "dc" in item:
+				with open(f"{data_in}/cdata.db", "r", encoding="utf-8") as rdb:
+					rdbj = json_unzip(jload(rdb))
+				for _ in rjson[item]:
+					rdbj[_] = rjson[item][_]
+					sc[_] = rjson[item][_]
+				with open(f"{data_in}/cdata.db", "w", encoding="utf-8") as wdb:
+					jdump(json_zip(rdbj), wdb, separators=(',', ':'))
+			elif "de" in item:
+				with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rdb:
+					rdbj = json_unzip(jload(rdb))
+				for _ in rjson[item]:
+					if _ in ("about","copyright"):
+						rdbj[_] = rjson[item][_]
+						se[_] = rjson[item][_]
+					elif _ in ("check","playmat"):
+						for _1 in rjson[item][_]:
+							rdbj[_][_1] = rjson[item][_][_1]
+							se[_][_1] = rjson[item][_][_1]
+					elif _ in ("neo","main"):
+						for _1 in rjson[item][_]:
+							if "main" in _:
+								if _1 in ("c","m"):
+									for _2 in rjson[item][_][_1]:
+										if _2 not in rdbj[_][_1]:
+											rdbj[_][_1].append(_2)
+										if _2 not in se[_][_1]:
+											se[_][_1].append(_2)
+								elif _1 in ("t","a","s"):
+									for _2 in rjson[item][_][_1]:
+										rdbj[_][_1][_2] = rjson[item][_][_1][_2]
+										se[_][_1][_2] = rjson[item][_][_1][_2]
+							elif "neo" in _:
+								for _2 in rjson[item][_][_1]:
+									if _2 in ("Limited","Exception"):
+										for _3 in rjson[item][_][_1][_2]:
+											rdbj[_][_1][_2][_3] = rjson[item][_][_1][_2][_3]
+											se[_][_1][_2][_3] = rjson[item][_][_1][_2][_3]
+									else:
+										rdbj[_][_1][_2] = rjson[item][_][_1][_2]
+										se[_][_1][_2] = rjson[item][_][_1][_2]
+				with open(f"{data_in}/edata.db", "w", encoding="utf-8") as wdb:
+					jdump(json_zip(rdbj), wdb, separators=(',', ':'))
+	else:
+		with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
+			temp = json_unzip(jload(rjson))
+			for key in list(temp.keys()):
+				for item2 in temp[key]:
+					if key == "c":
+						if item2 not in se["main"][key]:
+							se["main"][key].append(item2)
+					elif key == "t":
+						if item2 not in sd:
+							sd[item2] = dict(temp[key][item2])
+					elif key == "s":
+						if item2 not in se["main"][key]["Title"]:
+							se["main"][key]["Title"].append(item2)
+						if "w" not in se["main"]:
+							se["main"]["w"] = []
+						if item2 != "":
+							se["main"]["w"].append(item2)
+					elif key == "p":
+						if item2 not in sp:
+							sp[item2] = dict(temp[key][item2])
+					elif key == "m":
+						if item2 not in se["main"][key]:
+							se["main"][key].append(item2)
 def atlas_make():
 	files = {}
 	to_remove = []
@@ -480,7 +528,8 @@ if exists(f"{data_ex}/cej.db"):
 	with open(f"{data_ex}/cej.db", "r", encoding="utf-8") as rd:
 		scej = json_unzip(jload(rd))
 		for deck in scej:
-			sd[deck] = dict(scej[deck])
+			if deck != "version":
+				sd[deck] = dict(scej[deck])
 else:
 	scej = {}
 	with open(f"{data_ex}/cej.db", "w") as w_d:
