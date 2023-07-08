@@ -1,4 +1,6 @@
 from kivy.uix.settings import SettingsWithSpinner
+
+
 class ESettingsPanel(SettingsWithSpinner):
     """
     It is not usually necessary to create subclass of a settings panel. There
@@ -9,5 +11,6 @@ class ESettingsPanel(SettingsWithSpinner):
     """
     def on_close(self):
         pass
+
     def on_config_change(self, config, section, key, value):
         pass

@@ -8,11 +8,16 @@ from json import loads as jloads
 from os import remove
 from zlib import compress as zcom
 from zlib import decompress as zdecom
+
 from core.ability import Ability as Ab
 from core.datapath import *
+
+
 def json_zip(j):
 	j = {ZIP_KEY: benco(zcom(jdumps(j, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))).decode('ascii')}
 	return j
+
+
 def json_unzip(j, insist=True):
 	try:
 		assert (j[ZIP_KEY])
@@ -22,15 +27,20 @@ def json_unzip(j, insist=True):
 			raise RuntimeError("JSON not in the expected format {" + str(ZIP_KEY) + ": zipstring}")
 		else:
 			return j
+
 	try:
 		j = zdecom(bdeco(j[ZIP_KEY]))
 	except:
 		raise RuntimeError("Could not decode/unzip the contents")
+
 	try:
 		j = jloads(j)
 	except:
 		raise RuntimeError("Could interpret the unzipped contents")
+
 	return j
+
+
 def pdata_init():
 	return {
 		"1": {
@@ -120,6 +130,8 @@ def pdata_init():
 			}
 		}
 	}
+
+
 def gdata_init():
 	return {
 		"multiplay_btn": True,
@@ -131,6 +143,7 @@ def gdata_init():
 		"confirm_requirement": True,
 		"overlap_confirm": True,  
 		"remove_cards_in_deck": False,
+
 		"HDimg": False,
 		"load": False,
 		"check_atk": True,
@@ -150,9 +163,11 @@ def gdata_init():
 		"selected": "",
 		"selected_o": "",
 		"stage": ["Center0", "Center1", "Center2", "Back0", "Back1"],
+
 		"fields": ["Hand", "Center", "Back"],
 		"janken_choice": ("l", "k", "p", "s"),
 		"movable": [], "playable_climax": [],
+
 		"cont_on": False,
 		"stack": {"1": [], "2": []},
 		"stacked": {"0": []},
@@ -220,6 +235,7 @@ def gdata_init():
 		"touch_move_x": tuple(),
 		"touch_move_y": tuple(),
 		"old_pos": tuple(),
+
 		"popup_encore": True,
 		"auto_recheck": False,
 		"counter_icon": {"1": [True, True], "2": [True, True]},
@@ -229,6 +245,7 @@ def gdata_init():
 		"no_backup": {"1": False, "2": False},
 		"no_event": {"1": False, "2": False},
 		"no_cont_check": False,
+		"waiting_cost": [{}, "", 0],
 		"reserve": {"1": [], "2": []},
 		"check_reserve": False,
 		"confirm_pop": False,
@@ -250,8 +267,10 @@ def gdata_init():
 		"draw_both": [int(starting_hand), False, False],
 		"draw_upto": 0,
 		"shuffle": [],
+		"shufflest": [],
 		"levelup": {"1": False, "2": False},
 		"shuffle_trigger": "",
+		"shufflest_trigger": "",
 		"shuffle_rep": int(shuffle_n),
 		"shuffle_send": False,
 		"draw": 0,
@@ -365,7 +384,7 @@ def gdata_init():
 		"notargetfield": False,
 		"brainstorm": 0,
 		"stack_return": False,
-		"brainstorm_c": [0, [],[]],
+		"brainstorm_c": [0, [], []],
 		"resonance": [False, [], 0],
 		"random_reveal": [],
 		"confirm": False,
@@ -373,6 +392,7 @@ def gdata_init():
 		"confirm2": [False, 0],
 		"popup_attack": 1,
 		"btn_pressed": [0, None],
+		"choose_trait":False,
 		"revive": [],
 		"info_p": False,
 		"dont": [],
@@ -382,18 +402,21 @@ def gdata_init():
 		"battle": [],
 		"attack_t": {"d": [True, True, True], "s": [True, True, True], "f": [True, True, True]}
 	}
+
+
 def network_init():
 	return {
 		"url": "https://www.totuccio.com/ws/ws.php",
 		"data": "https://www.totuccio.com/ws/data/",
 		"version": "https://www.totuccio.com/ws/ver.php",
-		"EncoreDecks":"www.encoredecks.com/deck/",
-		"DECK LOG EN":"decklog-en.bushiroad.com/view/",
-		"DECK LOG JP":"decklog.bushiroad.com/view/",
+		"EncoreDecks": "www.encoredecks.com/deck/",
+		"DECK LOG EN": "decklog-en.bushiroad.com/view/",
+		"DECK LOG JP": "decklog.bushiroad.com/view/",
 		"var": "",
 		"var1": "",
 		"room": 0,
 		"select": 0,
+		"history":{},
 		"player": 0,
 		"actual": "",
 		"private": False,
@@ -410,57 +433,65 @@ def network_init():
 		"varlvl": [],
 		"act": ["", "", 0, [], [], 0, -1]
 	}
-def add_db(item,db=False):
+
+
+def add_db(item, db=False):
 	if db:
 		with open(f"{data_in}/{item}", "r", encoding="utf-8") as temp:
 			rjson = json_unzip(jload(temp))
+
 		for item in rjson:
 			if "dc" in item:
 				with open(f"{data_in}/cdata.db", "r", encoding="utf-8") as rdb:
 					rdbj = json_unzip(jload(rdb))
+
 				for _ in rjson[item]:
 					rdbj[_] = rjson[item][_]
 					sc[_] = rjson[item][_]
+
 				with open(f"{data_in}/cdata.db", "w", encoding="utf-8") as wdb:
 					jdump(json_zip(rdbj), wdb, separators=(',', ':'))
 			elif "de" in item:
 				with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rdb:
 					rdbj = json_unzip(jload(rdb))
+
 				for _ in rjson[item]:
-					if _ in ("about","copyright"):
+					if _ in ("about", "copyright"):
 						rdbj[_] = rjson[item][_]
 						se[_] = rjson[item][_]
-					elif _ in ("check","playmat"):
+					elif _ in ("check", "playmat"):
 						for _1 in rjson[item][_]:
 							rdbj[_][_1] = rjson[item][_][_1]
 							se[_][_1] = rjson[item][_][_1]
-					elif _ in ("neo","main"):
+					elif _ in ("neo", "main"):
 						for _1 in rjson[item][_]:
 							if "main" in _:
-								if _1 in ("c","m"):
+								if _1 in ("c", "m"):
 									for _2 in rjson[item][_][_1]:
 										if _2 not in rdbj[_][_1]:
 											rdbj[_][_1].append(_2)
 										if _2 not in se[_][_1]:
 											se[_][_1].append(_2)
-								elif _1 in ("t","a","s"):
+								elif _1 in ("t", "a", "s"):
 									for _2 in rjson[item][_][_1]:
 										rdbj[_][_1][_2] = rjson[item][_][_1][_2]
 										se[_][_1][_2] = rjson[item][_][_1][_2]
 							elif "neo" in _:
 								for _2 in rjson[item][_][_1]:
-									if _2 in ("Limited","Exception"):
+									if _2 in ("Limited", "Exception"):
 										for _3 in rjson[item][_][_1][_2]:
 											rdbj[_][_1][_2][_3] = rjson[item][_][_1][_2][_3]
 											se[_][_1][_2][_3] = rjson[item][_][_1][_2][_3]
 									else:
 										rdbj[_][_1][_2] = rjson[item][_][_1][_2]
 										se[_][_1][_2] = rjson[item][_][_1][_2]
+
 				with open(f"{data_in}/edata.db", "w", encoding="utf-8") as wdb:
 					jdump(json_zip(rdbj), wdb, separators=(',', ':'))
 	else:
 		with open(f"{data_ex}/{item}-d", "r", encoding="utf-8") as rjson:
 			temp = json_unzip(jload(rjson))
+
 			for key in list(temp.keys()):
 				for item2 in temp[key]:
 					if key == "c":
@@ -482,6 +513,8 @@ def add_db(item,db=False):
 					elif key == "m":
 						if item2 not in se["main"][key]:
 							se["main"][key].append(item2)
+
+
 def atlas_make():
 	files = {}
 	to_remove = []
@@ -501,43 +534,57 @@ def atlas_make():
 						to_remove.append(f"{data_ex}/{item1}")
 			else:
 				continue
+
 	for item in to_remove:
 		remove(item)
+
+
+
+
 ZIP_KEY = 'I2UHBG58pJ'
+
 ab = Ab()
 with open(f"{data_in}/edata.db", "r", encoding="utf-8") as rp:
 	se = json_unzip(jload(rp))
 with open(f"{data_in}/cdata.db", "r", encoding="utf-8") as rc:
 	sc = json_unzip(jload(rc))
+
 sp = se["playmat"]
 sd = se["main"]["t"]
 sn = se["neo"]
+
 annex_img = []
 with open(f"{img_in}/annex.atlas", "r", encoding="utf-8") as ax:
 	ann = jload(ax)
 	for f in ann:
 		for an in ann[f].keys():
 			annex_img.append(an)
+
 other_img = []
 with open(f"{img_in}/other.atlas", "r", encoding="utf-8") as ox:
 	ann = jload(ox)
 	for f in ann:
 		for an in ann[f].keys():
 			other_img.append(an)
+
 if exists(f"{data_ex}/cej.db"):
 	with open(f"{data_ex}/cej.db", "r", encoding="utf-8") as rd:
 		scej = json_unzip(jload(rd))
 		for deck in scej:
 			if deck != "version":
 				sd[deck] = dict(scej[deck])
+
 else:
 	scej = {}
 	with open(f"{data_ex}/cej.db", "w") as w_d:
 		jdump(json_zip(scej), w_d, separators=(',', ':'))
+
 atlas_make()
+
 phases = ["Stand Up", "Draw", "Clock", "Main", "Climax", "Attack", "End"]  
 steps = ["Declaration", "Trigger", "Counter", "Damage", "Battle", "Encore"]  
 icon_lst = ("door", "soul", "gate", "bar", "bag", "book", "shot", "bounce", "counter", "clock", "arrow")
+
 info_popup_dt = 1.10  
 info_popup_press = 3  
 phase_dt = 1.15 * 0.75  
@@ -556,8 +603,13 @@ hand_limit = 7
 dbuild_limit = 5  
 popup_max_cards = 7  
 select2cards = 5
+
 COMPUTER = True
+
 cont_ability = "[CONT]"
 auto_ability = "[AUTO]"
 act_ability = "[ACT]"
+
 cont_waiting = ["SHS/W98-040"]
+cont_waiting_cost = ["P4/EN-S01-042", "P4/EN-S01-056", "P4/EN-S01-056S", "P4/EN-S01-T08", "P4/SE01-02", "P4/SE01-07", "P4/SE01-11", "P4/SE12-14", "P4/SE12-23", "P4/SE12-41", "P4/SE12-46", "P4/SE12-51"]
+all_traits = list(set([tr for _ in sc for tr in sc[_]["trait"]]))
