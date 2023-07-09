@@ -394,6 +394,7 @@ def gdata_init():
 		"btn_pressed": [0, None],
 		"choose_trait":False,
 		"revive": [],
+		"version":"",
 		"info_p": False,
 		"dont": [],
 		"last": "",

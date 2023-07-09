@@ -1,3 +1,7 @@
+0.42.1
+	Fixed version checker getting stuck on popup while on android
+	Added warning and clear any previous game when updating
+
 0.42.0
 	Added Eng Persona 4 ver.E cards
 	Adeed Jap Persona 4 cards
