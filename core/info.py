@@ -135,7 +135,7 @@ class Info(Popup):
 						self.label[item].size = self.label[item].texture.size
 			self.content_size()
 
-	def import_data(self, card, annex):
+	def import_data(self, card, annex,dlimg=0):
 		self.inx = 10
 		self.lang_btn.text = "E"
 		ability = []
@@ -160,9 +160,9 @@ class Info(Popup):
 		if "dc_w00_00.gif" in card.img_file:
 			card.img_file = card.img_file.replace(".gif", "")
 
-		if exists(f"{cache}/{card.img_file}"):
+		if dlimg and exists(f"{cache}/{card.img_file}"):
 			self.img_card.source = f"{cache}/{card.img_file}"
-		elif card.img_file in annex:
+		elif card.img_file in annex and dlimg:
 			self.img_card.source = f"atlas://{img_in}/annex/{card.img_file}"
 		else:
 			self.img_card.source = f"atlas://{img_in}/other/grey"

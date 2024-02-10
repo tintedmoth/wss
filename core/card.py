@@ -83,6 +83,7 @@ card_annex = [
 class Card(RelativeLayout):
 	def __init__(self, code="", card=(100, 100), owner="", per=1, data="", **kwargs):
 		super(Card, self).__init__(**kwargs)
+		self.dlimg = 0
 		self.size_hint = (None, None)
 		self.move_dt = move_dt
 		self.ind = code
@@ -148,6 +149,8 @@ class Card(RelativeLayout):
 		self.img_blank = f"atlas://{img_in}/other/blank"
 		self.img_none = f"atlas://{img_in}/other/none"
 		self.img_back = f"atlas://{img_in}/other/back"
+		self.img_back1 = f"atlas://{img_in}/other/back"
+		self.img_backn = f"atlas://{img_in}/other/backnodl"
 		self.img_power = f"atlas://{img_in}/other/power"
 		self.img_soul = f"atlas://{img_in}/other/soul_s"
 		self.img_auto = f"atlas://{img_in}/other/auto"
@@ -234,7 +237,12 @@ class Card(RelativeLayout):
 	def import_mat(self, mat=""):
 		self.mat = mat
 
-	def import_data(self, card):
+	def import_data(self, card,dl=0):
+		self.dlimg = dl
+		if self.dlimg:
+			self.img_back = self.img_back
+		else:
+			self.img_back = self.img_backn
 		if card != "" and card != "player":
 			self.cid = str(card["id"])
 			self.name = str(card["name"])
@@ -514,10 +522,12 @@ class Card(RelativeLayout):
 			try:
 				if "dc_w00_00.gif" in self.img_file:
 					self.img_file = self.img_file.replace(".gif", "")
-				if exists(f"{cache}/{self.img_file}"):
+				if self.dlimg and exists(f"{cache}/{self.img_file}"):
 					self.front.source = f"{cache}/{self.img_file}"
-				else:
+				elif self.dlimg:
 					self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
+				else:
+					self.front.source = f"atlas://{img_in}/other/grey"
 			except KeyError:
 				self.front.source = f"atlas://{img_in}/other/grey"
 		else:
@@ -857,6 +867,7 @@ class Card(RelativeLayout):
 class CardImg(RelativeLayout):
 	def __init__(self, code="", card=(100, 100), owner="", per=1, data="", **kwargs):
 		super(CardImg, self).__init__(**kwargs)
+		self.dlimg = 0
 		self.size_hint = (None, None)
 		self.ind = code
 		self.per = per
@@ -917,6 +928,8 @@ class CardImg(RelativeLayout):
 		self.img_blank = f"atlas://{img_in}/other/blank"
 		self.img_none = f"atlas://{img_in}/other/none"
 		self.img_back = f"atlas://{img_in}/other/back"
+		self.img_back1 = f"atlas://{img_in}/other/back"
+		self.img_backn = f"atlas://{img_in}/other/backnodl"
 		self.img_power = f"atlas://{img_in}/other/power"
 		self.img_soul = f"atlas://{img_in}/other/soul_s"
 		self.img_auto = f"atlas://{img_in}/other/auto"
@@ -985,7 +998,12 @@ class CardImg(RelativeLayout):
 		if data:
 			self.import_data(data)
 
-	def import_data(self, card=""):
+	def import_data(self, card="",dl=0):
+		self.dlimg = dl
+		if self.dlimg:
+			self.img_back = self.img_back
+		else:
+			self.img_back = self.img_backn
 		if self.ind.endswith("9"):
 			self.img_file = card
 			self.front.source = f"atlas://{img_in}/other/{card}"
@@ -1175,10 +1193,12 @@ class CardImg(RelativeLayout):
 				try:
 					if "dc_w00_00.gif" in self.img_file:
 						self.img_file = self.img_file.replace(".gif", "")
-					if exists(f"{cache}/{self.img_file}"):
+					if self.dlimg and exists(f"{cache}/{self.img_file}"):
 						self.front.source = f"{cache}/{self.img_file}"
-					else:
+					elif self.dlimg:
 						self.front.source = f"atlas://{img_in}/annex/{self.img_file}"
+					else:
+						self.front.source = f"atlas://{img_in}/other/grey"
 				except (KeyError, PermissionError) as e:
 					self.front.source = f"atlas://{img_in}/other/grey"
 			else:

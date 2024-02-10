@@ -28,8 +28,15 @@
   },
   {
     "type": "bool",
+    "title": "Download/Use Image",
+    "desc": "Enable to download and use image in app",
+    "section": "Settings",
+    "key": "DLimg"
+  },
+  {
+    "type": "bool",
     "title": "Download Higher Quality Image",
-    "desc": "If not ON, lower quality image will be downloaded",
+    "desc": "Enable to download higher quality image",
     "section": "Settings",
     "key": "HDimg"
   }

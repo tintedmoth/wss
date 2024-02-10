@@ -1,3 +1,9 @@
+0.43.0
+	Fixed bond ability on some cards
+	Added setting to download image
+	Added simple default playmat
+	Added engligh version of base playmat
+
 0.42.1
 	Fixed version checker getting stuck on popup while on android
 	Added warning and clear any previous game when updating
