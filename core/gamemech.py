@@ -55,7 +55,7 @@ logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format="[%(f
 
 __author__ = "tintedmoth"
 __copyright__ = "Copyright © 2022 tintedmoth"
-__version__ = "0.43.0"
+__version__ = "0.43.1"
 app_package_name = 'com.totuccio.wss'
 
 if platform == "android":

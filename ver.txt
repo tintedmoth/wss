@@ -1,3 +1,6 @@
+0.43.1
+	Fixed missing image file on loading
+
 0.43.0
 	Fixed bond ability on some cards
 	Added setting to download image
