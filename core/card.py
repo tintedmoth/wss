@@ -237,12 +237,12 @@ class Card(RelativeLayout):
 	def import_mat(self, mat=""):
 		self.mat = mat
 
-	def import_data(self, card,dl=0):
+	def import_data(self, card, dl=0):
 		self.dlimg = dl
 		if self.dlimg:
-			self.img_back = self.img_back
+			self.img_back = str(self.img_back1)
 		else:
-			self.img_back = self.img_backn
+			self.img_back = str(self.img_backn)
 		if card != "" and card != "player":
 			self.cid = str(card["id"])
 			self.name = str(card["name"])
@@ -532,6 +532,10 @@ class Card(RelativeLayout):
 				self.front.source = f"atlas://{img_in}/other/grey"
 		else:
 			self.front.source = self.img_blank
+		if self.dlimg:
+			self.img_back = str(self.img_back1)
+		else:
+			self.img_back = str(self.img_backn)
 
 	def update_colour(self):
 		self.clean_c("colour")

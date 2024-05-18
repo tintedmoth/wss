@@ -10,6 +10,7 @@ from core.datapath import *
 class Janken(Button):
 	def __init__(self, ncard, size, **kwargs):
 		super(Janken, self).__init__(**kwargs)
+		self.dlimg = 0
 		self.font_name = f"{font_in}/{font}"
 		self.cid = ncard
 		self.card = ncard
@@ -21,6 +22,8 @@ class Janken(Button):
 		self.width = self.size[0]
 		self.img_card = f"atlas://{img_in}/other/{self.card}"
 		self.img_back = f"atlas://{img_in}/other/back"
+		self.img_backn = f"atlas://{img_in}/other/backnodl"
+		self.img_back1 = f"atlas://{img_in}/other/back"
 		self.angle = 0
 
 		with self.canvas.after:
@@ -35,6 +38,13 @@ class Janken(Button):
 		self.rect.size = inst.size
 		self.rotation.origin = (self.rect.pos[0] + self.rect.size[0] / 2, self.rect.pos[1] + self.rect.size[1] / 2)
 		self.height = inst.size[1]
+
+	def update_image(self,dlimg):
+		self.dlimg = dlimg
+		if self.dlimg:
+			self.img_back = self.img_back1
+		else:
+			self.img_back = self.img_backn
 
 	def show_back(self):
 		self.back = True

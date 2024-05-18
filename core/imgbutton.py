@@ -10,6 +10,7 @@ class ImgButton(Image):
 
 	def __init__(self, card=(13, 18), size=(10, 10), cid="", **kwargs):
 		super(ImgButton, self).__init__(**kwargs)
+		self.dlimg = 0
 		self.card = card
 		self.cid = cid
 		self.size = size
@@ -18,6 +19,8 @@ class ImgButton(Image):
 		self.width = self.size[0]
 		self.select = False
 		self.blank = f"atlas://{img_in}/other/blank"
+		self.img_btn = str(self.source)
+		self.img_btnn = f"atlas://{img_in}/other/grey"
 		self.img_select = f"atlas://{img_in}/other/select"
 		self.pos_select = (self.pos[0] - self.card[1] / 20, self.pos[1] - self.card[1] / 20)
 		self.size_select = (self.size[0] + self.card[1] / 10, self.size[1] + self.card[1] / 10)
@@ -37,6 +40,13 @@ class ImgButton(Image):
 		self.btn.size = inst.size
 		self.height = inst.size[1]
 		self.btn.height = inst.size[1]
+
+	def update_image(self, dlimg):
+		self.dlimg = dlimg
+		if not self.dlimg and "other/" not in self.img_btn:
+			self.source = self.img_btnn
+		else:
+			self.source = self.img_btn
 
 	def selected_c(self, s=True):
 		if s:

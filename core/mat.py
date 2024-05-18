@@ -35,7 +35,9 @@ class Mat(RelativeLayout):
 		self.size = (data["size"][0] * per, data["size"][1] * per)
 		self.center = (self.size[0] / 2, self.size[1] / 2)
 		self.rotation.origin = (self.pos[0] + self.center[0], self.pos[1] + self.center[1])
-		if "mat_mat" in data["img"]:
+		if "mat_matj" in data["img"]:
+			self.img_mat = f"atlas://{img_in}/other/mat_matj"
+		elif "mat_mat" in data["img"]:
 			self.img_mat = f"atlas://{img_in}/other/mat_mat"
 		elif "mat_nodl" in data["img"]:
 			self.img_mat = f"atlas://{img_in}/other/mat_nodl"
