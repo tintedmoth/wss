@@ -21,7 +21,7 @@ class GameApp(App):
 	app = None
 	tpopup = None
 	settings_popup = None
-	default_settings = {'show_wait_popup': True, 'overlap_confirm': True, "confirm_requirement": True, "show_counter_popup": True, "DLimg":False,"HDimg": False}
+	default_settings = {'show_wait_popup': True, 'overlap_confirm': True, "confirm_requirement": True, "show_counter_popup": True, "DLimg": False, "HDimg": False}
 
 	def build(self):
 		self.title = "WSS"

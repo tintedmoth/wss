@@ -55,7 +55,7 @@ logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format="[%(f
 
 __author__ = "tintedmoth"
 __copyright__ = "Copyright © 2022 tintedmoth"
-__version__ = "0.44.1"
+__version__ = "0.44.2"
 app_package_name = 'com.totuccio.wss'
 
 if platform == "android":
@@ -4258,12 +4258,21 @@ class GameMech(Widget):
 				if val == "all":
 					self.net["var"] = [str(val), 0]
 					self.temp = []
-					for var in se["check"].keys():
-						if any(var == self.decks["rv"].data[ids]["id"] for ids in range(len(self.decks["rv"].data))):
-							temp = str(var)
-							temp1 = [str(var), 0]
-							self.net["var"].append(temp)
-							self.temp.append(temp1)
+					if all(self.decks["rv"].data[ids]["id"] in self.title_pack for ids in range(len(self.decks["rv"].data))):
+						for ids in range(len(self.decks["rv"].data)):
+							for var in self.title_pack[self.decks["rv"].data[ids]["id"]][1]:
+								temp = str(var)
+								temp1 = [str(var), 0]
+								self.net["var"].append(temp)
+								self.temp.append(temp1)
+					else:
+						for var in se["check"].keys():
+							if any(var == self.decks["rv"].data[ids]["id"] for ids in range(len(self.decks["rv"].data))):
+								temp = str(var)
+								temp1 = [str(var), 0]
+								self.net["var"].append(temp)
+								self.temp.append(temp1)
+
 					self.net["var1"] = f"down_{val}"
 					self.mconnect("down")
 				elif val in se["check"]:
@@ -5512,8 +5521,9 @@ class GameMech(Widget):
 
 				self.mcancel_create_bar1.max = len(self.downloads) * 11
 
-				down = self.downloads_key.pop()
-				self.req[down] = UrlRequest(f"{self.downloads[down][0]}{down}", timeout=10, on_success=self.down_data, on_cancel=self.down_data_cnc, on_failure=self.failure_message, on_error=self.error_message, on_progress=self.progress_message, ca_file=cfi.where(), verify=True)
+				if len(self.downloads_key)>0:
+					down = self.downloads_key.pop()
+					self.req[down] = UrlRequest(f"{self.downloads[down][0]}{down}", timeout=10, on_success=self.down_data, on_cancel=self.down_data_cnc, on_failure=self.failure_message, on_error=self.error_message, on_progress=self.progress_message, ca_file=cfi.where(), verify=True)
 			else:
 				self.net["body"] = urlencode(dat)
 				self.cnet = UrlRequest(self.net["url"], req_body=self.net["body"], req_headers=headers, on_success=self.mcheck_data, timeout=10, ca_file=cfi.where(), on_failure=self.failure_message, on_error=self.error_message, verify=True)  
@@ -10316,7 +10326,7 @@ class GameMech(Widget):
 
 	def update_gdata_config(self, dt=0):
 		for s in App.get_running_app().default_settings:
-			self.gd[s] = bool(int(App.get_running_app().config.get("Settings", s)))
+			self.gd[s] = bool(App.get_running_app().config.get("Settings", s))
 
 	def popup_text_start(self):
 		self.sd["text"] = {}

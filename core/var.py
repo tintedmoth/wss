@@ -386,7 +386,7 @@ def gdata_init():
 		"estock_pop": "",
 		"estock_payed":[],
 		"select_on":False,
-		"shelve":False,
+		"shelve": False,
 		"notargetfield": False,
 		"brainstorm": 0,
 		"separate":[],

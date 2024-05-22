@@ -949,7 +949,7 @@ class AI:
 
 		if card.power_t < copp.power_t:
 			if card.level >= level - 1 and card.power_t + self.counter[0] > copp.power_t:
-				counter = [s for s in hand if cdata[s].icon == "Counter" and gdata["nobackup"][pl[-1]] and gdata["counter_icon"][pl[-1]][0]]
+				counter = [s for s in hand if cdata[s].icon == "Counter" and gdata["no_backup"][pl[-1]] and gdata["counter_icon"][pl[-1]][0]]
 		if len(counter) < 1:
 			counter = "pass"
 
