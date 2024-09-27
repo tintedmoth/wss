@@ -1,5 +1,5 @@
 import socket
-import logging
+from __main__ import logging
 import os
 import shelve
 import webbrowser
@@ -51,11 +51,11 @@ from core.textinput import TextInput, SuTextInput
 from core.togglebutton import ToggleButton
 from core.var import *
 
-logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format="[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
+logging.basicConfig(filename=f"{data_ex}/log.log", level=logging.DEBUG, format="[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s")
 
 __author__ = "tintedmoth"
 __copyright__ = "Copyright © 2022 tintedmoth"
-__version__ = "0.44.2"
+__version__ = "0.45.0"
 app_package_name = 'com.totuccio.wss'
 
 if platform == "android":
@@ -151,7 +151,7 @@ class GameMech(Widget):
 	check_waiting_cost = []
 
 
-	def __init__(self, **kwargs):
+	def __init__(self,**kwargs):
 		super(GameMech, self).__init__(**kwargs)
 		self.ai = AI("2")
 		self.icon = {}
@@ -172,7 +172,7 @@ class GameMech(Widget):
 		self.opp_choice = ""
 		self.network = {}
 		self.cdsh = {}
-		self.sd = {"field_btn_fill": False, "alabel": ""}
+		self.sd = {"field_btn_fill": False, "alabel": "","lremove":{"p":[],"s":[],"t":[],"l":[],"n":[],"tr":[],"c":[]}}
 		self.gd = {}
 		self.cd = {}
 		self.cpop = {}
@@ -562,12 +562,13 @@ class GameMech(Widget):
 	def check_game(self, dt=0):
 		self.shelve_load()
 		self.main_scrn.disabled = True
+
 		Clock.schedule_once(self.start_setting_game, move_dt_btw * 2)
 		if self.gd["game_start"] and "version" in self.gd and check_version(self.gd["version"], scej["version"], load=True):
 			Clock.schedule_once(partial(self.popup_text, "LoadGame"))
 		else:
-			Clock.schedule_once(partial(self.popup_text, "ClearLoadGame"), popup_dt)
 			self.clear_loaded_game()
+			self.check_internet(ver=True)
 
 
 	def load_pos(self):
@@ -1870,6 +1871,15 @@ class GameMech(Widget):
 			self.pay_condition_done()
 
 	def pay_condition_done(self, dt=0):
+		if self.gd["popup_pop"]:
+			self.gd["popup_pop"] = False
+			self.popup_clr()
+
+		if self.gd["pay"]:
+			dt = popup_dt
+			if self.gd["popup_pop"]:
+				dt = dt*1.5
+
 		if self.net["game"] and self.gd["active"] == "1" and self.gd["targetpay"] and "confirmbefore" not in self.gd["effect"]:
 			for ing in self.gd["targetpay"]:
 				self.net["act"][3].append(ing)
@@ -1964,7 +1974,9 @@ class GameMech(Widget):
 
 				Clock.schedule_once(self.ability_event)
 		else:
-			Clock.schedule_once(self.ability_effect)
+			if "pay" in self.gd['ability_effect']:
+				self.gd['ability_effect'].remove("pay")
+			Clock.schedule_once(self.ability_effect,dt)
 
 	def pay_opponent(self, dtype=""):
 		pick = self.ai.ability(self.pd, self.cd, self.gd)
@@ -2743,6 +2755,7 @@ class GameMech(Widget):
 					if "Center" not in self.cd[auto[0]].pos_new and "Back" not in self.cd[auto[0]].pos_new:
 						aa = 0
 			elif "hander" in auto[1] or ("do" in auto[1] and "pay" in auto[1] and "hander" in auto[1][auto[1].index("do") + 1]):
+
 				if "Climax" in auto[1] or ("do" in auto[1] and "pay" in auto[1] and "Climax" in auto[1][auto[1].index("do") + 1]) and len(self.pd[p]["Climax"]) < 1:
 					aa = 0
 				elif "hander" in auto[1] and auto[1][0] == 0:
@@ -2750,14 +2763,10 @@ class GameMech(Widget):
 						aa = 0
 					elif "Memory" in auto[1] and "Memory" not in self.cd[auto[0]].pos_new:
 						aa = 0
-					elif "Memory" not in auto[1] and auto[0] not in stage:
-						aa = 0
 				elif "do" in auto[1] and "pay" in auto[1] and "hander" in auto[1][auto[1].index("do") + 1] and auto[1][auto[1].index("do") + 1][0] == 0:
 					if self.cd[auto[0]].pos_new != auto[4][1]:
 						aa = 0
 					elif "Memory" in auto[1][auto[1].index("do") + 1] and "Memory" not in self.cd[auto[0]].pos_new:
-						aa = 0
-					elif "Memory" not in auto[1][auto[1].index("do") + 1] and auto[0] not in stage:
 						aa = 0
 			elif "memorier" in auto[1] or ("do" in auto[1] and "pay" in auto[1] and "memorier" in auto[1][auto[1].index("do") + 1]):
 				if "memorier" in auto[1] and auto[1][0] == 0:
@@ -2942,7 +2951,11 @@ class GameMech(Widget):
 						o = "2"
 					elif p == "2":
 						o = "1"
-				if "Center" in auto[1]:
+				if "Center0" in auto[1]:
+					stage1 = []
+					if self.pd[o]["Center"] =="":
+						stage1.append("")
+				elif "Center" in auto[1]:
 					stage1 = [s for s in self.pd[o]["Center"] if s == ""]
 				elif "Back" in auto[1]:
 					stage1 = [s for s in self.pd[p]["Back"] if s == ""]
@@ -4042,7 +4055,7 @@ class GameMech(Widget):
 				if "Mulligan" in self.gd["phase"]:
 					self.mulligan_start()
 				else:
-					if not self.gd['ability_effect'] and not self.gd['ability_doing']:
+					if not self.gd["ability_effect"] and not self.gd["ability_doing"]:
 						Clock.schedule_once(self.ability_event, move_dt_btw)
 					else:
 						Clock.schedule_once(self.ability_effect, move_dt_btw)
@@ -4597,9 +4610,8 @@ class GameMech(Widget):
 					self.decks["save"].center_x = xscat / 4 - self.sd["padding"] / 2
 					self.decks["close"].center_x = xscat / 4 * 3 - self.sd["card"][0] / 2
 					self.decks["save"].text = "Discard"
-					self.decks["import"].y = self.sd["card"][1] / 2 + self.sd["padding"] * 4
-					self.decks["import"].center_x = xscat / 2 - self.sd["card"][0] / 4
-					ypos += self.sd["card"][1] / 2 + self.sd["padding"] * 3
+
+
 				else:
 					self.decks["st"][f"{item}_box"].pos = (0, ypos)
 					if item == "lang":
@@ -5335,9 +5347,14 @@ class GameMech(Widget):
 			socket.create_connection(("8.8.8.8", 53), timeout=timeout)
 			_ = True
 		except socket.error:
-			pass
+			_ = False
 
-		if not ver and not _:
+		if ver and _:
+			Clock.schedule_once(self.check_version_start)
+		elif ver and not _:
+			self.main_scrn.disabled = False
+			self.sd["text"]["popup"].dismiss()
+		elif not ver and not _:
 			Clock.schedule_once(partial(self.popup_text, "no_internet"))
 
 		return _
@@ -5347,6 +5364,7 @@ class GameMech(Widget):
 			var = btn
 		else:
 			var = btn.cid
+
 		if "version" in var or self.check_internet():  
 			self.net["wait"] = True
 			self.net["got"] = False
@@ -5422,9 +5440,12 @@ class GameMech(Widget):
 					self.gd["popup_on"] = True
 					dat = {"0": f"o{self.net['player']}", "1": self.net["room"], "8": self.net["select"], "9": self.gd["turn"]}
 				elif (self.gd["active"] == "1" and not self.gd["rev"]) or (self.gd["rev"] and self.gd["active"] == "2"):
-					_ = list_str(self.net['var'][:3])
-					if len(self.net["var"]) > 3:
-						_ += f".{list_str(self.net['var'][3], sep='_')}"
+					if self.net["var1"] == "atk decla":
+						_ = list_str(self.net['var'])
+					else:
+						_ = list_str(self.net['var'][:3])
+						if len(self.net["var"]) > 3:
+							_ += f".{list_str(self.net['var'][3], sep='_')}"
 					temp = f"{self.gd['phase'][:3]}_{_}"  
 					dat = {"0": f"p{self.net['player']}", "1": self.net["room"], "2": temp, "8": self.net["select"], "9": self.gd["turn"]}
 			elif "oppchoose" in var:
@@ -5466,12 +5487,12 @@ class GameMech(Widget):
 				if self.gd["active"] == "1":
 					dat = {"0": f"o{self.net['player']}", "1": self.net["room"], "8": self.net["select"], "9": self.gd["turn"]}
 				else:
-					temp = f"{self.gd['phase'][:3]}_{list_str(self.net['var'])}_{self.gd['ability_doing']}"
+					temp = f'{self.gd["phase"][:3]}_{list_str(self.net["var"])}_{self.gd["ability_doing"]}'
 					dat = {"0": f"p{self.net['player']}", "1": self.net["room"], "2": temp, "8": self.net["select"], "9": self.gd["turn"]}
 			elif "version" in var:
 				self.net["status"] = "version"
 				dat = {"0": "q"}
-				Clock.schedule_once(self.cancel_version_check,10)
+				Clock.schedule_once(self.cancel_version_check, 5)
 			elif "down" in var:
 				if self.net["var"][1] <= 0:
 					Clock.schedule_once(partial(self.popup_text, "Loading"), ability_dt)
@@ -5482,9 +5503,9 @@ class GameMech(Widget):
 					im = "i"
 
 				if "all" in self.net["var"][0]:
-					dat = {"0": "w", "1": f"{list_str(self.net['var'])}", "2": im, "3": self.gd["DLimg"]}
+					dat = {"0": "w", "1": f'{list_str(self.net["var"])}', "2": im, "3": self.gd["DLimg"]}
 				else:
-					dat = {"0": "w", "1": f"{list_str(self.net['var'])}", "2": im, "3": self.gd["DLimg"]}
+					dat = {"0": "w", "1": f'{list_str(self.net["var"])}', "2": im, "3": self.gd["DLimg"]}
 
 			if "down" in var and self.net["var"][1] > 0:
 				self.downloads = {}
@@ -5504,11 +5525,11 @@ class GameMech(Widget):
 								continue
 							if not self.gd["DLimg"] and f"-{im}" in item1:
 								continue
-							self.downloads[item1] = [f"{self.net['data']}", 0, 0]
+							self.downloads[item1] = [f'{self.net["data"]}', 0, 0]
 							self.downloads_key.append(item1)
 				else:
 					if ".d" in self.net["var"][0]:
-						self.downloads[self.net["var"][0]] = [f"{self.net['data']}", 0, 0]
+						self.downloads[self.net["var"][0]] = [f'{self.net["data"]}', 0, 0]
 						self.downloads_key.append(self.net["var"][0])
 					elif self.net["var"][0] in se["check"]:
 						for item3 in se["check"][self.net["var"][0]]:
@@ -5516,7 +5537,7 @@ class GameMech(Widget):
 								continue
 							if not self.gd["DLimg"] and f"-{im}" in item3:
 								continue
-							self.downloads[item3] = [f"{self.net['data']}", 0, 0]
+							self.downloads[item3] = [f'{self.net["data"]}', 0, 0]
 							self.downloads_key.append(item3)
 
 				self.mcancel_create_bar1.max = len(self.downloads) * 11
@@ -5576,7 +5597,7 @@ class GameMech(Widget):
 			self.net["status"] = "create"
 			self.multiplay_cjpopup()
 			self.mcreate_popup.open()
-			self.net["room"] = int(result[2:])
+			self.net["room"] = int(result)
 			self.net["player"] = 1
 			self.sd["text"]["popup"].dismiss()
 			self.mping_data()
@@ -5584,7 +5605,7 @@ class GameMech(Widget):
 			Clock.schedule_once(partial(self.popup_text, "waitingopp"))
 			var = var.split("_")
 			self.net["player"] = 2
-			self.net["room"] = int(var[0][2:])
+			self.net["room"] = int(var[0])
 			self.net["status"] = "join"
 			self.decks["2"] = [var[1], var[2], False, False]
 			self.net["ready"] = 1
@@ -6115,11 +6136,15 @@ class GameMech(Widget):
 			self.decks["1"][1] = "nodl"
 			self.decks["2"][1] = "nodl"
 
-		if self.check_internet(ver=True):
-			Clock.schedule_once(partial(self.popup_text, "version"))
-			self.main_scrn.disabled = True
-			self.mconnect("version")
+		if "Load" in self.sd["text"]["c"]:
+			self.main_scrn.disabled = False
 
+
+
+	def check_version_start(self,dt=0):
+		Clock.schedule_once(partial(self.popup_text, "version"))
+		self.main_scrn.disabled = True
+		self.mconnect("version")
 
 	def main_menu(self, *args):
 		self.sd["single"] = Button(text="Start Game", on_release=self.popup_network_slc, cid="single")
@@ -6732,6 +6757,8 @@ class GameMech(Widget):
 						self.check_card_neo(ind)
 
 				session.close()
+
+			self.decks["popup"].title = ""
 			self.deck_building_cards()
 
 	def update_deck_names(self):
@@ -6991,6 +7018,7 @@ class GameMech(Widget):
 		elif btn.cid == "import":
 			self.decks["popup"].dismiss()
 			self.popup_text("Loading")
+
 			Clock.schedule_once(partial(self.popup_deck, "import"), popup_dt)
 
 
@@ -7239,7 +7267,7 @@ class GameMech(Widget):
 										self.pd[self.gd["active"]]["done"]["Main"] = True
 										if self.net["game"] and self.gd["active"] == "1":
 											self.net["var"] = [self.gd["play_card"]]
-											self.net["var1"] = "play_climax"
+											self.net["var1"] = "play climax"
 											if not self.poptext:
 												Clock.schedule_once(partial(self.popup_text, "waitingser"))
 											self.mconnect("phase")
@@ -8768,6 +8796,8 @@ class GameMech(Widget):
 				self.pd[ind[-1]]["Res"].remove(ind)
 		elif ind in self.pd[ind[-1]]["Climax"]:
 			self.pd[ind[-1]]["Climax"].remove(ind)
+		elif ind in self.pd[ind[-1]]["Stock"]:
+			self.pd[ind[-1]]["Stock"].remove(ind)
 		elif ind in self.pd[ind[-1]]["Memory"]:
 			self.pd[ind[-1]]["Memory"].remove(ind)
 		elif self.cd[ind].pos_new == "Waiting":
@@ -8792,6 +8822,11 @@ class GameMech(Widget):
 				elif self.gd["ksalvage"]:
 					self.remove_marker(ind=self.gd["ksalvage"], m=ind)
 			else:
+				if self.gd["attacking"][0]:
+					if ind in self.gd["attacking"][0]:
+						self.gd["attacking"][0] = ""
+					elif self.gd["attacking"][4] == self.cd[ind].pos_new[0] and self.gd["attacking"][3] == self.cd[ind].pos_new[-1]:
+						self.gd["attacking"][4] = ""
 				self.pd[ind[-1]][self.cd[ind].pos_new[:-1]][int(self.cd[ind].pos_new[-1])] = ""
 				self.remove_marker(ind)
 		self.update_field_label()
@@ -8989,7 +9024,9 @@ class GameMech(Widget):
 
 			self.check_cont_ability()
 
-			self.check_auto_ability(atk=self.gd["attacking"][0], cnc=(player, self.gd["cancel_dmg"]), dmg=self.gd["dmg"], stacks=False)
+			if self.gd["dmg"]:
+				self.check_auto_ability(atk=self.gd["attacking"][0], cnc=(player, self.gd["cancel_dmg"]), dmg=self.gd["dmg"], stacks=False)
+
 			if self.gd["cancel_dmg"]:
 				self.gd["cancel_dmg"] = False
 			self.gd["dmg"] = 0
@@ -9018,7 +9055,7 @@ class GameMech(Widget):
 			elif "pay" in self.gd["reshuffle_trigger"]:
 				if "Accelerate" in self.gd["pay"]:
 					_ = self.gd["pay"].index("Accelerate")
-					self.gd["pay"][_+1]+=1
+					self.gd["pay"][_+1] += 1
 				self.gd["reshuffle_trigger"] = ""
 				Clock.schedule_once(self.pay_condition, move_dt_btw)
 			elif "stock" in self.gd["reshuffle_trigger"]:
@@ -10652,6 +10689,9 @@ class GameMech(Widget):
 					if "Middle" in status:
 						e += ""
 						n += " in the middle position of your center stage"
+					elif "Center0" in status:
+						n += " in the left position of your center stage"
+						e += ""
 					elif "Center" in status:
 						e += " center stage"
 					elif "Back" in status:
@@ -10695,6 +10735,8 @@ class GameMech(Widget):
 					e += ""
 				elif "Opp" in self.gd["status"]:
 					e += " opponent's"
+				if "Center0" in self.gd["status"]:
+					s += "left "
 				if "Center" in self.gd["status"]:
 					e += " center"
 				elif "Back" in self.gd["status"]:
@@ -10713,7 +10755,8 @@ class GameMech(Widget):
 				else:
 					ptext = "There are no position in stage to choose."
 				self.gd["notargetfield"] = True
-
+				for _ in self.gd["chosen"]:
+					self.cd[_].update_text()
 
 		self.sd["text"]["label"].text = ptext
 		self.sd["text"]["label"].texture_update()
@@ -10747,7 +10790,7 @@ class GameMech(Widget):
 
 		self.sd["text"]["label"].x = 0  
 
-		if "Debugtext" in c or ("choice" in self.gd["effect"] and c == "Move"):
+		if "Debugtext" in c or "version" in c or ("choice" in self.gd["effect"] and c == "Move"):
 			Clock.schedule_once(self.popup_text_delay, popup_dt)
 		else:
 			self.sd["text"]["popup"].open()
@@ -11709,6 +11752,7 @@ class GameMech(Widget):
 
 				if f"id{self.decks['dbuilding']}" in self.dpop:
 					self.dpop[f"id{self.decks['dbuilding']}"].source = str(self.decks["st"]["image_btn"].source)
+					self.dpop[f"id{self.decks['dbuilding']}"].img_btn = str(self.decks["st"]["image_btn"].source)
 
 				self.popup_clr()
 				self.sd["popup"]["popup"].dismiss()
@@ -12297,6 +12341,7 @@ class GameMech(Widget):
 				continue
 			card = self.cd[idm]
 			card.update_text()
+
 			if "Waiting" in card.pos_new:
 				continue
 			self.mat[idm[-1]]["mat"].remove_widget(self.cd[idm])
@@ -12313,6 +12358,8 @@ class GameMech(Widget):
 			if idm in self.pd[idm[-1]]["marker"] or temp in self.pd[idm[-1]]["marker"]:
 				self.update_marker(idm[-1])
 			self.check_cont_ability()
+
+		self.cd[ind].update_text()
 
 		if "move" in self.gd["ability_effect"]:
 			self.gd["ability_effect"].remove("move")
@@ -12385,6 +12432,8 @@ class GameMech(Widget):
 			fields = self.pd[player]["Climax"]
 		elif "Middle" in status:
 			fields = [self.pd[player]["Center"][1]]
+		elif "Center0" in status:
+			fields = [self.pd[player]["Center"][0]]
 		elif "Center" in status:
 			fields = [s for s in self.pd[player]["Center"] if s != ""]
 		elif "Back" in status:
@@ -12510,7 +12559,8 @@ class GameMech(Widget):
 		if self.gd["btrait"][0] and len(self.gd["chosen"]) >= 1:
 			for ii in self.gd["chosen"]:
 				fields.append(ii)
-		return fields
+
+		return [s for s in fields if s!=""]
 
 	def select_card(self, s="", p=False, fd=None, card_filter=False, status=""):
 		self.gd["movable"] = []
@@ -12616,7 +12666,9 @@ class GameMech(Widget):
 					if self.pd[opp]["Center"][self.m[rr]] != "":
 						fields.append(f"Center{rr}")
 			elif "Middle" in status:
-				fields = list(self.gd["stage"][1])
+				fields = [self.gd["stage"][1]]
+			elif "Center0" in status:
+				fields = [self.gd["stage"][0]]
 			elif "Center" in status:
 				fields = list(self.gd["stage"][:3])
 			elif "Back" in status:
@@ -12624,10 +12676,8 @@ class GameMech(Widget):
 			else:
 				fields = list(self.gd["stage"])
 
-			if "OpenC" in status:
-				fields = [fd for fd in fields if self.pd[player][fd[:-1]][int(fd[-1])] == ""]
-			elif "Open" in status:
-				fields = [fd for fd in fields if self.pd[player][fd[:-1]][int(fd[-1])] == ""]
+			if "Open" in status:
+				fields = [fd for fd in fields if fd != "" and self.pd[player][fd[:-1]][int(fd[-1])] == ""]
 			if "separate" in self.gd["effect"]:
 				for field in list(fields):
 					if any(d for d in self.gd["target"] if field in d):
@@ -13189,19 +13239,7 @@ class GameMech(Widget):
 			else:
 				opp = idm[-1]
 
-			if self.gd["effect"][0] == -14:
-				times = 0
-				stage = []
-				if "xStage" in self.gd["effect"]:
-					stage = [_ for _ in self.pd[opp]["Center"] + self.pd[opp]["Back"] if _ != ""]
 
-				if "xTrait" in self.gd["effect"]:
-					traits = self.gd["effect"][self.gd["effect"].index("xTrait") + 1].split("_")
-					times = len([_ for _ in stage if any(tr in self.cd[_].trait_t for tr in traits)])
-				self.gd["effect"][0] = int(times)
-			elif self.gd["effect"][0] == "x":
-				if "xopp" in self.gd["effect"]:
-					self.gd["effect"][0] = len(self.cont_cards(["opp"], idm))
 			c = "Look"
 			self.sd["btn"]["draw_btn"].disabled = False
 			qty = 0
@@ -13600,7 +13638,7 @@ class GameMech(Widget):
 				self.net["var"] = [card.ind, card.pos_new, "", self.gd["estock_payed"]]
 			else:
 				self.net["var"] = [card.ind, card.pos_new[:-1], card.pos_new[-1]]
-			self.net["var1"] = "play_card"
+			self.net["var1"] = "play card"
 			if not self.poptext:
 				Clock.schedule_once(partial(self.popup_text, "waitingser"))
 			self.mconnect("phase")
@@ -13671,7 +13709,10 @@ class GameMech(Widget):
 		elif "Middle" in eff:
 			stat = f"Middle{stat}"
 		elif "Center" in eff:
-			stat = f"Center{stat}"
+			if "Left" in eff:
+				stat = f"Center0{stat}"
+			else:
+				stat = f"Center{stat}"
 		elif "Back" in eff:
 			stat = f"Back{stat}"
 		elif "Another" in eff:
@@ -13687,7 +13728,10 @@ class GameMech(Widget):
 		if "Antilvl" in eff:
 			stat = f"Antilvl{stat}"
 		if "Open" in eff:
-			stat = f"Open{stat}"
+			if "OpenCS" in eff:
+				stat = f"OpenCS{stat}"
+			else:
+				stat = f"Open{stat}"
 		if "Other" in eff:
 			stat = f"Other{stat}"
 		if "Cost" in eff:
@@ -13984,6 +14028,7 @@ class GameMech(Widget):
 			self.gd["confirm_trigger"] = self.gd["ability_trigger"]
 
 		if self.gd["done"] and self.gd["do"][0] > 0:
+			self.gd['ability_doing'] = "do"
 			if "do" in self.gd["ability_effect"]:
 				self.gd["ability_effect"].remove("do")
 			if "brainstorm" in self.gd["effect"]:
@@ -14563,6 +14608,25 @@ class GameMech(Widget):
 				if "extra" not in self.gd["effect"]:
 					self.gd["extra"] = []
 				self.gd["clear"] = False
+			elif self.gd["effect"][0] == -14:
+				if "opp" in self.gd["effect"] and ind[-1] == "1":
+					opp = "2"
+				elif "opp" in self.gd["effect"] and ind[-1] == "2":
+					opp = "1"
+				else:
+					opp = ind[-1]
+				times = 0
+				stage = []
+				if "xStage" in self.gd["effect"]:
+					stage = [_ for _ in self.pd[opp]["Center"] + self.pd[opp]["Back"] if _ != ""]
+
+				if "xTrait" in self.gd["effect"]:
+					traits = self.gd["effect"][self.gd["effect"].index("xTrait") + 1].split("_")
+					times = len([_ for _ in stage if any(tr in self.cd[_].trait_t for tr in traits)])
+				self.gd["effect"][0] = int(times)
+			elif self.gd["effect"][0] == "x":
+				if "xopp" in self.gd["effect"]:
+					self.gd["effect"][0] = len(self.cont_cards(["opp"], ind))
 
 			if self.net["game"] and "looktopopp" in self.gd["effect"]:
 				if ind[-1] == "1":
@@ -14580,11 +14644,6 @@ class GameMech(Widget):
 			elif self.gd["com"] and (ind[-1] == "2" or ("looktopopp" in self.gd["effect"] and ind[-1] == "1")):
 				if "stack" in self.gd["effect"]:
 					self.gd["p_c"] = "Look_stack"
-				if self.gd["effect"][0] == -16:
-					self.gd["effect"][0] = len(self.gd["extra"])
-					self.gd["p_l"] = list(self.gd["extra"])
-					if "extra" not in self.gd["effect"]:
-						self.gd["extra"] = []
 				if "hand" in self.gd["effect"] or "choosestage" in self.gd["effect"]:
 					if len(self.pd[ind[-1]]["Library"]) < self.gd["effect"][0]:
 						self.gd["effect"][0] = len(self.pd[ind[-1]]["Library"])
@@ -15078,7 +15137,7 @@ class GameMech(Widget):
 				if self.gd["com"] and ((ind[-1] == "2" and "oppturn" not in self.gd["effect"]) or (ind[-1] == "1" and "oppturn" in self.gd["effect"])):
 					if "this" in self.gd["effect"] and ind not in self.gd["target"]:
 						self.gd["target"].append(ind)
-					self.effect_to_stage("Field")
+					self.effect_to_stage()
 				else:
 					self.select_field()
 					Clock.schedule_once(partial(self.popup_text, "Move"))
@@ -15269,7 +15328,7 @@ class GameMech(Widget):
 						self.gd["p_c"] = ""
 						self.net["send"] = False
 						self.net["var"] = list(self.net["act"])
-						self.net["var1"] = "plchoose_salvage"
+						self.net["var1"] = "plchoose salvage"
 						if not self.poptext:
 							Clock.schedule_once(partial(self.popup_text, "waitingser"))
 						self.mconnect("act")
@@ -17064,12 +17123,12 @@ class GameMech(Widget):
 	def effs_sep(self, effs):
 		fc = {}
 		for ff in [c for c in effs if c in self.cc]:
-			fd = f"{ff[0]}"
-			if fd in fc:
-				fd += str(effs.index(ff))
-			if fd not in fc:
-				fc[fd] = []
-			fc[fd] = effs[:effs.index(ff) + 1]
+			_ = f"{ff[0]}"
+			if _ in fc:
+				_ += str(len(fc))
+			if _ not in fc:
+				fc[_] = []
+			fc[_] = effs[:effs.index(ff) + 1]
 			effs = effs[effs.index(ff) + 1:]
 		return fc
 
@@ -17092,64 +17151,58 @@ class GameMech(Widget):
 					continue
 
 				card = self.cd[ind]
+				for _ in self.sd["lremove"]:
+					self.sd["lremove"][_] = []
 
-				to_remove_p = []
-				to_remove_s = []
-				to_remove_t = []
-				to_remove_l = []
-				to_remove_n = []
-				to_remove_tr = []
-				to_remove_c = []
+				for _ in card.power_c:
+					if _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["p"]:
+							self.sd["lremove"]["p"].append(_)
 
-				for power in card.power_c:
-					if power[1] < 0:
-						if self.cont_remove(power, ind, player) and power not in to_remove_p:
-							to_remove_p.append(power)
+				for _ in card.soul_c:
+					if _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["s"]:
+							self.sd["lremove"]["s"].append(_)
 
-				for soul in card.soul_c:
-					if soul[1] < 0:
-						if self.cont_remove(soul, ind, player) and soul not in to_remove_s:
-							to_remove_s.append(soul)
+				for _ in card.text_c:
+					if len(_) > 2 and -9 < _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["t"]:
+							self.sd["lremove"]["t"].append(_)
 
-				for text in card.text_c:
-					if len(text) > 2 and -9 < text[1] < 0:
-						if self.cont_remove(text, ind, player) and text not in to_remove_t:
-							to_remove_t.append(text)
+				for _ in card.level_c:
+					if _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["l"]:
+							self.sd["lremove"]["l"].append(_)
 
-				for level in card.level_c:
-					if level[1] < 0:
-						if self.cont_remove(level, ind, player) and level not in to_remove_l:
-							to_remove_l.append(level)
+				for _ in card.trait_c:
+					if _[1] < 0 and _[1] != -66:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["tr"]:
+							self.sd["lremove"]["tr"].append(_)
 
-				for trait in card.trait_c:
-					if trait[1] < 0 and trait[1] != -66:
-						if self.cont_remove(trait, ind, player) and trait not in to_remove_tr:
-							to_remove_tr.append(trait)
+				for _ in card.name_c:
+					if _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["n"]:
+							self.sd["lremove"]["n"].append(_)
 
-				for name in card.name_c:
-					if name[1] < 0:
-						if self.cont_remove(name, ind, player) and name not in to_remove_n:
-							to_remove_n.append(name)
+				for _ in card.cost_c:
+					if _[1] < 0:
+						if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["c"]:
+							self.sd["lremove"]["c"].append(_)
 
-				for cost in card.cost_c:
-					if cost[1] < 0:
-						if self.cont_remove(cost, ind, player) and cost not in to_remove_c:
-							to_remove_c.append(cost)
-
-				for itemp in to_remove_p:
-					card.power_c.remove(itemp)
-				for items in to_remove_s:
-					card.soul_c.remove(items)
-				for itemt in to_remove_t:
-					card.text_c.remove(itemt)
-				for iteml in to_remove_l:
-					card.level_c.remove(iteml)
-				for itemtr in to_remove_tr:
-					card.trait_c.remove(itemtr)
-				for itemn in to_remove_n:
-					card.name_c.remove(itemn)
-				for itemc in to_remove_c:
-					card.cost_c.remove(itemc)
+				for _ in self.sd["lremove"]["p"]:
+					card.power_c.remove(_)
+				for _ in self.sd["lremove"]["s"]:
+					card.soul_c.remove(_)
+				for _ in self.sd["lremove"]["t"]:
+					card.text_c.remove(_)
+				for _ in self.sd["lremove"]["l"]:
+					card.level_c.remove(_)
+				for _ in self.sd["lremove"]["tr"]:
+					card.trait_c.remove(_)
+				for _ in self.sd["lremove"]["n"]:
+					card.name_c.remove(_)
+				for _ in self.sd["lremove"]["c"]:
+					card.cost_c.remove(_)
 
 
 				for item in card.text_c:
@@ -17204,6 +17257,8 @@ class GameMech(Widget):
 							effect = ab.cont(a=item[0])
 							if len(effect) < 4:
 								continue
+							if field == "Clock" and "Alarm" not in effect:
+								continue
 
 							if "multicond" in effect:
 								effect = effect[1]
@@ -17242,9 +17297,9 @@ class GameMech(Widget):
 		if self.cont_recheck:
 			self.cont_recheck_run()
 
-		for pind in reversed(self.power_zero):
+		for _ in reversed(self.power_zero):
 			self.gd["no_cont_check"] = True
-			self.send_to_waiting(pind)
+			self.send_to_waiting(_)
 		if "1" in self.gd["active"]:
 			if not act or len(self.gd["stack"]["1"]) > 0:
 				self.act_ability_show(hide=True)
@@ -17259,25 +17314,26 @@ class GameMech(Widget):
 				continue
 			card = self.cd[ind]
 
-			to_remove_l = []
-			to_remove_c = []
+			for _ in self.sd["lremove"]:
+				self.sd["lremove"][_] = []
 
-			for level in card.level_c:
-				if level[1] < 0 and len(level) > 2:
-					if self.cont_remove(level, ind, player) and level not in to_remove_l:
-						to_remove_l.append(level)
-			for cost in card.cost_c:
-				if cost[1] < 0:
-					if self.cont_remove(cost, ind, player) and cost not in to_remove_c:
-						to_remove_c.append(cost)
+			for _ in card.level_c:
+				if _[1] < 0:
+					if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["l"]:
+						self.sd["lremove"]["l"].append(_)
 
-			for iteml in to_remove_l:
-				card.level_c.remove(iteml)
-			if to_remove_l:
+			for _ in card.cost_c:
+				if _[1] < 0:
+					if self.cont_remove(_, ind, player) and _ not in self.sd["lremove"]["c"]:
+						self.sd["lremove"]["c"].append(_)
+
+			for _ in self.sd["lremove"]["l"]:
+				card.level_c.remove(_)
+			if self.sd["lremove"]["l"]:
 				card.update_level()
-			for itemc in to_remove_c:
-				card.cost_c.remove(itemc)
-			if to_remove_c:
+			for _ in self.sd["lremove"]["c"]:
+				card.cost_c.remove(_)
+			if self.sd["lremove"]["c"]:
 				card.update_cost()
 
 			for item in card.text_c:
@@ -17664,7 +17720,7 @@ class GameMech(Widget):
 		elif self.gd["effect"][0] == -21:
 			self.gd["effect"][0] = 1
 			self.gd["target"].append("P")
-		elif self.gd["effect"][0] == -1:
+		elif self.gd["effect"][0] == -1 or self.gd["effect"][0] == -2:
 			if idm[-1] == "1" or (idm[-1] == "2" and self.gd["com"]):
 				if "Battle" in self.gd["effect"] and self.gd["effect"][0] == -1 and self.gd["attacking"][1] == "f":
 					self.gd["target"].append(self.gd["attacking"][0])
@@ -17679,6 +17735,9 @@ class GameMech(Widget):
 				else:
 					for ta in self.cont_times(self.gd["effect"], self.cont_cards(self.gd["effect"], idm), self.cd):
 						self.gd["target"].append(ta)
+			if self.gd["effect"][0] == -2:
+				if idm in self.gd["target"]:
+					self.gd["target"].remove(idm)
 			self.gd["effect"][0] = len(self.gd["target"])
 		if "this" in self.gd["effect"] and self.gd["effect"][0] > 0:
 			if idm[-1] == "1" or (idm[-1] == "2" and self.gd["com"]):
@@ -18076,6 +18135,7 @@ class GameMech(Widget):
 				self.opp_choice = pick[inx + 2]
 		else:
 			self.gd["chosen"] = []
+
 		if target:
 			if self.gd["chosen"]:
 				for _ in self.gd["chosen"]:
@@ -18703,7 +18763,9 @@ class GameMech(Widget):
 
 	def damage_step(self, *args):
 		card = self.cd[self.gd["attacking"][0]]
-		if self.gd["attack_t"][self.gd["attacking"][1]][self.gd["attacking"][2]] and card.soul_t > 0:
+		self.gd["dmg"] = 0
+		self.gd["drev"] = True
+		if self.gd["attacking"][0] and self.gd["attack_t"][self.gd["attacking"][1]][self.gd["attacking"][2]] and card.soul_t > 0:
 			d = True
 			for text in card.text_c:
 				if text[0].startswith(cont_ability) and text[1] != 0 and text[1] > -9:
@@ -18724,7 +18786,6 @@ class GameMech(Widget):
 						else:
 							self.gd["damage"] = 0
 				self.gd["dmg"] = int(self.gd["damage"])
-				self.gd["drev"] = True
 
 		Clock.schedule_once(self.damage, move_dt_btw)
 
@@ -19217,7 +19278,7 @@ class GameMech(Widget):
 	def attack_declaration_beginning(self, dt=0):
 		if self.net["game"] and not self.net["send"] and self.gd["active"] == "1":
 			self.net["var"] = list(self.gd["attacking"])
-			self.net["var1"] = "atk_decla"
+			self.net["var1"] = "atk decla"
 			if not self.poptext:
 				Clock.schedule_once(partial(self.popup_text, "waitingser"))
 			self.mconnect("phase")
@@ -19262,7 +19323,7 @@ class GameMech(Widget):
 		elif self.net["game"] and self.gd["active"] == "1" and not self.net["send"] and self.gd["play_card"] and not self.gd["climax_play"]:
 			if len(self.pd[self.gd["active"]]["Climax"]) > 0:
 				self.net["var"] = [self.pd[self.gd["active"]]["Climax"][0]]
-				self.net["var1"] = "play_climax"
+				self.net["var1"] = "play climax"
 				if not self.poptext:
 					Clock.schedule_once(partial(self.popup_text, "waitingser"))
 				self.mconnect("phase")
@@ -20428,7 +20489,7 @@ class GameMech(Widget):
 
 		if len(self.pd[self.gd["active"]]["Hand"]) > hand_limit and self.net["game"] and self.gd["active"] == "1" and not self.net["send"]:
 			self.net["var"] = list(self.gd["chosen"])
-			self.net["var1"] = "hand_limit"
+			self.net["var1"] = "hand limit"
 			if not self.poptext:
 				Clock.schedule_once(partial(self.popup_text, "waitingser"))
 			self.mconnect("phase")

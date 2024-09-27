@@ -551,16 +551,27 @@ class AI:
 		elif "move" in gdata["effect"] and "move" in gdata["ability_doing"]:
 			if len(gdata["target"]) % 2 != 0:
 				field = gdata["stage"]
-				if "Back" in gdata["status"]:
-					field = [n for n in field if "Back" in n]
+				if "Change" in gdata["status"]:
+					field = [cdata[gdata["ability_trigger"].split("_")[1]].pos_old]
+				elif "Middle" in gdata["status"]:
+					field = [field[1]]
+				elif "Center0" in gdata["status"]:
+					field = [field[0]]
+				elif "Center2" in gdata["status"]:
+					field = [field[2]]
 				elif "Center" in gdata["status"]:
 					field = [n for n in field if "Center" in n]
+				elif "Back0" in gdata["status"]:
+					field = [field[4]]
+				elif "Back1" in gdata["status"]:
+					field = [field[5]]
+				elif "Back" in gdata["status"]:
+					field = [n for n in field if "Back" in n]
+
 				if "Open" in gdata["status"]:
 					field = [n for n in field if pdata[self.player][n[:-1]][int(n[-1])] == ""]
 
 				if field:
-					if "Back0" in field or "Back1" in field:
-						field = [n for n in field if "Back" in n]
 					move.append(choice(field))
 		elif "heal" in gdata["effect"]:
 			if "top" in gdata["effect"]:

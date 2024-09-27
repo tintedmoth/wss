@@ -1,10 +1,22 @@
+0.45.0
+	Added Eng BanG Dream! RAISE A SUILEN Trial Deck+ cards
+	Added Jap BanG Dream! RAISE A SUILEN Trial Deck+ cards
+	Added Eng BanG Dream! Morfonica×RAISE A SUILEN Trial Deck+ cards
+	Added Jap BanG Dream! Morfonica×RAISE A SUILEN Trial Deck+ cards
+	Added Eng BanG Dream! Morfonica×RAISE A SUILEN Extra Booster cards
+	Added Jap BanG Dream! Morfonica×RAISE A SUILEN Extra Booster cards
+	Fixed version check at start
+
+0.44.3
+	Fixed deck image change on Deck Building
+
 0.44.2
-	Fixed Dowload All for titles package
+	Fixed Download All for titles package
 	Fixed variable typo
 	Fixed config setting error
 
 0.44.1
-	Fixed englisg version base playmat stock location
+	Fixed English version base playmat stock location
 
 0.44.0
 	Fixed setting to download image
@@ -18,7 +30,7 @@
 	Fixed bond ability on some cards
 	Added setting to download image
 	Added simple default playmat
-	Added engligh version of base playmat
+	Added English version of base playmat
 
 0.42.1
 	Fixed version checker getting stuck on popup while on android
@@ -26,7 +38,7 @@
 
 0.42.0
 	Added Eng Persona 4 ver.E cards
-	Adeed Jap Persona 4 cards
+	Added Jap Persona 4 cards
 	Added Jap Persona 4 Extra booster cards
 	Added Jap Persona 4 The Animation cards
 	Added Jap Persona 4 Arena cards
@@ -54,7 +66,7 @@
 0.39.0
 	Fixed app version checker
 	Added Jap Crayon Shin-chan cards
-	Added confimation when dismateling deck
+	Added confirmation when dismantling deck
 	Added deck import for encoredecks website (pc only)
 	Added deck import for decklog eng website (pc only)
 	Added deck import for decklog jap website (pc only)
@@ -76,7 +88,7 @@
 	Added settings for popup and image download
 	Added card no and text filter option in deck building
 	Added app version checker
-	Added high quality image for demo and shiyoko deck
+	Added high quality image for demo and Shiyoko deck
 	Added Jap Shining Force EXA cards
 	Added Jap Shining Resonance cards
 	Added Eng Batman Ninja Demo Deck
@@ -89,7 +101,7 @@
 
 0.35.0
 	Changed directory of folders
-	Changed timming of trigger condition at beginning of phase
+	Changed timing of trigger condition at beginning of phase
 	Added Jap Fate/kaleid liner Prisma Illya Drei!! cards
 	Added Jap Fate/kaleid liner Prisma Illya Prisma Phantasm cards
 	Added Jap Psycho-Pass cards
@@ -104,7 +116,7 @@
 	Added Jap Nichijou cards
 	Added Jap Katanagatari cards
 	Changed button text size
-	Fixed Clock Phase not Clocking after leveling up 
+	Fixed Clock Phase not Clocking after levelling up 
 
 0.32.2
 	Fixed error email
@@ -140,7 +152,7 @@
 
 0.29.0	
 	Change Cont ability text sequence
-	Restructure of Cont Ability funtion
+	Restructure of Cont Ability function
 	Add Jap Saekano Vol 2 cards
 	COM able to do more ability
 
@@ -171,7 +183,7 @@
 	Fixed button text on deck building setting
 
 0.27.3
-	Added a retun button on new deck creation popup
+	Added a return button on new deck creation popup
 
 0.27.2
 	Fixed BFR/S78-005 ability
@@ -183,7 +195,7 @@
 	Added Jap BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
 	Added Eng BOFURI: I Don’t Want to Get Hurt, so I’ll Max Out My Defense cards
 	Added visual guide for cards colour requirement
-	Fixed abilities that serach the deck on Multiplayer
+	Fixed abilities that search the deck on Multiplayer
 	Fixed Climax Phase on Multiplayer when playing Climax during Main Phase
 	Fixed Turn 1 Attack Phase on Multiplayer
 	Fixed Mulligan bug on Multiplayer
@@ -202,7 +214,7 @@
 0.25.0
 	Added Jap Magical Girl Lyrical Nanoha A’s cards
 	Added Jap Magical Girl Lyrical Nanoha A’s PORTABLE -THE GEARS OF DESTINY- cards
-	Added Jap Magical Girl Lyrical Nanoha The MOVIE 1st extrabox cards
+	Added Jap Magical Girl Lyrical Nanoha The MOVIE 1st extra box cards
 	Added Jap Nanoha StrikerS cards
 
 0.24.1
@@ -211,7 +223,7 @@
 0.24.0
 	Added Eng The Melancholy of Haruhi Suzumiya cards
 	Added Jap The Melancholy of Haruhi Suzumiya cards
-	Fixed ability given to middle character on center stage
+	Fixed ability given to middle character on centre stage
 	Fixed Multiplayer when selecting a custom deck and starting room
 	Fixed STG/S60-T06 ability
 
@@ -223,11 +235,11 @@
 	Added Eng AngelBeats! Re:Edit cards
 	Added Jap AngelBeats! Re:Edit cards
 	Added Jap Angel Beats! & Kud Wafter cards
-	Added Jap AngelBeats! extrabox cards
-	Added Jap AngelBeats! vol.2 extrabox cards 
+	Added Jap AngelBeats! extra box cards
+	Added Jap AngelBeats! vol.2 extra box cards 
 	Fixed AI Encore	Phase
 	Fixed error downloading packages
-	Various ui fix
+	Various UI fix
 
 0.21.0
 	Added Detective Opera Milky Holme cards
@@ -241,7 +253,7 @@
 	Added THE IDOLM@STER cards (without IM/S07-067 ability)
 	Fixed Pool trigger effect on Multiplay
 	Fixed Level Up on Multiplay
-	Fixed Clock Phase on Multplay
+	Fixed Clock Phase on Multiplay
 	Fixed Auto ability trigger on Multiplay
 	Fixed Encore Phase on Multiplay
 
@@ -273,7 +285,7 @@
 	Fixed field label showing in main menu
 
 0.16.2
-	Changed download persentage of sets
+	Changed download percentage of sets
 	Fixed auto ability triggering outside of beginning of phase
 	Fixed encore step crash on select
 
@@ -284,11 +296,11 @@
 0.16.0
 	Added Jap Saekano cards
 	Added CX Combo icon image
-	Added popup for when Reshuffle and Level up rule action ocur at the same time
+	Added popup for when Reshuffle and Level up rule action occur at the same time
 	Changed card levels image to match ability effect
 	Fixed Show field button on Level up popup
 	Fixed Damage Step and Level up rule action
-	Fixed not drawing when leveling up during Clock Phase
+	Fixed not drawing when levelling up during Clock Phase
 	Fixed trigger card not going to stock after deck refresh
 
 0.15.0
@@ -300,17 +312,17 @@
 
 0.13.0
 	Added Eng Fate/kaleido linear PRISMA ILLYA cards
-	Added Jap Fate/kaleido linear PRISMA ILLYA extrabox 1 and 2
+	Added Jap Fate/kaleido linear PRISMA ILLYA extra box 1 and 2
 	Added number when selecting multiple cards
 	Added number when cards ability, having same names, activate to differentiate
 	Fixed Attack phase when opp press Skip Attack or End Attack button on Multiplayer
-	Fixed Trigger step gotting stuck on Multiplayer
-	Fixed filter button disapear when closing popup on Deck Building add cards popup
+	Fixed Trigger step getting stuck on Multiplayer
+	Fixed filter button disappear when closing popup on Deck Building add cards popup
 	Changed Cont ability core
 
 0.12.2
 	Fixed Counter error
-	Fixed reveal top cards triggering again after leveling up
+	Fixed reveal top cards triggering again after levelling up
 
 0.12.1
 	Fixed error in auto ability checking
@@ -320,7 +332,7 @@
 	Added turn player background
 	Added option to download all image
 	Changed Trigger step code
-	Changed phase setp transiton time
+	Changed phase step transition time
 	Fixed Stock movement when paying cost due to playing card
 	Fixed custom deck image
 	Fixed custom deck saving not showing after
@@ -330,15 +342,15 @@
 0.11.0
 	Added Trigger icon on card image
 	Added Download section
-	Added check of downloaded file on startup and download
+	Added check of downloaded file on start-up and download
 	Reduced the app to contain only 2 decks and main file
 	
 0.10.0
 	Added ENG/JAP cards filter on deck building
-	Added ENG/JAP cards infomation on info popup (not complete)
+	Added ENG/JAP cards information on info popup (not complete)
 	Added About page in other section
-	Added Copyright information in other sectection
-	Fixed "Joint Investigation, Kokoro & Shalo" confrim text
+	Added Copyright information in other section
+	Fixed "Joint Investigation, Kokoro & Shalo" confirm text
 	Fixed opponent janken cost pay
 	Fixed Encore Phase
 	Fixed Encore ability
@@ -355,7 +367,7 @@
 	Playmat popup sorted by name
 
 0.8.2
-	Playamt fix
+	Playmat fix
 	Added new playmat
 	Remove old playmat (wrong positions)
 
@@ -366,7 +378,7 @@
 0.8.0
 	restructure of Card object and popups
 	card limit based on name instead of quantity
-	seperated some class in different file
+	separated some class in different file
 	Relative instead of Scatter
 	changed string to fstring
 
@@ -395,7 +407,7 @@
 	Change file structure
 
 0.4.5
-	Fix Leveling up and Clocking not moving cards
+	Fix Levelling up and Clocking not moving cards
 
 0.4.4
 	Fix Portrait mode
@@ -413,8 +425,8 @@
 0.4.0
 	Added Custom deck in deck select
 	Removed extra name field in card info
-	Deck info can now ba accesed by triple touch
-	Card info can now be accesed by triple touch (both single and multiple area ie clock)
+	Deck info can now be accessed by triple touch
+	Card info can now be accessed by triple touch (both single and multiple area ie clock)
 	Deck list format changed
 	Card colour data changed - multi colour available
 	Changed card database
@@ -444,7 +456,7 @@
 0.3.0
 	changed trigger function structure
 	added all stg td cards
-	added 10% movement befor cancelling info card
+	added 10% movement before cancelling info card
 	
 0.2.1
 	remove auto ability check
@@ -459,7 +471,7 @@
 	added bond stock ability
 	added actual/original info on card info
 	added alarm giving ability
-	added bodygurad
+	added bodyguard
 	added debug buttons switch
 
 0.1.3
@@ -479,13 +491,13 @@
 	added some ability
 
 0.0.11	
-	centered stacked card count
+	centre aligned stacked card count
 	fixed card text size on card info
 	fixed other bug
 
 0.0.10
 	added card information popup
-	added stacked card count (Library,Waiting,Memory,Stock)
+	added stacked card count (Library, Waiting, Memory, Stock)
 	
 0.0.9
 	fixed attack text popup on start of declaration phase

@@ -10,7 +10,7 @@ from core.mail import *
 
 with open(f"{data_ex}/log", "w", encoding="utf-8") as log_file:
 	pass
-logging.basicConfig(filename=f"{data_ex}/log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=f"{data_ex}/log.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 smtp_handler = SMTPHandler(mailhost=(mailadd[0], 587), fromaddr=mailadd[1], toaddrs=[mailadd[3]], subject='Error', credentials=(mailadd[1], mailadd[2]), secure=())
 smtp_handler.setLevel(logging.ERROR)
 logging.getLogger().addHandler(smtp_handler)
